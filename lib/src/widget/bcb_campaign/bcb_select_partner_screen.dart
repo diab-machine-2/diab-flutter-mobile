@@ -8,11 +8,17 @@ import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dar
 class BcbSelectPartnerScreen extends StatefulWidget {
   final String bcbCampaignId;
   final String? bcbCampaignName;
+  final bool isReschedule;
+  final String? appointmentId;
+  final String? currentSlotId;
 
   const BcbSelectPartnerScreen({
     Key? key,
     required this.bcbCampaignId,
     this.bcbCampaignName,
+    this.isReschedule = false,
+    this.appointmentId,
+    this.currentSlotId,
   }) : super(key: key);
 
   @override
@@ -54,6 +60,9 @@ class _BcbSelectPartnerScreenState extends State<BcbSelectPartnerScreen> {
           bcbCampaignId: widget.bcbCampaignId,
           bcbCampaignName: widget.bcbCampaignName,
           scheduleDays: scheduleDays,
+          isReschedule: widget.isReschedule,
+          appointmentId: widget.appointmentId,
+          currentSlotId: widget.currentSlotId,
         ),
       ),
     );

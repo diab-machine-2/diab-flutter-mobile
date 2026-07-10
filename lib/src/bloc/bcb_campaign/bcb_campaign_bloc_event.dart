@@ -24,3 +24,13 @@ class MarkResultViewedEvent extends BcbCampaignEvent {
   final String examResultId;
   MarkResultViewedEvent({required this.examResultId});
 }
+
+class RescheduleBcbAppointmentEvent extends BcbCampaignEvent {
+  final String appointmentId;
+  final String slotId;
+
+  RescheduleBcbAppointmentEvent({
+    required this.appointmentId,
+    required this.slotId,
+  });
+}

@@ -126,6 +126,25 @@ class BcbCampaignClient extends FetchClient {
     }
   }
 
+  /// PUT App/BcbCustomerAppointment/{appointmentId}/reschedule — đổi lịch
+  Future<void> rescheduleAppointment({
+    required String appointmentId,
+    required String slotId,
+  }) async {
+    try {
+      final Response response = await super.putData(
+        url: '/App/BcbCustomerAppointment/$appointmentId/reschedule',
+        params: {'slotId': slotId},
+      );
+      if (response.statusCode != 200) {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
   /// PUT App/BcbExamResult/{id}/mark-viewed — đánh dấu đã xem
   Future<void> markResultViewed(String examResultId) async {
     try {

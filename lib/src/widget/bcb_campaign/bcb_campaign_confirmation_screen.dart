@@ -24,6 +24,8 @@ class BcbCampaignConfirmationScreen extends StatefulWidget {
   final List<BcbPartnerScheduleDay> scheduleDays;
   final BcbSelectedWishSlot selectedWishSlot;
   final String? initialDoctorNote;
+  final bool isReschedule;
+  final String? appointmentId;
 
   const BcbCampaignConfirmationScreen({
     Key? key,
@@ -32,6 +34,8 @@ class BcbCampaignConfirmationScreen extends StatefulWidget {
     required this.scheduleDays,
     required this.selectedWishSlot,
     this.initialDoctorNote,
+    this.isReschedule = false,
+    this.appointmentId,
   }) : super(key: key);
 
   @override
@@ -74,9 +78,11 @@ class _BcbCampaignConfirmationScreenState
     return '${short(slot.startTime)}-${short(slot.endTime)}';
   }
 
-  String _formattedDate(BcbPartnerScheduleDay day) {
-    final date = day.examDateLocal;
-    if (date == null) return '';
+  String _formattedDate(BcbPartnerScheduleSlot slot) {
+    final dateTimestamp = int.tryParse(slot.examDate ?? '');
+    if (dateTimestamp == null) return '';
+    final date =
+        DateTime.fromMillisecondsSinceEpoch(dateTimestamp * 1000);
     final weekDay = DateUtil.weekDayToString(date, isDisplayfull: true);
     return '$weekDay, ${DateFormat('dd/MM/yyyy').format(date)}';
   }
@@ -108,7 +114,6 @@ class _BcbCampaignConfirmationScreenState
   }
 
   void _submit() {
-    final note = (_sectionAddNoteKey.currentState?.getNote().note ?? '').trim();
     final slotId = widget.selectedWishSlot.slot.id ?? '';
     if (slotId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -116,13 +121,26 @@ class _BcbCampaignConfirmationScreenState
       );
       return;
     }
-    _bloc.add(
-      SubmitBcbRegistrationEvent(
-        bcbCampaignId: widget.bcbCampaignId,
-        doctorNote: note.isEmpty ? null : note,
-        slotId: slotId,
-      ),
-    );
+    if (widget.isReschedule) {
+      final apptId = widget.appointmentId ?? '';
+      if (apptId.isEmpty) return;
+      _bloc.add(
+        RescheduleBcbAppointmentEvent(
+          appointmentId: apptId,
+          slotId: slotId,
+        ),
+      );
+    } else {
+      final note =
+          (_sectionAddNoteKey.currentState?.getNote().note ?? '').trim();
+      _bloc.add(
+        SubmitBcbRegistrationEvent(
+          bcbCampaignId: widget.bcbCampaignId,
+          doctorNote: note.isEmpty ? null : note,
+          slotId: slotId,
+        ),
+      );
+    }
   }
 
   void _showSuccessAndGoHome() {
@@ -300,6 +318,103 @@ class _BcbCampaignConfirmationScreenState
     );
   }
 
+  void _showRescheduleSuccessAndGoDetail() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(dialogContext);
+                        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                          NavigatorName.bcb_detail_appointment,
+                          (route) =>
+                              route.settings.name == NavigatorName.tabbar ||
+                              !Navigator.of(context).canPop(),
+                          arguments: {'campaignId': widget.bcbCampaignId},
+                        );
+                      },
+                      child: Icon(Icons.close,
+                          color: R.color.textDark, size: 24),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Image.asset(R.drawable.ic_dialog_success,
+                    width: 43, height: 43),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14),
+                  child: Text(
+                    R.string.bcb_doi_lich_thanh_cong.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.greenGradientBottom,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                      NavigatorName.bcb_detail_appointment,
+                      (route) =>
+                          route.settings.name == NavigatorName.tabbar ||
+                          !Navigator.of(context).canPop(),
+                      arguments: {'campaignId': widget.bcbCampaignId},
+                    );
+                  },
+                  child: Container(
+                    height: 44,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(200),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          R.color.greenGradientTop,
+                          R.color.greenGradientMid,
+                          R.color.greenGradientBottom,
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        R.string.back_home_page.tr(),
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -318,6 +433,10 @@ class _BcbCampaignConfirmationScreenState
             if (state is BcbRegistrationSubmitted) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) _showSuccessAndGoHome();
+              });
+            } else if (state is BcbAppointmentRescheduled) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _showRescheduleSuccessAndGoDetail();
               });
             } else if (state is BcbCampaignError) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -366,7 +485,9 @@ class _BcbCampaignConfirmationScreenState
                         child: Opacity(
                           opacity: submitting ? 0.6 : 1,
                           child: _buildButton(
-                            R.string.submit_booking.tr(),
+                            widget.isReschedule
+                                ? R.string.bcb_doi_lich.tr()
+                                : R.string.submit_booking.tr(),
                             submitting ? null : _submit,
                           ),
                         ),
@@ -427,7 +548,7 @@ class _BcbCampaignConfirmationScreenState
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              _formattedDate(widget.selectedWishSlot.day),
+              _formattedDate(widget.selectedWishSlot.slot),
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontSize: 15,
