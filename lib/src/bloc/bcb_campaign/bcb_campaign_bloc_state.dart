@@ -15,6 +15,8 @@ class BcbExamResultLoaded extends BcbCampaignState {
 
 class BcbResultMarkedViewed extends BcbCampaignState {}
 
+class BcbAppointmentRescheduled extends BcbCampaignState {}
+
 class BcbCampaignError extends BcbCampaignState {
   final String message;
   BcbCampaignError({required this.message});
