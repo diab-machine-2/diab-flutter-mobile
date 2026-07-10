@@ -230,8 +230,31 @@ class BranchioLinkConfig {
                   .getBcbCampaignCustomer(campaignId: campaignId);
               result.when(
                 success: (response) {
-                  final status = response.data?.status;
-                  if (status != null && status >= 2 && status <= 4) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    final status = response.data?.status;
+                    if (status != null && status >= 2 && status <= 4) {
+                      navigatorKey.currentState?.pushNamed(
+                        NavigatorName.bcb_select_partner,
+                        arguments: <String, dynamic>{
+                          'bcbCampaignId': campaignId,
+                          if (campaignName != null) 'bcbCampaignName': campaignName,
+                        },
+                      );
+                    } else if (status != null && status >= 5 && status <= 7) {
+                      navigatorKey.currentState?.pushNamed(
+                        NavigatorName.bcb_detail_appointment,
+                        arguments: {'campaignId': campaignId},
+                      );
+                    } else if (status != null && status >= 9 && status <= 10) {
+                      navigatorKey.currentState?.pushNamed(
+                        NavigatorName.view_test_result,
+                        arguments: {'campaignId': campaignId},
+                      );
+                    }
+                  });
+                },
+                failure: (_) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
                     navigatorKey.currentState?.pushNamed(
                       NavigatorName.bcb_select_partner,
                       arguments: <String, dynamic>{
@@ -239,26 +262,7 @@ class BranchioLinkConfig {
                         if (campaignName != null) 'bcbCampaignName': campaignName,
                       },
                     );
-                  } else if (status != null && status >= 5 && status <= 7) {
-                    navigatorKey.currentState?.pushNamed(
-                      NavigatorName.bcb_detail_appointment,
-                      arguments: {'campaignId': campaignId},
-                    );
-                  } else if (status != null && status >= 9 && status <= 10) {
-                    navigatorKey.currentState?.pushNamed(
-                      NavigatorName.view_test_result,
-                      arguments: {'campaignId': campaignId},
-                    );
-                  }
-                },
-                failure: (_) {
-                  navigatorKey.currentState?.pushNamed(
-                    NavigatorName.bcb_select_partner,
-                    arguments: <String, dynamic>{
-                      'bcbCampaignId': campaignId,
-                      if (campaignName != null) 'bcbCampaignName': campaignName,
-                    },
-                  );
+                  });
                 },
               );
             });
@@ -1139,8 +1143,31 @@ class BranchioLinkConfig {
               .getBcbCampaignCustomer(campaignId: bid);
           result.when(
             success: (response) {
-              final status = response.data?.status;
-              if (status != null && status >= 2 && status <= 4) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final status = response.data?.status;
+                if (status != null && status >= 2 && status <= 4) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.bcb_select_partner,
+                    arguments: {
+                      'bcbCampaignId': bid,
+                      if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
+                    },
+                  );
+                } else if (status != null && status >= 5 && status <= 7) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.bcb_detail_appointment,
+                    arguments: {'campaignId': bid},
+                  );
+                } else if (status != null && status >= 9 && status <= 10) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.view_test_result,
+                    arguments: {'campaignId': bid},
+                  );
+                }
+              });
+            },
+            failure: (_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 navigatorKey.currentState?.pushNamed(
                   NavigatorName.bcb_select_partner,
                   arguments: {
@@ -1148,26 +1175,7 @@ class BranchioLinkConfig {
                     if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
                   },
                 );
-              } else if (status != null && status >= 5 && status <= 7) {
-                navigatorKey.currentState?.pushNamed(
-                  NavigatorName.bcb_detail_appointment,
-                  arguments: {'campaignId': bid},
-                );
-              } else if (status != null && status >= 9 && status <= 10) {
-                navigatorKey.currentState?.pushNamed(
-                  NavigatorName.view_test_result,
-                  arguments: {'campaignId': bid},
-                );
-              }
-            },
-            failure: (_) {
-              navigatorKey.currentState?.pushNamed(
-                NavigatorName.bcb_select_partner,
-                arguments: {
-                  'bcbCampaignId': bid,
-                  if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
-                },
-              );
+              });
             },
           );
         });
