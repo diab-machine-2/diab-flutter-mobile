@@ -689,4 +689,11 @@ abstract class AppApi {
   Future<BcbCampaignCustomerResponse> getBcbCampaignCustomer(
     @Query("campaignId") String campaignId,
   );
+
+  // BCB Appointment Reschedule
+  @PUT("App/BcbCustomerAppointment/{appointmentId}/reschedule")
+  Future<CommonResponse> rescheduleBcbAppointment(
+    @Path("appointmentId") String appointmentId,
+    @Body() Map<String, dynamic> body,
+  );
 }
