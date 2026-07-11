@@ -92,7 +92,7 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
         note: note,
       );
 
-      await _repository.api.submitMedicationRequest(body.toJson());
+      await _repository.submitMedicationRequest(body.toJson());
       emit(const BenefitServiceRequestSubmitSuccess(
           type: BenefitServiceType.medicine));
     } catch (e) {
@@ -121,7 +121,7 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
         note: note,
       );
 
-      await _repository.api.submitMedicationRequest(body.toJson());
+      await _repository.submitMedicationRequest(body.toJson());
       emit(const BenefitServiceRequestSubmitSuccess(
           type: BenefitServiceType.labTest));
     } catch (e) {

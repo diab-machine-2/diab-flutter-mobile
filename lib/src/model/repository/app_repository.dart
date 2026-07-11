@@ -1497,4 +1497,16 @@ class AppRepository {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
+
+  // Benefit Service Request (medicine + lab test)
+  Future<ApiResult<CommonResponse>> submitMedicationRequest(
+      Map<String, dynamic> body) async {
+    try {
+      final CommonResponse response =
+          await appClient.submitMedicationRequest(body);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }
