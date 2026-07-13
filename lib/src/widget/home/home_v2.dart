@@ -1253,7 +1253,7 @@ class _HomeControllerState extends State<HomeController>
                             ),
                           ),
 
-                          if (model?.hasBundle == true) ...
+                          if (model?.hasBundle == false) ...
                             [
                               const SizedBox(height: 16.0),
                               const Padding(

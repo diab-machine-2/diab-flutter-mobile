@@ -10,6 +10,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/benefit/benefit_lab_test_scan_result_page.dart';
 import 'package:medical/src/widget/benefit/benefit_medicine_scan_result_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
+import 'package:medical/src/widget/medicine/widgets/upload_take_photo.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class BenefitCaptureImagePage extends StatefulWidget {
@@ -27,6 +28,8 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
   final ImagePicker _picker = ImagePicker();
+  File? _selectedImage;
+  bool _isProcessing = false;
 
   bool get _isMedicine => widget.serviceType == BenefitServiceType.medicine;
 
@@ -61,6 +64,7 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
       return;
     }
     final image = await _cameraController!.takePicture();
+    setState(() => _selectedImage = File(image.path));
     _processImage(File(image.path));
   }
 
@@ -69,12 +73,15 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
       source: ImageSource.gallery,
       imageQuality: 85,
     );
-    if (picked != null) _processImage(File(picked.path));
+    if (picked != null) {
+      setState(() => _selectedImage = File(picked.path));
+      _processImage(File(picked.path));
+    }
   }
 
   Future<void> _processImage(File image) async {
     final cubit = context.read<BenefitServiceRequestCubit>();
-    BotToast.showLoading(allowClick: false);
+    setState(() => _isProcessing = true);
 
     if (_isMedicine) {
       await cubit.scanPrescription(image: image);
@@ -83,7 +90,7 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
     }
 
     if (!mounted) return;
-    BotToast.closeAllLoading();
+    setState(() => _isProcessing = false);
 
     final state = cubit.state;
     if (state is BenefitScanMedicineSuccess) {
@@ -118,116 +125,117 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          splashColor: R.color.transparent,
+          highlightColor: R.color.transparent,
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Transform(
+          transform: Matrix4.translationValues(-20, 0.0, 0.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              (_isMedicine
+                      ? R.string.benefit_capture_title_medicine
+                      : R.string.benefit_capture_title_lab)
+                  .tr(),
+              style: TextStyle(
+                color: R.color.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: R.color.transparent,
+        elevation: 0.0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [R.color.greenGradientMid, R.color.greenGradientBottom],
+            ),
+          ),
+        ),
+      ),
       body: Stack(
         children: [
-          if (_isCameraInitialized && _cameraController != null)
-            Positioned.fill(child: CameraPreview(_cameraController!))
-          else
-            Positioned.fill(child: Container(color: Colors.black87)),
-          // AppBar
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                    Expanded(
-                      child: Text(
-                        (_isMedicine
-                                ? R.string.benefit_capture_title_medicine
-                                : R.string.benefit_capture_title_lab)
-                            .tr(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
+          Column(
+            children: [
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.black,
+                  child: _selectedImage != null
+                      ? Image.file(_selectedImage!)
+                      : _isCameraInitialized
+                          ? CameraPreview(_cameraController!)
+                          : Center(child: CircularProgressIndicator()),
+                ),
+              ),
+              Container(
+                  padding: EdgeInsets.all(15),
+                  color: Colors.black,
+                  child: Center(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: R.color.color0xff008479,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.info, color: Colors.white),
+                          SizedBox(width: 8),
+                          Text(
+                            R.string.should_capture_advice.tr(),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
+                  )),
+              Padding(
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 40),
+                  child: UploadTakePhotoButtons(
+                    onUploadTap: _pickFromGallery,
+                    onTakePhotoTap: _captureFromCamera,
+                  ))
+            ],
+          ),
+          if (_isProcessing)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text(
+                      _isMedicine
+                          ? R.string.analyzing_prescription.tr()
+                          : R.string.analyzing_lab_result.tr(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        decoration: TextDecoration.none,
+                      ),
+                    )
                   ],
                 ),
               ),
             ),
-          ),
-          // Center hint
-          Center(
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                R.string.benefit_capture_hint.tr(),
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-              ),
-            ),
-          ),
-          // Bottom controls
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 20),
-                color: Colors.black54,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildActionButton(
-                      icon: Icons.photo_library_outlined,
-                      label: R.string.benefit_capture_btn_gallery.tr(),
-                      onTap: _pickFromGallery,
-                    ),
-                    GestureDetector(
-                      onTap: _captureFromCamera,
-                      child: Container(
-                        width: 64,
-                        height: 64,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.camera_alt,
-                            size: 30, color: Colors.black87),
-                      ),
-                    ),
-                    const SizedBox(width: 60),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 28),
-          GapH(4),
-          Text(label,
-              style:
-                  const TextStyle(color: Colors.white, fontSize: 12)),
         ],
       ),
     );

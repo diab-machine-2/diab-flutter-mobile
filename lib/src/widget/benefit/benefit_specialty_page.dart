@@ -291,6 +291,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: GridView.builder(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

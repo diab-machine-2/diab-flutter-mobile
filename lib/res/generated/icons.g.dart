@@ -61,4 +61,14 @@ class Icons {
   String get ic_benefit_other => "lib/res/icons/ic_benefit_other.svg";
   String get ic_benefit_at_home => "lib/res/icons/ic_benefit_at_home.svg";
   String get ic_ho_so_suc_khoe => "lib/res/icons/ic_ho_so_suc_khoe.svg";
+  String get ic_benefit_medicine_item => "lib/res/icons/ic_benefit_medicine_item.svg";
+  String get ic_benefit_buy_medicine => "lib/res/icons/ic_benefit_buy_medicine.svg";
+  String get ic_benefit_lab_service => "lib/res/icons/ic_benefit_lab_service.svg";
+  String get ic_benefit_capture_photo => "lib/res/icons/ic_benefit_capture_photo.svg";
+  String get ic_benefit_consult => "lib/res/icons/ic_benefit_consult.svg";
+  String get ic_benefit_request_success => "lib/res/icons/ic_benefit_request_success.svg";
+  String get ic_benefit_lab_capture => "lib/res/icons/ic_benefit_lab_capture.svg";
+  String get ic_benefit_lab_examination => "lib/res/icons/ic_benefit_lab_examination.svg";
+  String get ic_benefit_lab_imaging_diagnosis => "lib/res/icons/ic_benefit_lab_imaging_diagnosis.svg";
+  String get ic_benefit_lab_functional_exploration => "lib/res/icons/ic_benefit_lab_functional_exploration.svg";
 }

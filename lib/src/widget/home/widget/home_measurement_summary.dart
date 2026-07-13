@@ -84,7 +84,7 @@ class MeasurementSummary extends StatelessWidget {
           const SizedBox(height: 20.0),
 
           // Health profile button — only when hasBundle
-          if (hasBundle == false) ...[
+          if (hasBundle == true) ...[
             _buildHealthProfileButton(),
             const SizedBox(height: 4.0),
           ],

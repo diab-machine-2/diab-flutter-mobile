@@ -1772,6 +1772,16 @@ class Strings {
   String get benefit_affordable_price_desc => 'benefit_affordable_price_desc';
   String get benefit_info_security => 'benefit_info_security';
   String get benefit_info_security_desc => 'benefit_info_security_desc';
+  String get benefit_lab_examination => 'benefit_lab_examination';
+  String get benefit_lab_examination_desc => 'benefit_lab_examination_desc';
+  String get benefit_lab_imaging_diagnosis => 'benefit_lab_imaging_diagnosis';
+  String get benefit_lab_imaging_diagnosis_desc => 'benefit_lab_imaging_diagnosis_desc';
+  String get benefit_lab_functional_exploration => 'benefit_lab_functional_exploration';
+  String get benefit_lab_functional_exploration_desc => 'benefit_lab_functional_exploration_desc';
+  String get benefit_lab_endoscopy => 'benefit_lab_endoscopy';
+  String get benefit_lab_endoscopy_desc => 'benefit_lab_endoscopy_desc';
+  String get benefit_lab_biopsy => 'benefit_lab_biopsy';
+  String get benefit_lab_biopsy_desc => 'benefit_lab_biopsy_desc';
   String get benefit_capture_title_medicine => 'benefit_capture_title_medicine';
   String get benefit_capture_title_lab => 'benefit_capture_title_lab';
   String get benefit_capture_hint => 'benefit_capture_hint';
@@ -1783,6 +1793,14 @@ class Strings {
   String get benefit_scan_lab_check_hint => 'benefit_scan_lab_check_hint';
   String get benefit_send_medicine_request => 'benefit_send_medicine_request';
   String get benefit_send_lab_request => 'benefit_send_lab_request';
+  String get benefit_request_desc_prefix_medicine => 'benefit_request_desc_prefix_medicine';
+  String get benefit_request_desc_prefix_lab => 'benefit_request_desc_prefix_lab';
+  String get benefit_request_desc_hour => 'benefit_request_desc_hour';
+  String get benefit_request_desc_suffix => 'benefit_request_desc_suffix';
+  String get benefit_request_confirm_medicine => 'benefit_request_confirm_medicine';
+  String get benefit_request_deliver => 'benefit_request_deliver';
+  String get benefit_request_deliver_lab => 'benefit_request_deliver_lab';
+  String get benefit_request_contact_support => 'benefit_request_contact_support';
   String get benefit_request_success_title => 'benefit_request_success_title';
   String get benefit_request_success_medicine_desc => 'benefit_request_success_medicine_desc';
   String get benefit_request_success_lab_desc => 'benefit_request_success_lab_desc';
@@ -1791,7 +1809,11 @@ class Strings {
   String get benefit_request_confirm_sample => 'benefit_request_confirm_sample';
   String get benefit_back_to_home => 'benefit_back_to_home';
   String get benefit_scan_diagnose => 'benefit_scan_diagnose';
+  String get benefit_scan_diagnose_lab_title => 'benefit_scan_diagnose_lab_title';
   String get benefit_scan_prescription_name => 'benefit_scan_prescription_name';
+  String get quantity => 'quantity';
+  String get analyzing_lab_result => 'analyzing_lab_result';
+  String get paraclinical => 'paraclinical';
 }
 
 

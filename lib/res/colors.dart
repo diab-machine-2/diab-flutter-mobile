@@ -187,4 +187,8 @@ class AppColors {
   static const benefitBgGradientStart = Color(0xFFCAE9DF);
   static const benefitBgGradientEnd = Color(0xFFF8FEFD);
   static const serviceCardShadow = Color(0x19000000);
+  static const color0xFFF2F4F5 = Color(0xffF2F4F5);
+  static const color0xFF999999 = Color(0xFF999999);
+  static const color0xFFE5F7F5 = Color(0xFFE5F7F5);
+  static const color0x14016961 = Color(0x14016961);
 }
