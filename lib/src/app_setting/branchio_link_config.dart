@@ -59,6 +59,11 @@ class BranchioLinkConfig {
   String? _pendingMeasurementScreen;
   int? _pendingMedicineTab;
 
+  // Deduplication: track last processed link to prevent duplicate fires
+  String? _lastProcessedLinkUrl;
+  DateTime? _lastProcessedTime;
+  bool _isNavigatingActivity = false;
+
   // Getters
   String? get referalCode => _referalCode;
   String? get lessonId => _lessonId;
@@ -103,6 +108,22 @@ class BranchioLinkConfig {
     ));
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       log('listenDynamicLinks - Branchio DeepLink Data: $data');
+
+      // ---- DEDUPLICATION: Skip if same link processed within 5 seconds ----
+      final linkUrl = data['+url']?.toString() ?? data['~referring_link']?.toString();
+      final now = DateTime.now();
+      if (linkUrl != null &&
+          linkUrl.isNotEmpty &&
+          linkUrl == _lastProcessedLinkUrl &&
+          _lastProcessedTime != null &&
+          now.difference(_lastProcessedTime!).inSeconds < 5) {
+        print('[ROUTE] Duplicate deep link ignored: $linkUrl');
+        return;
+      }
+      _lastProcessedLinkUrl = linkUrl;
+      _lastProcessedTime = now;
+      // ---- END DEDUPLICATION ----
+
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
 
       final zoomStatus = await ZoomService().getMeetingStatus();
@@ -142,6 +163,11 @@ class BranchioLinkConfig {
       // Handle activity deeplink
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$activityId")) {
+        // Skip if already navigating for an activity deeplink
+        if (_isNavigatingActivity) {
+          print('[ROUTE] Activity navigation already in progress, skipping');
+          return;
+        }
         _activityId = data['\$activityId'] as String;
         if (data.containsKey("\$referralCode")) {
           _referalCode = data['\$referralCode'] as String;
@@ -1038,7 +1064,30 @@ class BranchioLinkConfig {
 
   void removeActivityId() {
     _activityId = null;
+    _isNavigatingActivity = false;
     print('[ROUTE] Activity ID cleared');
+  }
+
+  /// Atomically consume the activityId: returns the value and clears it.
+  /// This prevents multiple callers from reading the same ID.
+  String? consumeActivityId() {
+    final id = _activityId;
+    if (id != null) {
+      _activityId = null;
+      _isNavigatingActivity = true;
+      print('[ROUTE] Activity ID consumed: $id');
+    }
+    return id;
+  }
+
+  /// Atomically consume the lessonId: returns the value and clears it.
+  String? consumeLessonId() {
+    final id = _lessonId;
+    if (id != null) {
+      _lessonId = null;
+      print('[ROUTE] Lesson ID consumed: $id');
+    }
+    return id;
   }
 
   void removeZoomId() {
@@ -1119,6 +1168,7 @@ class BranchioLinkConfig {
     }
 
     if (_activityId != null &&
+        !_isNavigatingActivity &&
         AppSettings.splashScreenInitDone &&
         AppSettings.userInfo != null) {
       print('[ROUTE] Executing pending activity navigation: $_activityId');

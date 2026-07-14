@@ -142,15 +142,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   void _checkExistActivityId() async {
-    final String? activityId = BranchioLinkConfig.instance.activityId;
+    // Use consume pattern: atomically read + clear the ID so no other
+    // code path (e.g. TabbarController observer) can trigger duplicate navigation.
+    final String? activityId = BranchioLinkConfig.instance.consumeActivityId();
     if (activityId != null) {
       SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
       await Future.delayed(Duration(milliseconds: 500));
       NavigationUtil.navigatePage(navigatorKey.currentState!.context,
           IntroduceSurveyPage(survey: smartGoal));
-      Future.delayed(Duration(seconds: 1), () {
-        BranchioLinkConfig.instance.removeActivityId();
-      });
+      // Reset the navigation guard
+      BranchioLinkConfig.instance.removeActivityId();
     }
   }
 
@@ -170,7 +171,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           }
           if (state is ActivityTabSuccess) {
             _checkExistZoomId();
-            _checkExistActivityId();
+            // Activity deeplinks are handled via the observer pattern
+            // (NAVIGATE_TO_ACTIVITY_DETAIL). Do NOT call _checkExistActivityId()
+            // here as it would create a duplicate navigation path.
             if (_pendingKnowledgeScrollWeek != null) {
               _scheduleScrollToPendingKnowledgeWeek();
             }

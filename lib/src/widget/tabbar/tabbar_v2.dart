@@ -138,18 +138,9 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
     print('[ROUTE] TabbarController initialization complete');
 
-    // Check for lesson/activity deeplinks after initialization is complete
-    // Use observer pattern for activity deeplinks, direct call for lesson deeplinks
-    final String? pendingLessonId = BranchioLinkConfig.instance.lessonId;
-    final String? pendingActivityId = BranchioLinkConfig.instance.activityId;
-
-    if (pendingLessonId != null) {
-      _checkExistLessonId();
-    } else if (pendingActivityId != null) {
-      // Use observer pattern for activity deeplinks to ensure proper timing
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
-    }
+    // Deeplink navigation is handled by _checkPendingDeeplinks() below.
+    // Do NOT fire observer notifications here as they would cause duplicate
+    // navigation (observer in TabbarController + observer in ActivityTabPage).
 
     // Check if we have any pending deeplinks to navigate to
     _checkPendingDeeplinks();
@@ -287,8 +278,10 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkExistLessonId() async {
-    final String? lessonId = BranchioLinkConfig.instance.lessonId;
-    final String? activityId = BranchioLinkConfig.instance.activityId;
+    // Use consume pattern: atomically read + clear the ID so no other
+    // code path can read the same value and trigger duplicate navigation.
+    final String? lessonId = BranchioLinkConfig.instance.consumeLessonId();
+    final String? activityId = BranchioLinkConfig.instance.consumeActivityId();
     if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
@@ -298,12 +291,12 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         await Future.delayed(Duration(milliseconds: 500));
         NavigationUtil.navigatePage(navigatorKey.currentState!.context,
             IntroduceSurveyPage(survey: smartGoal));
-        Future.delayed(Duration(seconds: 1), () {
-          BranchioLinkConfig.instance.removeActivityId();
-        });
+        // ID already cleared by consumeActivityId above — reset nav guard
+        BranchioLinkConfig.instance.removeActivityId();
       } else {
         _jumpTo(TabBarType.program.index);
         _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+        BranchioLinkConfig.instance.removeActivityId();
       }
     }
   }

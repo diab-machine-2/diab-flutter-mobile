@@ -193,5 +193,7 @@
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
 	<false/>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>
