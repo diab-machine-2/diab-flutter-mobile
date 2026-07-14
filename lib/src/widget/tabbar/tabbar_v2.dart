@@ -559,53 +559,132 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
               appbarColor: R.color.greenGradientBottom,
               textColor: R.color.white,
               hideAllBackButton: true,
-              appBarAction: InkWell(
-                onTap: () async {
-                  HomeSupportFunctions.showModalAddData(context);
-                },
-                child: Container(
-                  height: 36,
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                  margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: R.color.color0xffCAFAF5,
-                    border: Border.all(
-                      color: R.color.color0xff8FEBE0,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        R.icons.ic_telephone,
-                        width: 16,
-                        height: 16,
-                        color: R.color.greenGradientBottom,
-                        fit: BoxFit.scaleDown,
-                      ),
-                      GapW(8),
-                      MediaQuery(
-                        data: MediaQuery.of(context).copyWith(
-                          textScaler: MediaQuery.of(context)
-                              .textScaler
-                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              appBarAction: AppSettings.hasBundle
+                  ? InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, NavigatorName.benefit_page);
+                      },
+                      child: Container(
+                        height: double.infinity,
+                        margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
+                        decoration: ShapeDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment(1.00, 0.00),
+                            end: Alignment(0.00, 1.00),
+                            colors: [
+                              const Color(0xFF3CB38D),
+                              const Color(0xFF01635A),
+                            ],
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          shadows: const [
+                            BoxShadow(
+                              color: Color(0x3F000000),
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
+                              spreadRadius: 0,
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          R.string.contact.tr(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'sfpro',
-                            fontWeight: FontWeight.w700,
-                            color: R.color.greenGradientBottom,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          clipBehavior: Clip.antiAlias,
+                          decoration: ShapeDecoration(
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                width: 1,
+                                color: const Color(0xFFE5B542),
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              GapW(4),
+                              MediaQuery(
+                                data: MediaQuery.of(context).copyWith(
+                                  textScaler: MediaQuery.of(context)
+                                      .textScaler
+                                      .clamp(
+                                          minScaleFactor: 1.0,
+                                          maxScaleFactor: 1.3),
+                                ),
+                                child: Text(
+                                  R.string.benefit_title.tr(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontFamily: 'sfpro',
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.50,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    )
+                  : InkWell(
+                      onTap: () async {
+                        HomeSupportFunctions.showModalAddData(context);
+                      },
+                      child: Container(
+                        height: 36,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: R.color.color0xffCAFAF5,
+                          border: Border.all(
+                            color: R.color.color0xff8FEBE0,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              R.icons.ic_telephone,
+                              width: 16,
+                              height: 16,
+                              color: R.color.greenGradientBottom,
+                              fit: BoxFit.scaleDown,
+                            ),
+                            GapW(8),
+                            MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3),
+                              ),
+                              child: Text(
+                                R.string.contact.tr(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: 'sfpro',
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.greenGradientBottom,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
               child: ActivityTabPage(extendTabbar: true),
             );
           },

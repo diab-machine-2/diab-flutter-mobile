@@ -46,6 +46,7 @@ class AppSettings {
   static bool isReloadCurrentUserInfo = false;
 
   static bool isOwnPackage = false;
+  static bool hasBundle = false;
 
   static bool isFirstDownload = true;
 

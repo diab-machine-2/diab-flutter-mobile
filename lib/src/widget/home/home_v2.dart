@@ -701,6 +701,7 @@ class _HomeControllerState extends State<HomeController>
           HomeLoaded? stateLoaded;
           if (state is HomeLoaded) {
             model = state.model;
+            AppSettings.hasBundle = model?.hasBundle ?? false;
             stateLoaded = state;
             if (false == model?.packageAccount?.isDisplayedWelcome &&
                 !_isDisplayedWelcome) {
@@ -1253,7 +1254,7 @@ class _HomeControllerState extends State<HomeController>
                             ),
                           ),
 
-                          if (model?.hasBundle == false) ...
+                          if (model?.hasBundle == true) ...
                             [
                               const SizedBox(height: 16.0),
                               const Padding(
