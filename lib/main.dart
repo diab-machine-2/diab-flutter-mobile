@@ -12,11 +12,8 @@ import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
-import 'src/service/medicine_service.dart';
 import 'src/utils/app_log.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_timezone/flutter_timezone.dart';
+import 'src/app_setting/branchio_link_config.dart';
 import 'package:flutter/foundation.dart';
 
 class SimpleBlocObserver extends BlocObserver {
@@ -63,6 +60,25 @@ Future<void> main() async {
   //WidgetsFlutterBinding.ensureInitialized();
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  // === INITIALIZE BRANCH SDK FIRST ===
+  int branchRetries = 0;
+  const int maxBranchRetries = 2;
+  while (branchRetries < maxBranchRetries) {
+    try {
+      await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
+      // Subscribe to deeplink stream immediately after init
+      BranchioLinkConfig.instance.setUpHandleDeepLink();
+      break;
+    } catch (e) {
+      branchRetries++;
+      debugPrint('FlutterBranchSdk.init failed (attempt $branchRetries/$maxBranchRetries): $e');
+      if (branchRetries < maxBranchRetries) {
+        await Future.delayed(Duration(seconds: 1 * branchRetries));
+      }
+    }
+  }
+  // ===================================
 
   if (kDebugMode) {
     HttpClient.enableTimelineLogging = true;
@@ -122,12 +138,6 @@ Future<void> main() async {
   // await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();
   // Note: Firebase.initializeApp() is already called in initializeFlutterFire()
-
-  try {
-    await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
-  } catch (e) {
-    debugPrint('FlutterBranchSdk.init failed: $e');
-  }
 
   try {
     await RevenueCatService.initialize();
