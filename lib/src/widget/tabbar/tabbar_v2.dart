@@ -60,8 +60,10 @@ bool isHomeTabActive() {
 }
 
 class TabbarController extends StatefulWidget {
-  const TabbarController(
-      {this.sharedCode, this.isRedirectFromNotification = false});
+  const TabbarController({
+    this.sharedCode,
+    this.isRedirectFromNotification = false,
+  });
   final String? sharedCode;
   final bool isRedirectFromNotification;
 
@@ -559,11 +561,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
               appbarColor: R.color.greenGradientBottom,
               textColor: R.color.white,
               hideAllBackButton: true,
-              appBarAction: AppSettings.hasBundle
+              appBarAction: AppSettings.hasBundle == true
                   ? InkWell(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, NavigatorName.benefit_page);
+                            context, NavigatorName.benefit_introduce_bundle);
                       },
                       child: Container(
                         height: double.infinity,

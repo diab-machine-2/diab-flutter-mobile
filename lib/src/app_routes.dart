@@ -39,6 +39,7 @@ import 'package:medical/src/widget/bcb_campaign/bcb_detail_appointment_screen.da
 import 'package:medical/src/widget/benefit/benefit_appointment_history_page.dart';
 import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
 import 'package:medical/src/widget/benefit/benefit_page.dart';
+import 'package:medical/src/widget/benefit/benefit_introduce_bundle_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_intro_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -86,7 +87,7 @@ class AppRoutes {
               sharedCode = settings.arguments! as String;
             } else if (settings.arguments is Map<String, dynamic>) {
               final data = settings.arguments as Map<String, dynamic>?;
-              isRedirectFromNotification = data!['isRedirectFromNotification'];
+              isRedirectFromNotification = data?['isRedirectFromNotification'] ?? false;
             }
           }
 
@@ -463,10 +464,15 @@ class AppRoutes {
       case NavigatorName.benefit_page:
         {
           final data = settings.arguments as Map<String, dynamic>?;
-          final bookingType = data?['bookingType'] as String? ?? Const.BENEFIT_BOOKING_AT_CLINIC;
+          final bookingType = data?['bookingType'] as String? ??
+              Const.BENEFIT_BOOKING_AT_CLINIC;
           page = BenefitPage(bookingType: bookingType);
           break;
         }
+
+      case NavigatorName.benefit_introduce_bundle:
+        page = const BenefitIntroduceBundlePage();
+        break;
 
       case NavigatorName.dsmes_booking_detail:
         {

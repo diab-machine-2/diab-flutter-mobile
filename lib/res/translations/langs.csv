@@ -1744,3 +1744,14 @@ benefit_scan_diagnose_lab_title,Tên phiếu cận lâm sàng,Paraclinical Test 
 benefit_scan_prescription_name,Tên phiếu,Order name,
 medicine_quantity,Số lượng,Quantity,
 paraclinical,Cận lâm sàng,Paraclinical
+benefit_detail_title,Chi tiết quyền lợi,Benefit Details
+benefit_active,Hoạt động,Active
+benefit_progress_title,Tiến độ hoàn thành,Completion Progress
+benefit_service_count,{}/{} dịch vụ,{}/{} services
+benefit_remaining_count,Còn {} lượt,{} remaining
+benefit_booking_button,Đặt lịch hẹn ngay,Book Appointment Now
+benefit_discount_badge,-{}%,-{}%
+benefit_remaining_days,Còn {} ngày,{} days remaining
+benefit_unlimited,Không giới hạn,Unlimited
+benefit_discount,Giảm {},Discount {},
+benefit_my_benefits,Quyền lợi của tôi,My Benefits

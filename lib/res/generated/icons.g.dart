@@ -71,4 +71,10 @@ class Icons {
   String get ic_benefit_lab_examination => "lib/res/icons/ic_benefit_lab_examination.svg";
   String get ic_benefit_lab_imaging_diagnosis => "lib/res/icons/ic_benefit_lab_imaging_diagnosis.svg";
   String get ic_benefit_lab_functional_exploration => "lib/res/icons/ic_benefit_lab_functional_exploration.svg";
+  String get ic_benefit_item_dat_lich => "lib/res/icons/ic_benefit_item_dat_lich.svg";
+  String get ic_benefit_item_gioi_thieu => "lib/res/icons/ic_benefit_item_gioi_thieu.svg";
+  String get ic_benefit_item_bao_cao => "lib/res/icons/ic_benefit_item_bao_cao.svg";
+  String get ic_benefit_item_thuoc => "lib/res/icons/ic_benefit_item_thuoc.svg";
+  String get ic_benefit_item_dat_xet_nghiem => "lib/res/icons/ic_benefit_item_dat_xet_nghiem.svg";
+  String get ic_benefit_item_dsp => "lib/res/icons/ic_benefit_item_dsp.svg";
 }

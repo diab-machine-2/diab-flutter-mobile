@@ -1409,14 +1409,17 @@ class Strings {
   String get add_prescription => 'add_prescription';
   String get edit_prescription => 'edit_prescription';
   String get prescription_warning => 'prescription_warning';
-  String get medicine_prescription_data_incomplete => 'medicine_prescription_data_incomplete';
-  String get prescription_name=> 'prescription_name';
+  String get medicine_prescription_data_incomplete =>
+      'medicine_prescription_data_incomplete';
+  String get prescription_name => 'prescription_name';
   String get start_date => 'start_date';
   String get set_time => 'set_time';
   String get reminder_get_more_medicine => 'reminder_get_more_medicine';
-  String get reminder_get_more_medicine_description => 'reminder_get_more_medicine_description';
+  String get reminder_get_more_medicine_description =>
+      'reminder_get_more_medicine_description';
   String get enable_medicine_notification => 'enable_medicine_notification';
-  String get enable_medicine_notification_description => 'enable_medicine_notification_description';
+  String get enable_medicine_notification_description =>
+      'enable_medicine_notification_description';
   String get prescription => 'prescription';
   String get prescription_using => 'prescription_using';
   String get prescription_out => 'prescription_out';
@@ -1514,8 +1517,10 @@ class Strings {
   String get please_input_dosage => 'please_input_dosage';
   String get not_used => 'not_used';
   String get used => 'used';
-  String get today_you_have_no_schedule_today => 'today_you_have_no_schedule_today';
-  String get add_medicine_so_diab_remind_you_on_time => 'add_medicine_so_diab_remind_you_on_time';
+  String get today_you_have_no_schedule_today =>
+      'today_you_have_no_schedule_today';
+  String get add_medicine_so_diab_remind_you_on_time =>
+      'add_medicine_so_diab_remind_you_on_time';
   String get reuse_prescription => 'reuse_prescription';
   String get input_medicine => 'input_medicine';
   String get should_capture_advice => 'should_capture_advice';
@@ -1545,7 +1550,8 @@ class Strings {
   String get examination => 'examination';
   String get choose_input_method => 'choose_input_method';
   String get centre_name => 'centre_name';
-  String get given_access_gallery_description => 'given_access_gallery_description';
+  String get given_access_gallery_description =>
+      'given_access_gallery_description';
   String get manage => 'manage';
   String get participation => 'participation';
   String get login_apple_id => 'login_apple_id';
@@ -1553,7 +1559,8 @@ class Strings {
   String get conversation_ai_citation => 'conversation_ai_citation';
   String get reference_source => 'reference_source';
   String get change_medicine_quantity_title => 'change_medicine_quantity_title';
-  String get change_medicine_quantity_message => 'change_medicine_quantity_message';
+  String get change_medicine_quantity_message =>
+      'change_medicine_quantity_message';
   String get delete_medicine_dialog_title => 'delete_medicine_dialog_title';
   String get exceed_medicine_warning => 'exceed_medicine_warning';
   String get food_guide_meal_score_question => 'food_guide_meal_score_question';
@@ -1611,7 +1618,8 @@ class Strings {
   String get lesson_back_to_library => 'lesson_back_to_library';
   String get lesson_reason_hard_to_understand =>
       'lesson_reason_hard_to_understand';
-  String get lesson_reason_low_quality_video => 'lesson_reason_low_quality_video';
+  String get lesson_reason_low_quality_video =>
+      'lesson_reason_low_quality_video';
   String get lesson_reason_insufficient_references =>
       'lesson_reason_insufficient_references';
   String get lesson_reason_unclear_images => 'lesson_reason_unclear_images';
@@ -1626,7 +1634,8 @@ class Strings {
   String get lesson_reason_need_more_illustrations =>
       'lesson_reason_need_more_illustrations';
   String get lesson_reason_useful_content => 'lesson_reason_useful_content';
-  String get lesson_reason_high_quality_video => 'lesson_reason_high_quality_video';
+  String get lesson_reason_high_quality_video =>
+      'lesson_reason_high_quality_video';
   String get lesson_reason_sufficient_references =>
       'lesson_reason_sufficient_references';
   String get lesson_reason_beautiful_images => 'lesson_reason_beautiful_images';
@@ -1709,12 +1718,12 @@ class Strings {
   String get bcb_doi_lich_thanh_cong => 'bcb_doi_lich_thanh_cong';
   String get recommendation_track_index => 'recommendation_track_index';
   String get recommendation_spirit => 'recommendation_spirit';
-  String get recommendation_behavioral_psychology => 'recommendation_behavioral_psychology';
+  String get recommendation_behavioral_psychology =>
+      'recommendation_behavioral_psychology';
   String get recommendation_pathology => 'recommendation_pathology';
   String get gallery_permission_denied_title =>
       'gallery_permission_denied_title';
-  String get gallery_permission_denied_body =>
-      'gallery_permission_denied_body';
+  String get gallery_permission_denied_body => 'gallery_permission_denied_body';
   String get gallery_permission_denied_body_android =>
       'gallery_permission_denied_body_android';
   String get gallery_permission_denied_body_ios =>
@@ -1729,7 +1738,8 @@ class Strings {
   String get specialty_dinh_duong => 'specialty_dinh_duong';
   String get specialty_tang_huyet_ap => 'specialty_tang_huyet_ap';
   String get specialty_thua_can_beo_phi => 'specialty_thua_can_beo_phi';
-  String get specialty_dai_thao_duong_thai_ky => 'specialty_dai_thao_duong_thai_ky';
+  String get specialty_dai_thao_duong_thai_ky =>
+      'specialty_dai_thao_duong_thai_ky';
   String get specialty_tim_mach => 'specialty_tim_mach';
   String get specialty_roi_loan_chuyen_hoa => 'specialty_roi_loan_chuyen_hoa';
   String get specialty_than_man_tinh => 'specialty_than_man_tinh';
@@ -1775,9 +1785,12 @@ class Strings {
   String get benefit_lab_examination => 'benefit_lab_examination';
   String get benefit_lab_examination_desc => 'benefit_lab_examination_desc';
   String get benefit_lab_imaging_diagnosis => 'benefit_lab_imaging_diagnosis';
-  String get benefit_lab_imaging_diagnosis_desc => 'benefit_lab_imaging_diagnosis_desc';
-  String get benefit_lab_functional_exploration => 'benefit_lab_functional_exploration';
-  String get benefit_lab_functional_exploration_desc => 'benefit_lab_functional_exploration_desc';
+  String get benefit_lab_imaging_diagnosis_desc =>
+      'benefit_lab_imaging_diagnosis_desc';
+  String get benefit_lab_functional_exploration =>
+      'benefit_lab_functional_exploration';
+  String get benefit_lab_functional_exploration_desc =>
+      'benefit_lab_functional_exploration_desc';
   String get benefit_lab_endoscopy => 'benefit_lab_endoscopy';
   String get benefit_lab_endoscopy_desc => 'benefit_lab_endoscopy_desc';
   String get benefit_lab_biopsy => 'benefit_lab_biopsy';
@@ -1793,27 +1806,45 @@ class Strings {
   String get benefit_scan_lab_check_hint => 'benefit_scan_lab_check_hint';
   String get benefit_send_medicine_request => 'benefit_send_medicine_request';
   String get benefit_send_lab_request => 'benefit_send_lab_request';
-  String get benefit_request_desc_prefix_medicine => 'benefit_request_desc_prefix_medicine';
-  String get benefit_request_desc_prefix_lab => 'benefit_request_desc_prefix_lab';
+  String get benefit_request_desc_prefix_medicine =>
+      'benefit_request_desc_prefix_medicine';
+  String get benefit_request_desc_prefix_lab =>
+      'benefit_request_desc_prefix_lab';
   String get benefit_request_desc_hour => 'benefit_request_desc_hour';
   String get benefit_request_desc_suffix => 'benefit_request_desc_suffix';
-  String get benefit_request_confirm_medicine => 'benefit_request_confirm_medicine';
+  String get benefit_request_confirm_medicine =>
+      'benefit_request_confirm_medicine';
   String get benefit_request_deliver => 'benefit_request_deliver';
   String get benefit_request_deliver_lab => 'benefit_request_deliver_lab';
-  String get benefit_request_contact_support => 'benefit_request_contact_support';
+  String get benefit_request_contact_support =>
+      'benefit_request_contact_support';
   String get benefit_request_success_title => 'benefit_request_success_title';
-  String get benefit_request_success_medicine_desc => 'benefit_request_success_medicine_desc';
-  String get benefit_request_success_lab_desc => 'benefit_request_success_lab_desc';
-  String get benefit_request_received_medicine => 'benefit_request_received_medicine';
+  String get benefit_request_success_medicine_desc =>
+      'benefit_request_success_medicine_desc';
+  String get benefit_request_success_lab_desc =>
+      'benefit_request_success_lab_desc';
+  String get benefit_request_received_medicine =>
+      'benefit_request_received_medicine';
   String get benefit_request_received_lab => 'benefit_request_received_lab';
   String get benefit_request_confirm_sample => 'benefit_request_confirm_sample';
   String get benefit_back_to_home => 'benefit_back_to_home';
   String get benefit_scan_diagnose => 'benefit_scan_diagnose';
-  String get benefit_scan_diagnose_lab_title => 'benefit_scan_diagnose_lab_title';
+  String get benefit_scan_diagnose_lab_title =>
+      'benefit_scan_diagnose_lab_title';
   String get benefit_scan_prescription_name => 'benefit_scan_prescription_name';
   String get quantity => 'quantity';
   String get analyzing_lab_result => 'analyzing_lab_result';
+  String get medicine_quantity => 'medicine_quantity';
   String get paraclinical => 'paraclinical';
+  String get benefit_detail_title => 'benefit_detail_title';
+  String get benefit_active => 'benefit_active';
+  String get benefit_progress_title => 'benefit_progress_title';
+  String get benefit_service_count => 'benefit_service_count';
+  String get benefit_remaining_count => 'benefit_remaining_count';
+  String get benefit_booking_button => 'benefit_booking_button';
+  String get benefit_discount_badge => 'benefit_discount_badge';
+  String get benefit_remaining_days => 'benefit_remaining_days';
+  String get benefit_unlimited => 'benefit_unlimited';
+  String get benefit_discount => 'benefit_discount';
+  String get benefit_my_benefits => 'benefit_my_benefits';
 }
-
-

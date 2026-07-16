@@ -106,6 +106,8 @@ import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/model/response/exercise_lesson_response.dart';
 import 'package:medical/src/model/response/bcb_campaign_customer_response.dart';
+import 'package:medical/src/model/response/my_benefit_response.dart';
+import 'package:medical/src/widget/benefit/my_benefit_mock.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
@@ -1504,6 +1506,22 @@ class AppRepository {
     try {
       final CommonResponse response =
           await appClient.submitMedicationRequest(body);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /// TODO: Remove mock when API is ready.
+  static const bool _useMyBenefitMock = true;
+
+  Future<ApiResult<MyBenefitResponse>> getMyBenefit() async {
+    if (_useMyBenefitMock) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      return ApiResult.success(data: MyBenefitMock.response);
+    }
+    try {
+      final response = await appClient.getMyBenefit();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
