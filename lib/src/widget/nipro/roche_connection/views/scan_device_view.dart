@@ -134,8 +134,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   String? _glucoseRecordKey(GlucoseMeasurementRecord record) {
     if (record.calendar == null || !record.isBloodGlucose) return null;
-    final glucose = roundAsFixed(roundDouble(
-        record.convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+    final rawGlucose = double.parse(record.convertGlucoseConcentrationValueToMilligramsPerDeciliter());
+    final glucose = roundAsFixed(roundDouble(calibrateDeviceGlucose(rawGlucose)));
     final glucoseValue = _parseGlucoseValue(glucose);
     if (glucoseValue == null) return null;
     final epochSeconds = DateUtil.getDayInMillis(record.calendar!);
@@ -1964,8 +1964,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         log('🔍 DEBUG: Processing record - calendar: ${element.calendar}, isBloodGlucose: ${element.isBloodGlucose}');
 
         if (element.calendar != null && element.isBloodGlucose) {
-          final glucose = roundAsFixed(roundDouble(element
-              .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+          final rawGlucose = double.parse(element.convertGlucoseConcentrationValueToMilligramsPerDeciliter());
+          final glucose = roundAsFixed(roundDouble(calibrateDeviceGlucose(rawGlucose)));
 
           log('🔍 DEBUG: Glucose value: $glucose, calendar: ${element.calendar}');
 

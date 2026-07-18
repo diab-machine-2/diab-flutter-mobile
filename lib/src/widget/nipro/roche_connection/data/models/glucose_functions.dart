@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -106,6 +107,37 @@ class GlucoseFunctions {
     // device?.disconnect();
   }
 
+  /// Helper: tên loại máu từ type integer (BLE spec)
+  String _testBloodTypeName(int type) {
+    switch (type) {
+      case 0: return 'Reserved for future use';
+      case 1: return 'Capillary Whole blood';
+      case 2: return 'Capillary Plasma';
+      case 3: return 'Venous Whole blood';
+      case 4: return 'Venous Plasma';
+      case 5: return 'Arterial Whole blood';
+      case 6: return 'Arterial Plasma';
+      case 7: return 'Undetermined Whole blood';
+      case 8: return 'Undetermined Plasma';
+      case 9: return 'Interstitial Fluid (ISF)';
+      case 10: return 'Control Solution';
+      default: return 'Reserved for future use';
+    }
+  }
+
+  /// Helper: tên vị trí lấy mẫu từ sampleLocationInteger (BLE spec)
+  String _sampleLocationName(int location) {
+    switch (location) {
+      case 0: return 'Reserved for future use';
+      case 1: return 'Finger';
+      case 2: return 'Alternate Site Test (AST)';
+      case 3: return 'Earlobe';
+      case 4: return 'Control solution';
+      case 15: return 'Sample Location value not available';
+      default: return 'Reserved for future use';
+    }
+  }
+
   Future<void> writeDataSubmit(List<BluetoothService> services) async {
     BluetoothCharacteristic? racpCharacteristic;
 
@@ -145,32 +177,63 @@ class GlucoseFunctions {
     var glucoseMeasurementRecord = GlucoseMeasurementRecord();
     int offset = 0;
     int flag = getIntValue(values, FORMAT_UINT8, offset);
-    // Console.log("PHUONG $offset flag", flag);
+
+    // ============================================================
+    // 🛠️ DEV LOG: RAW BLE DATA (Glucose Measurement 0x2A18)
+    // ============================================================
+    developer.log('╔══════════════════════════════════════════════╗',
+        name: 'diaB.BLE');
+    developer.log('║  📦 RAW DATA (${values.length} bytes)             ║',
+        name: 'diaB.BLE');
+    developer.log(
+        '║  Hex: ${values.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ')}',
+        name: 'diaB.BLE');
+    developer.log('╚══════════════════════════════════════════════╝',
+        name: 'diaB.BLE');
+
+    // --- Flags ---
+    developer.log('── FLAGS ───────────────────────────────',
+        name: 'diaB.BLE');
+    developer.log('  Byte 0 (flags)     = ${flag.toRadixString(2).padLeft(8, '0')}b = 0x${flag.toRadixString(16).padLeft(2, '0')} = $flag',
+        name: 'diaB.BLE');
+    developer.log('    Bit 0 (Time Offset present):  ${flag & (1 << 0) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Bit 1 (Glucose conc + Type  ):  ${flag & (1 << 1) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Bit 2 (Glucose unit):          ${flag & (1 << 2) > 0}  (0=mg/dL, 1=mmol/L)',
+        name: 'diaB.BLE');
+    developer.log('    Bit 3 (Status Annunc present): ${flag & (1 << 3) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Bit 4-7 (reserved):            ${(flag >> 4).toRadixString(4).padLeft(4, '0')}b',
+        name: 'diaB.BLE');
 
     offset++; // offset is 1
 
+    // --- Sequence Number ---
     glucoseMeasurementRecord.sequenceNumber =
         getIntValue(values, FORMAT_UINT16, 1);
-
-    // Console.log("PHUONG $offset sequenceNumber",
-    // glucoseMeasurementRecord.sequenceNumber);
+    developer.log('── BASIC INFO ──────────────────────────',
+        name: 'diaB.BLE');
+    developer.log('  Sequence Number    = ${glucoseMeasurementRecord.sequenceNumber}',
+        name: 'diaB.BLE');
 
     offset += 2; // offset is 3
     int baseTimeYear = gregorianCalendar + values[offset];
+    developer.log('  Raw year byte     = ${values[offset]} (gregorianCalendar + ${values[offset]} = $baseTimeYear)',
+        name: 'diaB.BLE');
 
-    // Console.log("PHUONG $offset baseTimeYear", baseTimeYear);
     offset += 2; // offset is 5
     int baseTimeMonth = getIntValue(values, FORMAT_UINT8, offset++);
-    // Console.log("PHUONG $offset baseTimeMonth", baseTimeMonth);
     int baseTimeDay = getIntValue(values, FORMAT_UINT8, offset++);
-    // Console.log("PHUONG $offset baseTimeDay", baseTimeDay);
     int baseTimeHours = getIntValue(values, FORMAT_UINT8, offset++);
-    // Console.log("PHUONG $offset baseTimeHours", baseTimeHours);
     int baseTimeMinutes = getIntValue(values, FORMAT_UINT8, offset++);
-    // Console.log("PHUONG $offset baseTimeMinutes", baseTimeMinutes);
     int baseTimeSeconds = getIntValue(values, FORMAT_UINT8, offset++);
-    // Console.log("PHUONG $offset baseTimeSeconds", baseTimeSeconds);
+    developer.log('  Timestamp (meter) = $baseTimeYear-$baseTimeMonth-$baseTimeDay ${baseTimeHours.toString().padLeft(2,'0')}:${baseTimeMinutes.toString().padLeft(2,'0')}:${baseTimeSeconds.toString().padLeft(2,'0')}',
+        name: 'diaB.BLE');
 
+    // Convert standard local time into standard absolute epoch.
+    // The previous workaround (DateTime.utc) is no longer needed since
+    // helper.dart's convertToUTC has been fixed globally to parse as local time.
     glucoseMeasurementRecord.calendar = DateTime(
       baseTimeYear,
       baseTimeMonth,
@@ -195,94 +258,98 @@ class GlucoseFunctions {
     glucoseMeasurementRecord.calendar =
         glucoseMeasurementRecord.calendar!.add(Duration(minutes: timeOffset));
 
-    // Console.log("PHUONG flag & (1 << 1)) > 0", (flag & (1 << 1)) > 0);
+    developer.log('── TIME ────────────────────────────────',
+        name: 'diaB.BLE');
+    developer.log('  Time Offset        = $timeOffset minutes',
+        name: 'diaB.BLE');
+    developer.log('  Time after offset  = ${glucoseMeasurementRecord.calendar}',
+        name: 'diaB.BLE');
+    developer.log('  Epoch seconds      = ${glucoseMeasurementRecord.calendar!.millisecondsSinceEpoch ~/ 1000}',
+        name: 'diaB.BLE');
+    developer.log('  Device timezone    = ${glucoseMeasurementRecord.calendar!.timeZoneName} (offset: ${glucoseMeasurementRecord.calendar!.timeZoneOffset.inHours}h)',
+        name: 'diaB.BLE');
+
     late double glucoseConcentrationValue;
     if ((flag & (1 << 1)) > 0) {
-      // int typeAndSampleLocation =
-      //     getIntValue(values, FORMAT_UINT8, offset);
-      // offset += 1; // offset is 15
-      // Console.log("PHUONG $offset location", typeAndSampleLocation);
-
-      // Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
       glucoseMeasurementRecord.glucoseUnits = calculateGlucoseUnit(values);
       glucoseConcentrationValue = extractSFloat(values, offset);
 
-      // Console.log('PHUONG glucoseUnit',
-      //     glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit);
+      developer.log('── GLUCOSE VALUE ────────────────────────',
+          name: 'diaB.BLE');
+      developer.log('  Glucose unit       = ${glucoseMeasurementRecord.glucoseUnits} (0=mg/dL, 1=mmol/L)',
+          name: 'diaB.BLE');
+      developer.log('  Raw SFloat bytes   = values[$offset]=${values[offset]}, values[${offset+1}]=${values[offset+1]}',
+          name: 'diaB.BLE');
+      developer.log('  Glucose (raw)      = $glucoseConcentrationValue',
+          name: 'diaB.BLE');
+
       offset += 2; // offset is 14
       int typeAndSampleLocation = values[offset];
-      // Console.log('PHUONG location $offset', typeAndSampleLocation);
       glucoseMeasurementRecord.type = typeAndSampleLocation >> 4;
       glucoseMeasurementRecord.sampleLocationInteger =
           typeAndSampleLocation & 0x0F;
       glucoseMeasurementRecord.glucoseConcentrationValue =
           glucoseConcentrationValue;
-      // Console.log('PHUONG type $offset', glucoseMeasurementRecord.type);
-      // Console.log('PHUONG LocationInteger $offset',
-      //     glucoseMeasurementRecord.sampleLocationInteger);
+
+      developer.log('  Type+Sample byte   = ${typeAndSampleLocation.toRadixString(2).padLeft(8, '0')}b = 0x${typeAndSampleLocation.toRadixString(16).padLeft(2, '0')}',
+          name: 'diaB.BLE');
+      developer.log('    Type (4 bit cao) = ${glucoseMeasurementRecord.type} → ${glucoseMeasurementRecord.testBloodType.isNotEmpty ? glucoseMeasurementRecord.testBloodType : _testBloodTypeName(glucoseMeasurementRecord.type)}',
+          name: 'diaB.BLE');
+      developer.log('    SampleLoc (4 thấp)= ${glucoseMeasurementRecord.sampleLocationInteger} → ${glucoseMeasurementRecord.sampleLocation.isNotEmpty ? glucoseMeasurementRecord.sampleLocation : _sampleLocationName(glucoseMeasurementRecord.sampleLocationInteger)}',
+          name: 'diaB.BLE');
+    } else {
+      developer.log('  ⚠️ Bit 1 = 0 → Không có glucose concentration + type/sample location trong packet này',
+          name: 'diaB.BLE');
     }
-    // Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
-    // if ((flag & (1 << 2)) > 0) {
-    //   // Sensor Status Annunciation field is present
+    developer.log('── SENSOR STATUS ────────────────────────',
+        name: 'diaB.BLE');
     int sensorStatusAnnunciationValue =
         getIntValue(values, FORMAT_UINT16, offset);
-    offset += 2; // offset is 16 or 12 or 9
-
-    //   SensorStatusAnnunciation sensorStatusAnnunciation =
-    //       SensorStatusAnnunciation();
-    //   sensorStatusAnnunciation.deviceBatteryLowAtTimeOfMeasurement =
-    //       sensorStatusAnnunciationValue & (1 << 0) > 0;
-    //   sensorStatusAnnunciation.sensorMalfunctionAtTimeOfMeasurement =
-    //       sensorStatusAnnunciationValue & (1 << 1) > 0;
-    //   sensorStatusAnnunciation.bloodSampleInsufficientAtTimeOfMeasurement =
-    //       sensorStatusAnnunciationValue & (1 << 2) > 0;
-    //   sensorStatusAnnunciation.stripInsertionError =
-    //       sensorStatusAnnunciationValue & (1 << 3) > 0;
-    //   sensorStatusAnnunciation.stripTypeIncorrectForDevice =
-    //       sensorStatusAnnunciationValue & (1 << 4) > 0;
-    //   sensorStatusAnnunciation.sensorResultHigherThanDeviceCanProcess =
-    //       sensorStatusAnnunciationValue & (1 << 5) > 0;
-    //   sensorStatusAnnunciation.sensorResultLowerThanTheDeviceCanProcess =
-    //       sensorStatusAnnunciationValue & (1 << 6) > 0;
-    //   sensorStatusAnnunciation.
-    bool sensorTemperatureTooHighForValidTestResult =
-        sensorStatusAnnunciationValue & (1 << 7) > 0;
-    // bool sensorTemperatureTooLowForValidTestResult =
-    //     sensorStatusAnnunciationValue & (1 << 8) > 0;
-    //   sensorStatusAnnunciation
-    //           .sensorReadInterruptedBecauseStripWasPulledTooSoon =
-    //       sensorStatusAnnunciationValue & (1 << 9) > 0;
-    //   sensorStatusAnnunciation.generalDeviceFaultHasOccurredInSensor =
-    //       sensorStatusAnnunciationValue & (1 << 10) > 0;
-    //   sensorStatusAnnunciation.timeFaultHasOccurredInTheSensor =
-    //       sensorStatusAnnunciationValue & (1 << 11) > 0;
-
-    //   glucoseMeasurementRecord.sensorStatusAnnunciation =
-    //       sensorStatusAnnunciation;
-    // } else {}
-    // glucoseMeasurementRecord.isControlGlucose = isControlGlucose(values[1]);
+    offset += 2;
+    developer.log('  Sensor Status Annunc = ${sensorStatusAnnunciationValue.toRadixString(2).padLeft(16, '0')}b',
+        name: 'diaB.BLE');
+    developer.log('    Device Battery Low        : ${sensorStatusAnnunciationValue & (1 << 0) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Sensor Malfunction        : ${sensorStatusAnnunciationValue & (1 << 1) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Insufficient Sample       : ${sensorStatusAnnunciationValue & (1 << 2) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Strip Insertion Error     : ${sensorStatusAnnunciationValue & (1 << 3) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Strip Type Incorrect      : ${sensorStatusAnnunciationValue & (1 << 4) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Result Too High           : ${sensorStatusAnnunciationValue & (1 << 5) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Result Too Low            : ${sensorStatusAnnunciationValue & (1 << 6) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Temperature Too High      : ${sensorStatusAnnunciationValue & (1 << 7) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Temperature Too Low       : ${sensorStatusAnnunciationValue & (1 << 8) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Strip Pulled Too Soon     : ${sensorStatusAnnunciationValue & (1 << 9) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Device Fault              : ${sensorStatusAnnunciationValue & (1 << 10) > 0}',
+        name: 'diaB.BLE');
+    developer.log('    Time Fault                : ${sensorStatusAnnunciationValue & (1 << 11) > 0}',
+        name: 'diaB.BLE');
 
     glucoseMeasurementRecord.isBloodGlucose = values[14] == 248 &&
         !glucoseMeasurementRecord.glucoseConcentrationValue.isInfinite;
-    // if (!isControlGlucose(values[1])) {
-    // print(
-    //     'sensorTemperatureTooHighForValidTestResult ${glucoseMeasurementRecord.calendar} heigt -> $sensorTemperatureTooHighForValidTestResult, low -> $sensorTemperatureTooLowForValidTestResult: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}}');
-    // print(
-    //     'isControlGlucose $values: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()} -> ${isControlGlucose(values[1])}');
-    // }
-    // print('isBloodGlucose sensorTemperatureeodGlucose: ${glucoseMeasurementRecord.isBloodGlucose} --> ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}');
-    // if () {
-    //   print(
-    //       'isBloodGlucose => ${values[14]} $values =-> ${glucoseMeasurementRecord.glucoseConcentrationValue}');
-    //   Console.log('values[13]: ${values[13]}',
-    //       glucoseMeasurementRecord.glucoseConcentrationValue);
-    // }
-    // if (glucoseMeasurementRecord.isBloodGlucose) {
-    Console.log(
-        'hihi $values =>  ${glucoseMeasurementRecord.glucoseUnits}',
-        glucoseMeasurementRecord
-            .convertGlucoseConcentrationValueToMilligramsPerDeciliter());
-    // }
+
+    developer.log('── CLASSIFICATION ────────────────────────',
+        name: 'diaB.BLE');
+    developer.log('  values[14]         = ${values[14]}',
+        name: 'diaB.BLE');
+    developer.log('  isBloodGlucose     = ${glucoseMeasurementRecord.isBloodGlucose}',
+        name: 'diaB.BLE');
+    developer.log('  glucoseConcentrationValue = ${glucoseMeasurementRecord.glucoseConcentrationValue}',
+        name: 'diaB.BLE');
+    developer.log(
+        '  Glucose (mg/dL)    = ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}',
+        name: 'diaB.BLE');
+    developer.log('══════════════════════════════════════════',
+        name: 'diaB.BLE');
+
     return glucoseMeasurementRecord;
     // Broadcast the glucose measurement record
     // LocalBroadcastManager.getInstance().sendBroadcast(
