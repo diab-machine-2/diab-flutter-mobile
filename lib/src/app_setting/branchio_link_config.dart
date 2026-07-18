@@ -27,9 +27,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import '../model/response/lesson_section_list_response.dart';
-import '../model/response/bcb_campaign_customer_response.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
-import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 
 class BranchioLinkConfig {
   BranchioLinkConfig._privateConstructor();
@@ -80,6 +78,8 @@ class BranchioLinkConfig {
   String? _pendingBcbCampaignId;
   String? _pendingBcbCampaignName;
   String? _pendingLabResultId;
+  String? _pendingWebinarId;
+  String? _pendingNewsDetailId;
 
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
@@ -189,11 +189,12 @@ class BranchioLinkConfig {
         }
         print('[ROUTE] Webinar deeplink detected: $webinarId');
         if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          Navigator.pushNamed(
-            navigatorKey.currentState!.context,
+          navigatorKey.currentState?.pushNamed(
             NavigatorName.webinar_info,
             arguments: {'id': webinarId},
           );
+        } else {
+          _pendingWebinarId = webinarId;
         }
         return;
       }
@@ -316,19 +317,14 @@ class BranchioLinkConfig {
         if (labResultId.isEmpty) return;
         print('[ROUTE] Lab result deeplink detected: $labResultId');
         if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
+          // Use Future.microtask so navigation fires immediately without
+          // waiting for the next widget frame when the app is idle.
+          Future.microtask(() async {
             await _navigateToLabResultDetail(labResultId);
           });
         } else {
           _pendingLabResultId = labResultId;
         }
-        return;
-      }
-
-      // Handle referral code deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$referralCode")) {
-        _referalCode = data['\$referralCode'] as String;
         return;
       }
 
@@ -340,42 +336,23 @@ class BranchioLinkConfig {
           _referalCode = data['\$referralCode'] as String;
         }
         if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          Navigator.pushNamed(
-              navigatorKey.currentState!.context, NavigatorName.news_detail,
+          navigatorKey.currentState?.pushNamed(
+              NavigatorName.news_detail,
               arguments: {'id': newsDetailId});
+        } else {
+          _pendingNewsDetailId = newsDetailId;
         }
         return;
       }
 
-      // Handle generic deeplinks with mode, id, type
-      if (data['+clicked_branch_link'] == true) {
-        int? mode;
-        int? id;
-        String? type;
-        if (data.containsKey('\$mode'))
-          mode = int.tryParse(data['\$mode'] as String);
-        if (data.containsKey('\$id')) id = int.tryParse(data['\$id'] as String);
-        if (data.containsKey('\$type')) type = data['\$type'] as String;
-        print('[ROUTE] Deeplink params - mode: $mode, id: $id, type: $type');
-        if (id != null && type == null) type = 'dsmes';
-        if (mode != null || id != null || type != null) {
-          _hasPendingDeeplink = true;
-          _pendingMode = mode;
-          _pendingClinicId = id;
-          _pendingType = type;
-          if (AppSettings.splashScreenInitDone &&
-              AppSettings.userInfo != null) {
-            executeDeeplinkNavigation();
-          }
-          return;
-        }
-      }
-
-      // Handle deeplinks with $screen_value (medicine tabs + measurement screens)
+      // Handle deeplinks with $screen_value (medicine tabs + measurement screens).
+      // IMPORTANT: must come BEFORE the generic mode/id/type block so that a link
+      // carrying only $screen_value is never swallowed by the generic handler.
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$screen_value")) {
         final screenValue = data['\$screen_value'] as String;
-        // calendar-medicine -> tab 0 (schedule_use_medicine), refill-medicine -> tab 1 (prescription)
+        // calendar-medicine -> tab 0 (schedule_use_medicine)
+        // refill-medicine   -> tab 1 (prescription)
         if (screenValue == 'calendar-medicine') {
           _processMedicineTabDeepLink(0);
           return;
@@ -388,7 +365,8 @@ class BranchioLinkConfig {
         return;
       }
 
-      // Handle targetType and smartGoalId deeplink
+      // Handle targetType and smartGoalId deeplink.
+      // IMPORTANT: must come BEFORE the generic mode/id/type block.
       if (data['+clicked_branch_link'] == true &&
           data.containsKey('\$targetType') &&
           data.containsKey('\$smartGoalId')) {
@@ -421,13 +399,10 @@ class BranchioLinkConfig {
         if (lessonId != null && lessonType != null) {
           final lessonTypeNum = int.tryParse(lessonType);
           if (lessonTypeNum != null) {
-            // Create lesson data with the actual lesson ID
             final lessonData = LessonSectionListResponseData(
               id: lessonId,
               type: lessonTypeNum,
             );
-
-            // Set the lesson data to the smartGoal
             smartGoal.data = lessonData;
           }
         }
@@ -443,6 +418,39 @@ class BranchioLinkConfig {
           _pendingLessonId = lessonId;
           _pendingLessonType = lessonType;
         }
+        return;
+      }
+
+      // Handle generic deeplinks with mode, id, type.
+      // This is intentionally placed LAST among the +clicked_branch_link handlers
+      // so that more-specific keys ($screen_value, $targetType, etc.) are matched first.
+      if (data['+clicked_branch_link'] == true) {
+        int? mode;
+        int? id;
+        String? type;
+        if (data.containsKey('\$mode'))
+          mode = int.tryParse(data['\$mode'] as String);
+        if (data.containsKey('\$id')) id = int.tryParse(data['\$id'] as String);
+        if (data.containsKey('\$type')) type = data['\$type'] as String;
+        print('[ROUTE] Deeplink params - mode: $mode, id: $id, type: $type');
+        if (id != null && type == null) type = 'dsmes';
+        if (mode != null || id != null || type != null) {
+          _hasPendingDeeplink = true;
+          _pendingMode = mode;
+          _pendingClinicId = id;
+          _pendingType = type;
+          if (AppSettings.splashScreenInitDone &&
+              AppSettings.userInfo != null) {
+            executeDeeplinkNavigation();
+          }
+          return;
+        }
+      }
+
+      // Handle referral code deeplink (catch-all — only $referralCode, no navigation target)
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$referralCode")) {
+        _referalCode = data['\$referralCode'] as String;
         return;
       }
 
@@ -934,16 +942,15 @@ class BranchioLinkConfig {
   }
 
   void _clearPendingData() {
+    // Only clear booking-related pending data.
+    // Content-specific pending data (_pendingTargetType, _pendingLabResultId,
+    // _pendingWebinarId, _pendingNewsDetailId, _pendingBcbCampaignId, etc.)
+    // must NOT be cleared here because checkPendingContentNavigation() may
+    // still need to process them after executeDeeplinkNavigation() returns.
     _pendingClinicId = null;
     _pendingMode = null;
     _pendingType = null;
     _hasPendingDeeplink = false;
-    _pendingTargetType = null;
-    _pendingSmartGoalId = null;
-    _pendingSurveyId = null;
-    _pendingLessonId = null;
-    _pendingLessonType = null;
-    _pendingLabResultId = null;
   }
 
   void clearPendingLoginData() {
@@ -1282,8 +1289,40 @@ class BranchioLinkConfig {
       final lid = _pendingLabResultId!;
       _pendingLabResultId = null;
       print('[ROUTE] Executing pending lab result deeplink: $lid');
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Future.microtask(() async {
         await _navigateToLabResultDetail(lid);
+      });
+    }
+
+    if (_pendingWebinarId != null &&
+        _pendingWebinarId!.isNotEmpty &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      final wid = _pendingWebinarId!;
+      _pendingWebinarId = null;
+      print('[ROUTE] Executing pending webinar deeplink: $wid');
+      // Defer to next frame to avoid navigator assertion when called during build/init.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigatorKey.currentState?.pushNamed(
+          NavigatorName.webinar_info,
+          arguments: {'id': wid},
+        );
+      });
+    }
+
+    if (_pendingNewsDetailId != null &&
+        _pendingNewsDetailId!.isNotEmpty &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      final nid = _pendingNewsDetailId!;
+      _pendingNewsDetailId = null;
+      print('[ROUTE] Executing pending news deeplink: $nid');
+      // Defer to next frame to avoid navigator assertion when called during build/init.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigatorKey.currentState?.pushNamed(
+          NavigatorName.news_detail,
+          arguments: {'id': nid},
+        );
       });
     }
   }

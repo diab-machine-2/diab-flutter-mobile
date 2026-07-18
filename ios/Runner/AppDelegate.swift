@@ -13,6 +13,9 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
+    static var pendingInitialDeepLink: String?
+    static weak var activeDeepLinkChannel: FlutterMethodChannel?
+    
     static var sink: FlutterEventSink?
     private var arrDevices: [btInfo]? = []
     private var selectedDevice: btInfo?
@@ -104,6 +107,26 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
+    // MARK: - Universal Link handler (iOS < 26 fallback)
+    // Trên iOS 26+, Universal Links đi qua SceneDelegate thay vì AppDelegate.
+    // Method này vẫn cần cho iOS 25 và older.
+    override func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        // Forward to Branch SDK (bắt buộc để Branch nhận được deep link data)
+        Branch.getInstance().continue(userActivity)
+        
+        // Safety net: capture URL phòng Flutter plugin chưa sẵn sàng
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+           let url = userActivity.webpageURL {
+            AppDelegate.pendingInitialDeepLink = url.absoluteString
+        }
+        
+        return true
+    }
+
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         // Check if this is our payment scheme
         if url.scheme?.lowercased().contains(kVNPayScheme) == true {
@@ -142,8 +165,9 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
             }
         }
         
-        // Pass to Zalo SDK if not handled
-        return ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+        Branch.getInstance().application(app, open: url, options: options)
+        ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+        return super.application(app, open: url, options: options)
     }
     
     // override func applicationWillResignActive(_ application: UIApplication) {

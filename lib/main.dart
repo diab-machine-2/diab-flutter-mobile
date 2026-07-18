@@ -66,13 +66,16 @@ Future<void> main() async {
   const int maxBranchRetries = 2;
   while (branchRetries < maxBranchRetries) {
     try {
-      await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
+      await FlutterBranchSdk.init(
+          enableLogging: true,
+          branchAttributionLevel: BranchAttributionLevel.FULL);
       // Subscribe to deeplink stream immediately after init
       BranchioLinkConfig.instance.setUpHandleDeepLink();
       break;
     } catch (e) {
       branchRetries++;
-      debugPrint('FlutterBranchSdk.init failed (attempt $branchRetries/$maxBranchRetries): $e');
+      debugPrint(
+          'FlutterBranchSdk.init failed (attempt $branchRetries/$maxBranchRetries): $e');
       if (branchRetries < maxBranchRetries) {
         await Future.delayed(Duration(seconds: 1 * branchRetries));
       }
