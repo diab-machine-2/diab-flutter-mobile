@@ -86,7 +86,7 @@ Future<void> main() async {
   if (kDebugMode) {
     HttpClient.enableTimelineLogging = true;
     // Validate Branch SDK integration in debug builds
-    FlutterBranchSdk.validateSDKIntegration();
+    // FlutterBranchSdk.validateSDKIntegration();
   }
 
   // config health

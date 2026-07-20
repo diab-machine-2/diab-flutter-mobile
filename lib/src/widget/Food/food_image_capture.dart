@@ -47,6 +47,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   bool _showFlashEffect = false;
   bool _requestingPermission = false;
   bool _isAnalyzing = false;
+  bool _isCapturing = false;
 
   @override
   void initState() {
@@ -253,10 +254,13 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   Future<void> _captureImage() async {
     if (_controller?.value == null ||
         !_controller!.value.isInitialized ||
-        _controller!.value.isStreamingImages ||
+        _isCapturing ||
+        _isAnalyzing ||
+        _controller!.value.isTakingPicture ||
         !_isInitialized) return;
 
     try {
+      _isCapturing = true;
       final XFile file = await _controller!.takePicture();
       final imageFile = File(file.path);
 
@@ -279,7 +283,11 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       await _processSelectedImages([convertedPath]);
     } catch (e) {
       if (mounted) {
-        _showErrorDialog('Lỗi khi chụp ảnh: $e');
+        await _showErrorDialog('Lỗi khi chụp ảnh: $e');
+      }
+    } finally {
+      if (mounted && !_disposed) {
+        _isCapturing = false;
       }
     }
   }
@@ -381,8 +389,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
+  Future<void> _showErrorDialog(String message) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -392,7 +400,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
             TextButton(
               child: Text(R.string.close.tr()),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pop(context);
               },
             ),
@@ -737,16 +744,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Widget _buildCaptureButton() {
-    return GestureDetector(
-      onTap: _isInitialized ? _captureImage : null,
-      child: Container(
-        width: 68,
-        height: 68,
-        child: Image.asset(
-          R.drawable.im_food_capture,
+    return AbsorbPointer(
+      absorbing: !_isInitialized || _isCapturing || _isAnalyzing,
+      child: GestureDetector(
+        onTap: _isInitialized ? _captureImage : null,
+        child: Container(
           width: 68,
           height: 68,
-          fit: BoxFit.contain,
+          child: Image.asset(
+            R.drawable.im_food_capture,
+            width: 68,
+            height: 68,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
