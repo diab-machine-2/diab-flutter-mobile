@@ -117,6 +117,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Cho phép diaB truy cập mạng nội bộ để gỡ lỗi và kết nối thiết bị.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Luôn cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
@@ -154,27 +160,7 @@
 		<string>remote-notification</string>
 		<string>voip</string>
 	</array>
-	<key>UIApplicationSceneManifest</key>
-	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
-		<key>UISceneConfigurations</key>
-		<dict>
-			<key>UIWindowSceneSessionRoleApplication</key>
-			<array>
-				<dict>
-					<key>UISceneClassName</key>
-					<string>UIWindowScene</string>
-					<key>UISceneDelegateClassName</key>
-					<string>SceneDelegate</string>
-					<key>UISceneConfigurationName</key>
-					<string>flutter</string>
-					<key>UISceneStoryboardFile</key>
-					<string>Main</string>
-				</dict>
-			</array>
-		</dict>
-	</dict>
+
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

@@ -161,6 +161,7 @@
         <!-- Branch init -->
         <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_hrfMzKMuZcwu9nk6tnKjkoooztnbu76v" />
         <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
+        <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
 
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

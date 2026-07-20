@@ -110,9 +110,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     if (notifyName == 'mark_completed_calendar') {
       _checkExistZoomId();
     }
-    if (notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
-      _checkExistActivityId();
-    }
+    // NAVIGATE_TO_ACTIVITY_DETAIL is now handled globally in tabbar_v2.dart
     if (notifyName == 'refresh_activity_tab') {
       Future.delayed(Duration(milliseconds: 1000), () {
         if (isVisible) {
@@ -138,20 +136,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'goal_calo_changed' ||
         notifyName == 'active_change_data_v2') {
       _controller.requestRefresh();
-    }
-  }
-
-  void _checkExistActivityId() async {
-    // Use consume pattern: atomically read + clear the ID so no other
-    // code path (e.g. TabbarController observer) can trigger duplicate navigation.
-    final String? activityId = BranchioLinkConfig.instance.consumeActivityId();
-    if (activityId != null) {
-      SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
-      await Future.delayed(Duration(milliseconds: 500));
-      NavigationUtil.navigatePage(navigatorKey.currentState!.context,
-          IntroduceSurveyPage(survey: smartGoal));
-      // Reset the navigation guard
-      BranchioLinkConfig.instance.removeActivityId();
     }
   }
 

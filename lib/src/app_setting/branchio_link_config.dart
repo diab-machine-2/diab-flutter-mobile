@@ -62,6 +62,10 @@ class BranchioLinkConfig {
   DateTime? _lastProcessedTime;
   bool _isNavigatingActivity = false;
 
+  // Tracks whether getFirstReferringParams() has been checked
+  // (only needs to run once per app session)
+  bool _hasCheckedInstallParams = false;
+
   // Getters
   String? get referalCode => _referalCode;
   String? get lessonId => _lessonId;
@@ -98,6 +102,7 @@ class BranchioLinkConfig {
   bool isActivatedSubscription = false;
 
   void setUpHandleDeepLink() {
+    print('[BRANCH_DEBUG] Inside setUpHandleDeepLink()');
     SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
       screenName: 'deeplink',
       trackingEnabled: false, // Disable tracking for deeplinks
@@ -106,7 +111,9 @@ class BranchioLinkConfig {
       hasInputBloodPressure: true,
       hasInputGlucose: true,
     ));
+    print('[BRANCH_DEBUG] Calling FlutterBranchSdk.listSession().listen()');
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
+      print('[BRANCH_DEBUG] Stream fired! Data: $data');
       log('listenDynamicLinks - Branchio DeepLink Data: $data');
 
       // ---- DEDUPLICATION: Skip if same link processed within 5 seconds ----
@@ -124,346 +131,7 @@ class BranchioLinkConfig {
       _lastProcessedTime = now;
       // ---- END DEDUPLICATION ----
 
-      AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
-
-      final zoomStatus = await ZoomService().getMeetingStatus();
-      print('[Meeting Status] Zoom Status: ${zoomStatus[0]}');
-
-      if (zoomStatus[0] == 'MEETING_STATUS_INMEETING') {
-        await ZoomService().returnToMeeting();
-        return;
-      }
-
-      // Handle login deeplink
-      if (data['+clicked_branch_link'] == true && data.containsKey("\$login")) {
-        final token = await AppSettings.getToken();
-        if (token.isNotEmpty) return;
-        _hasPendingLoginDeeplink = true;
-        if (AppSettings.splashScreenInitDone) {
-          executeLoginDeeplinkNavigation();
-        }
-        return;
-      }
-
-      // Handle lesson deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$lessonId")) {
-        _lessonId = data['\$lessonId'] as String;
-        if (data.containsKey("\$referralCode")) {
-          _referalCode = data['\$referralCode'] as String;
-        }
-        print('[ROUTE] Lesson deeplink detected: $_lessonId');
-        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          Observable.instance
-              .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
-        }
-        return;
-      }
-
-      // Handle activity deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$activityId")) {
-        // Skip if already navigating for an activity deeplink
-        if (_isNavigatingActivity) {
-          print('[ROUTE] Activity navigation already in progress, skipping');
-          return;
-        }
-        _activityId = data['\$activityId'] as String;
-        if (data.containsKey("\$referralCode")) {
-          _referalCode = data['\$referralCode'] as String;
-        }
-        print('[ROUTE] Activity deeplink detected: $_activityId');
-        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          Observable.instance.notifyObservers([],
-              notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
-        }
-        return;
-      }
-
-      // Handle webinar deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$webinarId")) {
-        final webinarId = data['\$webinarId'] as String;
-        if (data.containsKey("\$referralCode")) {
-          _referalCode = data['\$referralCode'] as String;
-        }
-        print('[ROUTE] Webinar deeplink detected: $webinarId');
-        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          navigatorKey.currentState?.pushNamed(
-            NavigatorName.webinar_info,
-            arguments: {'id': webinarId},
-          );
-        } else {
-          _pendingWebinarId = webinarId;
-        }
-        return;
-      }
-
-      // Handle subscription deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$subscription")) {
-        isActivatedSubscription = true;
-        Observable.instance
-            .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
-        return;
-      }
-
-      // Handle course deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$course")) {
-        _processBookingCourseLink(data['\$course'] as String,
-            data['\$end_time'] as String?, data['\$type'] as String?);
-        return;
-      }
-
-      // Handle Zoom meeting deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$meetingId") &&
-          data.containsKey("\$meetingPassword")) {
-        String meetingId = data['\$meetingId'] as String;
-        String meetingPassword = data['\$meetingPassword'] as String;
-        if (AppSettings.userInfo == null) {
-          _meetingId = meetingId;
-          _meetingPassword = meetingPassword;
-          return;
-        }
-        if (lastMeetingEndTime != null) {
-          final timeSinceLastMeeting =
-              DateTime.now().difference(lastMeetingEndTime!);
-          if (timeSinceLastMeeting.inSeconds < 5) return;
-        }
-        ZoomService().launchZoomMeeting(meetingId, meetingPassword);
-        return;
-      }
-
-      // BCB campaign — `\$campaignId` / `\$bcbCampaignId` / `bcb_campaign_id`; optional `\$campaignName` (e.g. date label)
-      if (data['+clicked_branch_link'] == true &&
-          (data.containsKey('\$campaignId') )) {
-        final campaignId = data['\$campaignId']
-            ?.toString()
-            .trim() ??
-            '';
-        if (campaignId.isEmpty) return;
-        final rawName = (data['\$campaignName'] ?? data['campaign_name'])
-            ?.toString()
-            .trim();
-        final campaignName =
-            (rawName != null && rawName.isNotEmpty) ? rawName : null;
-        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          final phone = AppSettings.userInfo!.phoneNumber;
-          if (phone != null && phone.isNotEmpty) {
-            // Use Future.microtask so navigation fires immediately without
-            // waiting for the next widget frame (addPostFrameCallback would
-            // stall indefinitely when the app is idle in the foreground).
-            Future.microtask(() async {
-              final result = await AppRepository()
-                  .getBcbCampaignCustomer(campaignId: campaignId);
-              result.when(
-                success: (response) {
-                  final status = response.data?.status;
-                  if (status != null && status >= 2 && status <= 4) {
-                    navigatorKey.currentState?.pushNamed(
-                      NavigatorName.bcb_select_partner,
-                      arguments: <String, dynamic>{
-                        'bcbCampaignId': campaignId,
-                        if (campaignName != null) 'bcbCampaignName': campaignName,
-                      },
-                    );
-                  } else if (status != null && status >= 5 && status <= 7) {
-                    navigatorKey.currentState?.pushNamed(
-                      NavigatorName.bcb_detail_appointment,
-                      arguments: {'campaignId': campaignId},
-                    );
-                  } else if (status != null && status >= 9 && status <= 10) {
-                    navigatorKey.currentState?.pushNamed(
-                      NavigatorName.view_test_result,
-                      arguments: {'campaignId': campaignId},
-                    );
-                  }
-                },
-                failure: (_) {
-                  navigatorKey.currentState?.pushNamed(
-                    NavigatorName.bcb_select_partner,
-                    arguments: <String, dynamic>{
-                      'bcbCampaignId': campaignId,
-                      if (campaignName != null) 'bcbCampaignName': campaignName,
-                    },
-                  );
-                },
-              );
-            });
-          } else {
-            Future.microtask(() {
-              navigatorKey.currentState?.pushNamed(
-                NavigatorName.bcb_select_partner,
-                arguments: <String, dynamic>{
-                  'bcbCampaignId': campaignId,
-                  if (campaignName != null) 'bcbCampaignName': campaignName,
-                },
-              );
-            });
-          }
-        } else {
-          _pendingBcbCampaignId = campaignId;
-          _pendingBcbCampaignName = campaignName;
-        }
-        return;
-      }
-
-      // Handle lab result deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$labResultId")) {
-        final labResultId = data['\$labResultId'] as String;
-        if (labResultId.isEmpty) return;
-        print('[ROUTE] Lab result deeplink detected: $labResultId');
-        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          // Use Future.microtask so navigation fires immediately without
-          // waiting for the next widget frame when the app is idle.
-          Future.microtask(() async {
-            await _navigateToLabResultDetail(labResultId);
-          });
-        } else {
-          _pendingLabResultId = labResultId;
-        }
-        return;
-      }
-
-      // Handle news deeplink
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$newsDetail")) {
-        String newsDetailId = data['\$newsDetail'] as String;
-        if (data.containsKey("\$referralCode")) {
-          _referalCode = data['\$referralCode'] as String;
-        }
-        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          navigatorKey.currentState?.pushNamed(
-              NavigatorName.news_detail,
-              arguments: {'id': newsDetailId});
-        } else {
-          _pendingNewsDetailId = newsDetailId;
-        }
-        return;
-      }
-
-      // Handle deeplinks with $screen_value (medicine tabs + measurement screens).
-      // IMPORTANT: must come BEFORE the generic mode/id/type block so that a link
-      // carrying only $screen_value is never swallowed by the generic handler.
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$screen_value")) {
-        final screenValue = data['\$screen_value'] as String;
-        // calendar-medicine -> tab 0 (schedule_use_medicine)
-        // refill-medicine   -> tab 1 (prescription)
-        if (screenValue == 'calendar-medicine') {
-          _processMedicineTabDeepLink(0);
-          return;
-        }
-        if (screenValue == 'refill-medicine') {
-          _processMedicineTabDeepLink(1);
-          return;
-        }
-        _processMeasurementDeepLink(screenValue);
-        return;
-      }
-
-      // Handle targetType and smartGoalId deeplink.
-      // IMPORTANT: must come BEFORE the generic mode/id/type block.
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey('\$targetType') &&
-          data.containsKey('\$smartGoalId')) {
-        final smartGoalId = data['\$smartGoalId'] as String?;
-        final targetType = data['\$targetType'] as String?;
-        final surveyId = data['\$surveyId'] as String?;
-        final lessonId = data['\$lessonId'] as String?;
-        final lessonType = data['\$lessonType'] as String?;
-
-        if (targetType == null || smartGoalId == null) {
-          return;
-        }
-
-        final targetTypeNum = int.tryParse(targetType);
-        if (targetTypeNum == null) {
-          return;
-        }
-
-        print(
-            '[ROUTE] Handling targetType deeplink: $targetTypeNum with smartGoalId: $smartGoalId, lessonId: $lessonId, surveyId: $surveyId');
-
-        // Create a SmartGoalList object with the provided data
-        SmartGoalList smartGoal = SmartGoalList(
-          id: smartGoalId,
-          surveyId: surveyId,
-          type: targetTypeNum,
-        );
-
-        // Handle lesson data if lessonId and lessonType are provided
-        if (lessonId != null && lessonType != null) {
-          final lessonTypeNum = int.tryParse(lessonType);
-          if (lessonTypeNum != null) {
-            final lessonData = LessonSectionListResponseData(
-              id: lessonId,
-              type: lessonTypeNum,
-            );
-            smartGoal.data = lessonData;
-          }
-        }
-
-        // Navigate immediately if app is initialized and user is logged in
-        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          await _handleTargetTypeDeeplink(targetTypeNum, smartGoal);
-        } else {
-          // Store for later execution
-          _pendingTargetType = targetTypeNum;
-          _pendingSmartGoalId = smartGoalId;
-          _pendingSurveyId = surveyId;
-          _pendingLessonId = lessonId;
-          _pendingLessonType = lessonType;
-        }
-        return;
-      }
-
-      // Handle generic deeplinks with mode, id, type.
-      // This is intentionally placed LAST among the +clicked_branch_link handlers
-      // so that more-specific keys ($screen_value, $targetType, etc.) are matched first.
-      if (data['+clicked_branch_link'] == true) {
-        int? mode;
-        int? id;
-        String? type;
-        if (data.containsKey('\$mode'))
-          mode = int.tryParse(data['\$mode'] as String);
-        if (data.containsKey('\$id')) id = int.tryParse(data['\$id'] as String);
-        if (data.containsKey('\$type')) type = data['\$type'] as String;
-        print('[ROUTE] Deeplink params - mode: $mode, id: $id, type: $type');
-        if (id != null && type == null) type = 'dsmes';
-        if (mode != null || id != null || type != null) {
-          _hasPendingDeeplink = true;
-          _pendingMode = mode;
-          _pendingClinicId = id;
-          _pendingType = type;
-          if (AppSettings.splashScreenInitDone &&
-              AppSettings.userInfo != null) {
-            executeDeeplinkNavigation();
-          }
-          return;
-        }
-      }
-
-      // Handle referral code deeplink (catch-all — only $referralCode, no navigation target)
-      if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$referralCode")) {
-        _referalCode = data['\$referralCode'] as String;
-        return;
-      }
-
-      //Handle old dynamic link referral code
-      if (data['+non_branch_link'] != null) {
-        final urlString = data['+non_branch_link'] as String;
-        AppSettings.saveClickedBranchLink(urlString.isNotEmpty);
-        if (urlString.isNotEmpty && urlString.contains('referralCode')) {
-          List<String> separatedString = urlString.split('referralCode=');
-          _referalCode = separatedString[1].substring(0, 6);
-          return;
-        }
-      }
+      await _processDeepLinkData(data);
     }, onError: (error) {
       if (error is PlatformException) {
         print('InitSession error: ${error.code} - ${error.message}');
@@ -472,6 +140,425 @@ class BranchioLinkConfig {
       }
       TrackingManager.recordError(error, null);
     });
+
+    // ── Fallback: check install/session params after a short delay ──────────
+    // This handles:
+    //   Flow 1.2 – first-session install where listSession fires with
+    //              +is_first_session:true but +clicked_branch_link:false
+    //              (actual data lives in getFirstReferringParams)
+    //   Flow 2.4 – URI-scheme open where listSession fires without
+    //              +clicked_branch_link:true
+    //              (fallback via getLatestReferringParams)
+    Future.delayed(const Duration(seconds: 3), () async {
+      await _checkInstallOrSessionDeepLink();
+    });
+  }
+
+  /// Processes deep link data from any source (stream, install params, session
+  /// params). Contains all the routing logic so it can be reused by both the
+  /// main [listSession] listener and the install/session-param fallback.
+  Future<void> _processDeepLinkData(Map<dynamic, dynamic> data) async {
+    AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
+
+    final zoomStatus = await ZoomService().getMeetingStatus();
+    print('[Meeting Status] Zoom Status: ${zoomStatus[0]}');
+
+    if (zoomStatus[0] == 'MEETING_STATUS_INMEETING') {
+      await ZoomService().returnToMeeting();
+      return;
+    }
+
+    // Handle login deeplink
+    if (data['+clicked_branch_link'] == true && data.containsKey("\$login")) {
+      final token = await AppSettings.getToken();
+      if (token.isNotEmpty) return;
+      _hasPendingLoginDeeplink = true;
+      if (AppSettings.splashScreenInitDone) {
+        executeLoginDeeplinkNavigation();
+      }
+      return;
+    }
+
+    // Handle lesson deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$lessonId")) {
+      _lessonId = data['\$lessonId'] as String;
+      if (data.containsKey("\$referralCode")) {
+        _referalCode = data['\$referralCode'] as String;
+      }
+      print('[ROUTE] Lesson deeplink detected: $_lessonId');
+      if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+        Observable.instance
+            .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+      }
+      return;
+    }
+
+    // Handle activity deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$activityId")) {
+      // Skip if already navigating for an activity deeplink
+      if (_isNavigatingActivity) {
+        print('[ROUTE] Activity navigation already in progress, skipping');
+        return;
+      }
+      _activityId = data['\$activityId'] as String;
+      if (data.containsKey("\$referralCode")) {
+        _referalCode = data['\$referralCode'] as String;
+      }
+      print('[ROUTE] Activity deeplink detected: $_activityId');
+      if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+        Observable.instance.notifyObservers([],
+            notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
+      }
+      return;
+    }
+
+    // Handle webinar deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$webinarId")) {
+      final webinarId = data['\$webinarId'] as String;
+      if (data.containsKey("\$referralCode")) {
+        _referalCode = data['\$referralCode'] as String;
+      }
+      print('[ROUTE] Webinar deeplink detected: $webinarId');
+      if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+        navigatorKey.currentState?.pushNamed(
+          NavigatorName.webinar_info,
+          arguments: {'id': webinarId},
+        );
+      } else {
+        _pendingWebinarId = webinarId;
+      }
+      return;
+    }
+
+    // Handle subscription deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$subscription")) {
+      isActivatedSubscription = true;
+      Observable.instance
+          .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
+      return;
+    }
+
+    // Handle course deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$course")) {
+      _processBookingCourseLink(data['\$course'] as String,
+          data['\$end_time'] as String?, data['\$type'] as String?);
+      return;
+    }
+
+    // Handle Zoom meeting deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$meetingId") &&
+        data.containsKey("\$meetingPassword")) {
+      String meetingId = data['\$meetingId'] as String;
+      String meetingPassword = data['\$meetingPassword'] as String;
+      if (AppSettings.userInfo == null) {
+        _meetingId = meetingId;
+        _meetingPassword = meetingPassword;
+        return;
+      }
+      if (lastMeetingEndTime != null) {
+        final timeSinceLastMeeting =
+            DateTime.now().difference(lastMeetingEndTime!);
+        if (timeSinceLastMeeting.inSeconds < 5) return;
+      }
+      ZoomService().launchZoomMeeting(meetingId, meetingPassword);
+      return;
+    }
+
+    // BCB campaign
+    if (data['+clicked_branch_link'] == true &&
+        (data.containsKey('\$campaignId') )) {
+      final campaignId = data['\$campaignId']
+          ?.toString()
+          .trim() ??
+          '';
+      if (campaignId.isEmpty) return;
+      final rawName = (data['\$campaignName'] ?? data['campaign_name'])
+          ?.toString()
+          .trim();
+      final campaignName =
+          (rawName != null && rawName.isNotEmpty) ? rawName : null;
+      if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+        final phone = AppSettings.userInfo!.phoneNumber;
+        if (phone != null && phone.isNotEmpty) {
+          Future.microtask(() async {
+            final result = await AppRepository()
+                .getBcbCampaignCustomer(campaignId: campaignId);
+            result.when(
+              success: (response) {
+                final status = response.data?.status;
+                if (status != null && status >= 2 && status <= 4) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.bcb_select_partner,
+                    arguments: <String, dynamic>{
+                      'bcbCampaignId': campaignId,
+                      if (campaignName != null) 'bcbCampaignName': campaignName,
+                    },
+                  );
+                } else if (status != null && status >= 5 && status <= 7) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.bcb_detail_appointment,
+                    arguments: {'campaignId': campaignId},
+                  );
+                } else if (status != null && status >= 9 && status <= 10) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.view_test_result,
+                    arguments: {'campaignId': campaignId},
+                  );
+                }
+              },
+              failure: (_) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.bcb_select_partner,
+                  arguments: <String, dynamic>{
+                    'bcbCampaignId': campaignId,
+                    if (campaignName != null) 'bcbCampaignName': campaignName,
+                  },
+                );
+              },
+            );
+          });
+        } else {
+          Future.microtask(() {
+            navigatorKey.currentState?.pushNamed(
+              NavigatorName.bcb_select_partner,
+              arguments: <String, dynamic>{
+                'bcbCampaignId': campaignId,
+                if (campaignName != null) 'bcbCampaignName': campaignName,
+              },
+            );
+          });
+        }
+      } else {
+        _pendingBcbCampaignId = campaignId;
+        _pendingBcbCampaignName = campaignName;
+      }
+      return;
+    }
+
+    // Handle lab result deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$labResultId")) {
+      final labResultId = data['\$labResultId'] as String;
+      if (labResultId.isEmpty) return;
+      print('[ROUTE] Lab result deeplink detected: $labResultId');
+      if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+        Future.microtask(() async {
+          await _navigateToLabResultDetail(labResultId);
+        });
+      } else {
+        _pendingLabResultId = labResultId;
+      }
+      return;
+    }
+
+    // Handle news deeplink
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$newsDetail")) {
+      String newsDetailId = data['\$newsDetail'] as String;
+      if (data.containsKey("\$referralCode")) {
+        _referalCode = data['\$referralCode'] as String;
+      }
+      if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+        navigatorKey.currentState?.pushNamed(
+            NavigatorName.news_detail,
+            arguments: {'id': newsDetailId});
+      } else {
+        _pendingNewsDetailId = newsDetailId;
+      }
+      return;
+    }
+
+    // Handle deeplinks with $screen_value (medicine tabs + measurement screens).
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$screen_value")) {
+      final screenValue = data['\$screen_value'] as String;
+      if (screenValue == 'calendar-medicine') {
+        _processMedicineTabDeepLink(0);
+        return;
+      }
+      if (screenValue == 'refill-medicine') {
+        _processMedicineTabDeepLink(1);
+        return;
+      }
+      _processMeasurementDeepLink(screenValue);
+      return;
+    }
+
+    // Handle targetType and smartGoalId deeplink.
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey('\$targetType') &&
+        data.containsKey('\$smartGoalId')) {
+      final smartGoalId = data['\$smartGoalId'] as String?;
+      final targetType = data['\$targetType'] as String?;
+      final surveyId = data['\$surveyId'] as String?;
+      final lessonId = data['\$lessonId'] as String?;
+      final lessonType = data['\$lessonType'] as String?;
+
+      if (targetType == null || smartGoalId == null) {
+        return;
+      }
+
+      final targetTypeNum = int.tryParse(targetType);
+      if (targetTypeNum == null) {
+        return;
+      }
+
+      print(
+          '[ROUTE] Handling targetType deeplink: $targetTypeNum with smartGoalId: $smartGoalId, lessonId: $lessonId, surveyId: $surveyId');
+
+      SmartGoalList smartGoal = SmartGoalList(
+        id: smartGoalId,
+        surveyId: surveyId,
+        type: targetTypeNum,
+      );
+
+      if (lessonId != null && lessonType != null) {
+        final lessonTypeNum = int.tryParse(lessonType);
+        if (lessonTypeNum != null) {
+          final lessonData = LessonSectionListResponseData(
+            id: lessonId,
+            type: lessonTypeNum,
+          );
+          smartGoal.data = lessonData;
+        }
+      }
+
+      if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+        await _handleTargetTypeDeeplink(targetTypeNum, smartGoal);
+      } else {
+        _pendingTargetType = targetTypeNum;
+        _pendingSmartGoalId = smartGoalId;
+        _pendingSurveyId = surveyId;
+        _pendingLessonId = lessonId;
+        _pendingLessonType = lessonType;
+      }
+      return;
+    }
+
+    // Handle generic deeplinks with mode, id, type.
+    if (data['+clicked_branch_link'] == true) {
+      int? mode;
+      int? id;
+      String? type;
+      if (data.containsKey('\$mode'))
+        mode = int.tryParse(data['\$mode'] as String);
+      if (data.containsKey('\$id')) id = int.tryParse(data['\$id'] as String);
+      if (data.containsKey('\$type')) type = data['\$type'] as String;
+      print('[ROUTE] Deeplink params - mode: $mode, id: $id, type: $type');
+      if (id != null && type == null) type = 'dsmes';
+      if (mode != null || id != null || type != null) {
+        _hasPendingDeeplink = true;
+        _pendingMode = mode;
+        _pendingClinicId = id;
+        _pendingType = type;
+        if (AppSettings.splashScreenInitDone &&
+            AppSettings.userInfo != null) {
+          executeDeeplinkNavigation();
+        }
+        return;
+      }
+    }
+
+    // Handle referral code deeplink (catch-all)
+    if (data['+clicked_branch_link'] == true &&
+        data.containsKey("\$referralCode")) {
+      _referalCode = data['\$referralCode'] as String;
+      return;
+    }
+
+    //Handle old dynamic link referral code
+    if (data['+non_branch_link'] != null) {
+      final urlString = data['+non_branch_link'] as String;
+      AppSettings.saveClickedBranchLink(urlString.isNotEmpty);
+      if (urlString.isNotEmpty && urlString.contains('referralCode')) {
+        List<String> separatedString = urlString.split('referralCode=');
+        _referalCode = separatedString[1].substring(0, 6);
+        return;
+      }
+    }
+  }
+
+  /// Fallback check for install-time and session deep link data.
+  ///
+  /// Call this once after [setUpHandleDeepLink] has set up the stream listener.
+  /// It handles the case where [listSession] fires but [clicked_branch_link] is
+  /// false even though the user arrived via a deep link — which happens on:
+  ///
+  /// 1. **First install + click** (Flow 1.2): The install link data is in
+  ///    [getFirstReferringParams] with [is_first_session] == true.
+  /// 2. **URI scheme open** (Flow 2.4): The app opens via custom URL scheme
+  ///    and [listSession] may not have [clicked_branch_link] == true.
+  Future<void> _checkInstallOrSessionDeepLink() async {
+    print('[BRANCH_DEBUG] Checking install/session deep link params');
+
+    // ── Check install-time params (getFirstReferringParams) ────────────────
+    // This is the ONLY reliable source for deep link data when the app is
+    // opened for the first time after an install that originated from a
+    // Branch link click. Only needs to run once per app session.
+    if (!_hasCheckedInstallParams) {
+      _hasCheckedInstallParams = true;
+      try {
+        final firstParams = await FlutterBranchSdk.getFirstReferringParams();
+        if (firstParams.isNotEmpty) {
+          print('[BRANCH_DEBUG] getFirstReferringParams data: $firstParams');
+          final isClicked = firstParams['+clicked_branch_link'] == true;
+          final isFirstSession = firstParams['+is_first_session'] == true;
+          if (isClicked || isFirstSession) {
+            // Deduplicate: if the link URL matches the last processed one,
+            // skip to avoid double-processing.
+            final linkUrl = firstParams['+url']?.toString() ??
+                firstParams['~referring_link']?.toString();
+            if (linkUrl != null && linkUrl.isNotEmpty) {
+              final now = DateTime.now();
+              if (linkUrl == _lastProcessedLinkUrl &&
+                  _lastProcessedTime != null &&
+                  now.difference(_lastProcessedTime!).inSeconds < 10) {
+                print('[ROUTE] Install params duplicate, skipping');
+                return;
+              }
+              _lastProcessedLinkUrl = linkUrl;
+              _lastProcessedTime = now;
+            }
+            await _processDeepLinkData(firstParams);
+          }
+        }
+      } catch (e) {
+        print('[BRANCH_DEBUG] getFirstReferringParams error: $e');
+      }
+    }
+
+    // ── Check latest session params (getLatestReferringParams) ─────────────
+    // Fallback for URI-scheme opens where listSession fired but without
+    // clicked_branch_link context.
+    try {
+      final latestParams = await FlutterBranchSdk.getLatestReferringParams();
+      if (latestParams.isNotEmpty &&
+          latestParams['+clicked_branch_link'] == true) {
+        print('[BRANCH_DEBUG] getLatestReferringParams data: $latestParams');
+        final linkUrl = latestParams['+url']?.toString() ??
+            latestParams['~referring_link']?.toString();
+        final now = DateTime.now();
+        if (linkUrl != null && linkUrl.isNotEmpty) {
+          if (linkUrl == _lastProcessedLinkUrl &&
+              _lastProcessedTime != null &&
+              now.difference(_lastProcessedTime!).inSeconds < 10) {
+            print('[ROUTE] Latest params duplicate, skipping');
+            return;
+          }
+          _lastProcessedLinkUrl = linkUrl;
+          _lastProcessedTime = now;
+        }
+        await _processDeepLinkData(latestParams);
+      }
+    } catch (e) {
+      print('[BRANCH_DEBUG] getLatestReferringParams error: $e');
+    }
   }
 
   Future<void> createShareReferralLink() async {
@@ -964,6 +1051,9 @@ class BranchioLinkConfig {
       checkPendingContentNavigation();
       checkPendingMeasurementScreen();
       checkPendingMedicineTab();
+      // Also re-check install/session params now that the app is ready
+      // (the initial delay check may have run before splash init was done)
+      _checkInstallOrSessionDeepLink();
     });
   }
 

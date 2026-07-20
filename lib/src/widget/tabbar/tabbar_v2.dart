@@ -286,18 +286,14 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
     } else if (activityId != null) {
-      if (AppSettings.userInfo?.packageType == PackageType.free) {
-        SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
-        await Future.delayed(Duration(milliseconds: 500));
-        NavigationUtil.navigatePage(navigatorKey.currentState!.context,
-            IntroduceSurveyPage(survey: smartGoal));
-        // ID already cleared by consumeActivityId above — reset nav guard
-        BranchioLinkConfig.instance.removeActivityId();
-      } else {
-        _jumpTo(TabBarType.program.index);
-        _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
-        BranchioLinkConfig.instance.removeActivityId();
-      }
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      
+      SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
+      await Future.delayed(Duration(milliseconds: 500));
+      NavigationUtil.navigatePage(navigatorKey.currentState!.context,
+          IntroduceSurveyPage(survey: smartGoal));
+      BranchioLinkConfig.instance.removeActivityId();
     }
   }
 
