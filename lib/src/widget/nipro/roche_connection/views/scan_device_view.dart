@@ -59,6 +59,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   Stream<int> get secondsStream => secondsStreamController.stream;
   StreamSubscription? characteristicListener;
   StreamSubscription? _racpResponseListener;
+  StreamSubscription? _contextListener;
 
   List<GlucoseMeasurementRecord> glucoseMeasurementRecordList = [];
   List<Map<String, String>> selectedGlucose = [];
@@ -134,11 +135,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   String? _glucoseRecordKey(GlucoseMeasurementRecord record) {
     if (record.calendar == null || !record.isBloodGlucose) return null;
-    final glucose = roundAsFixed(roundDouble(
-        record.convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+    final rawGlucose = double.parse(record.convertGlucoseConcentrationValueToMilligramsPerDeciliter());
+    final glucose = roundAsFixed(roundDouble(calibrateDeviceGlucose(rawGlucose)));
     final glucoseValue = _parseGlucoseValue(glucose);
     if (glucoseValue == null) return null;
     final epochSeconds = DateUtil.getDayInMillis(record.calendar!);
+    log('🔑 RecordKey: calendar=${record.calendar}, epoch=$epochSeconds, '
+        'glucoseValue=$glucoseValue, rawGlucose=$rawGlucose', name: 'diaB.BLE');
     return '$epochSeconds|${glucoseValue.toStringAsFixed(3)}';
   }
 
@@ -176,6 +179,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     }
     characteristicListener?.cancel();
     _racpResponseListener?.cancel();
+    _contextListener?.cancel();
     if (!secondsStreamController.isClosed) {
       secondsStreamController.close();
     }
@@ -1621,8 +1625,48 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               log('🔍 DEBUG: Received empty data from device');
               return;
             }
-            log('🔍 DEBUG: Received data from device, length: ${data.length}');
-            log('🔍 DEBUG: Data bytes: ${data.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ')}');
+            // ============================================================
+            // 🛠️ DEV LOG: RAW BLE DATA FROM DEVICE (0x2A18 Notification)
+            // ============================================================
+            final hexStr =
+                data.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ');
+            final decStr = data.join(', ');
+            final asciiStr = data
+                .map((e) =>
+                    (e >= 32 && e <= 126) ? String.fromCharCode(e) : '.')
+                .join('');
+            log('╔══════════════════════════════════════════════╗',
+                name: 'diaB.BLE');
+            log('║  📱 RAW BLE NOTIFICATION  (0x2A18)          ║',
+                name: 'diaB.BLE');
+            log('║  Device   : ${modelName ?? "Unknown"} (${modelNumber ?? "?"})',
+                name: 'diaB.BLE');
+            log('║  Length   : ${data.length} bytes                    ║',
+                name: 'diaB.BLE');
+            log('╠══════════════════════════════════════════════╣',
+                name: 'diaB.BLE');
+            log('║  HEX: $hexStr',
+                name: 'diaB.BLE');
+            log('║  DEC: $decStr',
+                name: 'diaB.BLE');
+            log('║  ASC: $asciiStr',
+                name: 'diaB.BLE');
+            log('╠══════════════════════════════════════════════╣',
+                name: 'diaB.BLE');
+            // Chi tiết từng byte (tối đa 20 bytes)
+            final byteLines = StringBuffer();
+            for (int i = 0; i < data.length && i < 20; i++) {
+              byteLines.write(
+                  '  Byte[$i] = ${data[i]} (0x${data[i].toRadixString(16).padLeft(2, '0')}) | ');
+            }
+            log('║  Raw bytes: ${byteLines.toString().trimRight()}',
+                name: 'diaB.BLE');
+            if (data.length > 20) {
+              log('║  (... ${data.length - 20} more bytes)',
+                  name: 'diaB.BLE');
+            }
+            log('╚══════════════════════════════════════════════╝',
+                name: 'diaB.BLE');
 
             GlucoseMeasurementRecord glucoseMeasurementRecord =
                 GlucoseFunctions().readDataFrom2A18(data);
@@ -1638,6 +1682,40 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           });
         }
 
+        // Tìm Characteristic 0x2A34 (Glucose Measurement Context)
+        if (characteristic.characteristicUuid.str128 ==
+            GlucoseProfileConfiguration
+                .GLUCOSE_MEASUREMENT_CONTEXT_CHARACTERISTIC_UUID) {
+          log('📋 Found 0x2A34 (Glucose Measurement Context) — subscribing',
+              name: 'diaB.BLE');
+          await characteristic.setNotifyValue(true);
+
+          _contextListener?.cancel();
+          _contextListener =
+              characteristic.lastValueStream.listen((data) async {
+            if (data.isEmpty) {
+              log('⚠️ 0x2A34: Received empty data',
+                  name: 'diaB.BLE');
+              return;
+            }
+
+            log('╔══════════════════════════════════════════════╗',
+                name: 'diaB.BLE');
+            log('║  🍎 RAW BLE NOTIFICATION (0x2A34 Context)   ║',
+                name: 'diaB.BLE');
+            log('║  Length   : ${data.length} bytes                    ║',
+                name: 'diaB.BLE');
+            log('║  HEX: ${data.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ')}',
+                name: 'diaB.BLE');
+            log('╚══════════════════════════════════════════════╝',
+                name: 'diaB.BLE');
+
+            // Parse context & map to existing record via sequenceNumber
+            GlucoseFunctions()
+                .readDataFrom2A34(data, glucoseMeasurementRecordList);
+          });
+        }
+
         // Tìm Characteristic 0x2A52
         if (characteristic.characteristicUuid.str128 ==
             GlucoseProfileConfiguration
@@ -1649,6 +1727,19 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           _racpResponseListener?.cancel();
           _racpResponseListener =
               characteristic.lastValueStream.listen((data) async {
+            log('╔══════════════════════════════════════════════╗',
+                name: 'diaB.BLE');
+            log('║  📡 RAW RACP NOTIFICATION (0x2A52)          ║',
+                name: 'diaB.BLE');
+            log('║  Length   : ${data.length} bytes                    ║',
+                name: 'diaB.BLE');
+            log('║  HEX: ${data.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ')}',
+                name: 'diaB.BLE');
+            log('║  DEC: ${data.join(', ')}',
+                name: 'diaB.BLE');
+            log('╚══════════════════════════════════════════════╝',
+                name: 'diaB.BLE');
+
             if (data.length >= 4 && data[0] == 0x06) {
               // OpCode 0x06 = Response Code
               // data[1] = Operator (0x00 = Null)
@@ -1964,10 +2055,23 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         log('🔍 DEBUG: Processing record - calendar: ${element.calendar}, isBloodGlucose: ${element.isBloodGlucose}');
 
         if (element.calendar != null && element.isBloodGlucose) {
-          final glucose = roundAsFixed(roundDouble(element
-              .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
-
-          log('🔍 DEBUG: Glucose value: $glucose, calendar: ${element.calendar}');
+          final rawGlucose = double.parse(element.convertGlucoseConcentrationValueToMilligramsPerDeciliter());
+          
+          // 🛠️ DEBUG: trace exact pipeline values
+          log('══════ GLUCOSE VALUE DEBUG ══════', name: 'diaB.BLE');
+          log('  glucoseConcentrationValue (SFLOAT) = ${element.glucoseConcentrationValue}', name: 'diaB.BLE');
+          log('  * 100000 → rawGlucose = $rawGlucose', name: 'diaB.BLE');
+          log('  glucoseUnit = ${AppSettings.userInfo?.glucoseUnit}', name: 'diaB.BLE');
+          
+          final calibrated = calibrateDeviceGlucose(rawGlucose);
+          log('  calibrateDeviceGlucose → $calibrated', name: 'diaB.BLE');
+          
+          final rounded = roundDouble(calibrated);
+          log('  roundDouble → $rounded', name: 'diaB.BLE');
+          
+          final glucose = roundAsFixed(rounded);
+          log('  roundAsFixed → $glucose', name: 'diaB.BLE');
+          log('══════════════════════════════════', name: 'diaB.BLE');
 
           if (!uniqueValues.contains(element.calendar)) {
             glucoseDataRequest.add(GlucoseData(
@@ -2002,11 +2106,16 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               log('🔍 DEBUG: Skipped API record with invalid createDate: ${element['createDate']}');
               return;
             }
+            final matchedRecord = glucoseMeasurementRecordList.firstWhere(
+                (record) => DateUtil.getDayInMillis(record.calendar!) == createDate, 
+                orElse: () => GlucoseMeasurementRecord());
+                
             glucoseDataList.add({
               'glucose': element['glucose'].toString(),
               'date': createDate.toString(),
+              'mealContext': matchedRecord.mealContextInteger != null ? matchedRecord.mealContextName() : '',
             });
-            log('🔍 DEBUG: Added to display list from API - glucose: ${element['glucose']}, date: $createDate');
+            log('🔍 DEBUG: Added to display list from API - glucose: ${element['glucose']}, date: $createDate, mealContext: ${matchedRecord.mealContextInteger}');
           });
         } else {
           // API returned empty → all records already exist on server.
@@ -2023,11 +2132,16 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           // device-data fallback is safe to show.
           log('🔍 DEBUG: API returned empty, using device data as fallback');
           glucoseDataRequest.forEach((element) {
+            final matchedRecord = glucoseMeasurementRecordList.firstWhere(
+                (record) => DateUtil.getDayInMillis(record.calendar!).toString() == element.date.toString(), 
+                orElse: () => GlucoseMeasurementRecord());
+                
             glucoseDataList.add({
               'glucose': element.glucose.toString(),
-              'date': element.date.toString()
+              'date': element.date.toString(),
+              'mealContext': matchedRecord.mealContextInteger != null ? matchedRecord.mealContextName() : '',
             });
-            log('🔍 DEBUG: Added to display list from device - glucose: ${element.glucose}, date: ${element.date}');
+            log('🔍 DEBUG: Added to display list from device - glucose: ${element.glucose}, date: ${element.date}, mealContext: ${matchedRecord.mealContextInteger}');
           });
         }
 
