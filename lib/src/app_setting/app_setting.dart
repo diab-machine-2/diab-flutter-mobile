@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -495,6 +496,8 @@ class AppSettings {
       userInfo = null;
       appPreference.setData(Const.hasInputedWaist, false);
       await FetchClient().checkNetwork();
+      // Clear Branch user identity so future deep links are attributed correctly
+      FlutterBranchSdk.logout();
       await RevenueCatService.logout();
       await LoginClient().logout();
       await deleteHomeData();
