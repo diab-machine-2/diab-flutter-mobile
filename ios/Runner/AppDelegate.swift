@@ -10,8 +10,11 @@ import BranchSDK
 private let kPaymentGatewayChannel = "paymentGateway"
 private let kSDKCompletedNotification = "SDK_COMPLETED"
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
+    
+    static var pendingInitialDeepLink: String?
+    static weak var activeDeepLinkChannel: FlutterMethodChannel?
     
     static var sink: FlutterEventSink?
     private var arrDevices: [btInfo]? = []
@@ -19,6 +22,8 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
     private var arrResult: [String]? = []
     private var glucoseData: [RecordInfo]? = []
     private var isInit: Bool = false
+    
+    public static weak var flutterController: FlutterViewController?
     
     // private var zoomInited: Bool = false
     // private var zoomAuthResult: FlutterResult?
@@ -29,13 +34,28 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+
+        // IMPORTANT: Register ALL plugins BEFORE super.application(...) so they
+        // receive the didFinishLaunchingWithOptions lifecycle event (including
+        // FlutterBranchSdkPlugin which calls Branch.getInstance().initSession()).
+        GeneratedPluginRegistrant.register(with: self)
         
-        //Branch.setUseTestBranchKey(true)        
-        Branch.getInstance().initSession(launchOptions: launchOptions) { (params, error) in
-            print(params as? [String: AnyObject] ?? {})
-            // Access and use Branch Deep Link data here (nav to page, display content, etc.)
+        // Call super to bootstrap the Flutter engine (forwards lifecycle event
+        // to all registered plugin delegates — Branch SDK session init happens here)
+        let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        
+        // Setup channels now that engine & root VC are ready
+        if let controller = window?.rootViewController as? FlutterViewController {
+            AppDelegate.flutterController = controller
+            setupMethodChannels(controller: controller)
         }
-        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+        
+        return result
+    }
+
+    @objc public func setupMethodChannels(controller: FlutterViewController) {
+        if self.vnPayEventChannel != nil { return } // Already set up
+        
         let iBleMethodChannel = FlutterMethodChannel(name: "iBleSdk",
                                                      binaryMessenger: controller.binaryMessenger)
     
@@ -66,20 +86,6 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
         let eventChannel = FlutterEventChannel(name: "eventChannelStreamiBle", binaryMessenger: controller.binaryMessenger)
         eventChannel.setStreamHandler(IBleStreamHandler())
         
-        // Start method-channel handler for zoom-meeting-sdk
-        // let zoomMeetingSdkMC = FlutterMethodChannel(name: "DiaB_MeetingMC", binaryMessenger: controller.binaryMessenger)
-        // zoomMeetingSdkMC.setMethodCallHandler({
-        //     (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-        //     if call.method == "initZoom" {
-        //         self.initZoom(info: call.arguments as! Dictionary<String, Any>, result: result)
-        //     } else if call.method == "joinMeeting" {
-        //         self.joinMeeting(info: call.arguments as! Dictionary<String, Any>, result: result)
-        //     } else {
-        //         result(FlutterMethodNotImplemented)
-        //         return
-        //     }
-        // })
-        
         vnPayEventChannel = FlutterMethodChannel(name: kPaymentGatewayChannel, binaryMessenger: controller.binaryMessenger)
         vnPayEventChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
@@ -90,18 +96,17 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
                 return
             }
         })
-        
-        // Register plugins with error handling to prevent cascade failures
-        // If one plugin fails (like Zoom), others should still work
-        do {
-            GeneratedPluginRegistrant.register(with: self)
-            print("✅ Plugins registered successfully")
-        } catch {
-            print("❌ Error registering plugins: \(error.localizedDescription)")
-            // Don't let plugin registration errors break the app
-            // Individual plugins should handle their own errors
-        }
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+
+    // MARK: - Universal Link handler (iOS < 26 fallback)
+    // Trên iOS 26+, Universal Links đi qua SceneDelegate thay vì AppDelegate.
+    // Method này vẫn cần cho iOS 25 và older.
+    override func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
 
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -142,8 +147,8 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
             }
         }
         
-        // Pass to Zalo SDK if not handled
-        return ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+        ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
+        return super.application(app, open: url, options: options)
     }
     
     // override func applicationWillResignActive(_ application: UIApplication) {
@@ -272,13 +277,15 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
        
         // Store method channel for callback
         if vnPayEventChannel == nil {
-            vnPayEventChannel = FlutterMethodChannel(
-                name: kPaymentGatewayChannel,
-                binaryMessenger: (window?.rootViewController as! FlutterViewController).binaryMessenger)
+            if let controller = AppDelegate.flutterController ?? window?.rootViewController as? FlutterViewController {
+                vnPayEventChannel = FlutterMethodChannel(
+                    name: kPaymentGatewayChannel,
+                    binaryMessenger: controller.binaryMessenger)
+            }
         }
-       
+        
         // Configure VNPay SDK
-        if let controller = window?.rootViewController {
+        if let controller = AppDelegate.flutterController ?? window?.rootViewController {
             CallAppInterface.setHomeViewController(controller)
         }
         CallAppInterface.setSchemes(scheme)

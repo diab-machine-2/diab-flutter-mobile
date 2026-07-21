@@ -21,12 +21,17 @@ class ResultSyncDataNew extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String unitName = '(mg/dL)';
-    dynamic bloodGlucose = double.tryParse(glucoseData['glucose']!)!.round();
+    // Use raw mg/dL value (with decimals) instead of rounding to int early.
+    // Premature .round() loses fractional precision which causes ~0.1 error
+    // when converting to mmol/L (e.g. 104.5→round→105→5.8 vs 104→round→103→5.7)
+    dynamic bloodGlucose = double.tryParse(glucoseData['glucose']!)!;
 
     if (glucoseUnits == GlucoseUnitsFlag.mmolPerL) {
-      bloodGlucose =
-          roundAsFixed(roundDouble(bloodGlucose) / Const.mmollToMgdlFactor);
+      bloodGlucose = roundAsFixed(bloodGlucose / Const.mmollToMgdlFactor);
       unitName = '(mmol/L)';
+    } else {
+      // Still round to int for mg/dL display (no fractional mg/dL shown)
+      bloodGlucose = bloodGlucose.round();
     }
 
     return Column(
@@ -70,6 +75,17 @@ class ResultSyncDataNew extends StatelessWidget {
                         color: Color(0xFF777E90),
                       ),
                     ),
+                    if (glucoseData['mealContext'] != null && glucoseData['mealContext']!.isNotEmpty) ...[
+                      SizedBox(height: 5),
+                      Text(
+                        glucoseData['mealContext']!,
+                        style: TextStyle(
+                          color: R.color.mainColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
