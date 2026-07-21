@@ -17,6 +17,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/list_data.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:medical/src/widget/helper/helper.dart';
 
 part 'nipro_bloc_event.dart';
 part 'nipro_bloc_state.dart';
@@ -170,8 +171,10 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           break;
         case 'get_data_success':
           final List<GlucoseData> glucoseData = data.map((e) {
+            final rawGlucose = double.parse(e['glucose']!);
+            final calibratedGlucose = roundAsFixed(roundDouble(calibrateDeviceGlucose(rawGlucose)));
             return GlucoseData(
-              glucose: e['glucose']!,
+              glucose: calibratedGlucose.toString(),
               date: e['date']!,
             );
           }).toList();
