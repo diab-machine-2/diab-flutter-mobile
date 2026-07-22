@@ -1755,3 +1755,13 @@ benefit_remaining_days,Còn {} ngày,{} days remaining
 benefit_unlimited,Không giới hạn,Unlimited
 benefit_discount,Giảm {},Discount {},
 benefit_my_benefits,Quyền lợi của tôi,My Benefits
+benefit_already_requested,Đã yêu cầu,Requested
+benefit_order_type_medicine,Mua thuốc,Purchase Medicine
+benefit_order_type_lab,Cận lâm sàng,Lab Test
+benefit_order_detail_title,Chi tiết yêu cầu,Request Detail
+benefit_order_prescription_name,Tên đơn thuốc,Prescription Name
+benefit_order_diagnose,Chẩn đoán,Diagnosis
+benefit_order_medicine_list,Danh sách thuốc,Medicine List
+benefit_order_services_list,Danh sách dịch vụ,Services List
+benefit_order_note,Ghi chú,Note
+benefit_order_code,Mã yêu cầu,Request Code

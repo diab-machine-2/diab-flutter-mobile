@@ -40,6 +40,7 @@ import 'package:medical/src/widget/benefit/benefit_appointment_history_page.dart
 import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
 import 'package:medical/src/widget/benefit/benefit_page.dart';
 import 'package:medical/src/widget/benefit/benefit_introduce_bundle_page.dart';
+import 'package:medical/src/widget/benefit/benefit_medication_order_detail_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_intro_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -503,6 +504,16 @@ class AppRoutes {
       case NavigatorName.benefit_appointment_history:
         page = const BenefitAppointmentHistoryPage();
         break;
+
+      case NavigatorName.benefit_medication_order_detail:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          if (args == null) break;
+          page = BenefitMedicationOrderDetailPage(
+            order: args['order'],
+          );
+          break;
+        }
 
       case NavigatorName.benefit_booking_detail:
         {

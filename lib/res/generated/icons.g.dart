@@ -77,4 +77,6 @@ class Icons {
   String get ic_benefit_item_thuoc => "lib/res/icons/ic_benefit_item_thuoc.svg";
   String get ic_benefit_item_dat_xet_nghiem => "lib/res/icons/ic_benefit_item_dat_xet_nghiem.svg";
   String get ic_benefit_item_dsp => "lib/res/icons/ic_benefit_item_dsp.svg";
+  String get ic_purchase_medicine => "lib/res/icons/ic_purchase_medicine.svg";
+  String get ic_paraclinical => "lib/res/icons/ic_paraclinical.svg";
 }

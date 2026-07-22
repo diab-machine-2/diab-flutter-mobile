@@ -1847,4 +1847,14 @@ class Strings {
   String get benefit_unlimited => 'benefit_unlimited';
   String get benefit_discount => 'benefit_discount';
   String get benefit_my_benefits => 'benefit_my_benefits';
+  String get benefit_already_requested => 'benefit_already_requested';
+  String get benefit_order_type_medicine => 'benefit_order_type_medicine';
+  String get benefit_order_type_lab => 'benefit_order_type_lab';
+  String get benefit_order_detail_title => 'benefit_order_detail_title';
+  String get benefit_order_prescription_name => 'benefit_order_prescription_name';
+  String get benefit_order_diagnose => 'benefit_order_diagnose';
+  String get benefit_order_medicine_list => 'benefit_order_medicine_list';
+  String get benefit_order_services_list => 'benefit_order_services_list';
+  String get benefit_order_note => 'benefit_order_note';
+  String get benefit_order_code => 'benefit_order_code';
 }

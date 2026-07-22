@@ -38,6 +38,7 @@ import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/request/add_exercise_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
+import 'package:medical/src/model/response/medication_order_response.dart';
 import 'package:medical/src/model/response/booking_doctor_detail_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
@@ -1501,6 +1502,18 @@ class AppRepository {
   }
 
   // Benefit Service Request (medicine + lab test)
+  Future<ApiResult<MedicationOrderResponse>> getMedicationOrders({
+    int page = 1,
+    int size = 100,
+  }) async {
+    try {
+      final response = await appClient.getMedicationOrders(page, size);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<CommonResponse>> submitMedicationRequest(
       Map<String, dynamic> body) async {
     try {
