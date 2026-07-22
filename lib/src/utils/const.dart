@@ -255,8 +255,8 @@ class Const {
     BOOKING_TYPE_DOCTOR,
   ];
   static const TABLET_BREAKPOINT = 540;
-  static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
-  static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
+  // static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ'; (removed)
+  // static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr'; (removed)
   static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
 
   static const bmiThreshold = <double>[18.5, 23, 25, 30];

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -52,6 +53,9 @@ class ZoomService {
       String jwtToken = _generateToken(username);
 
       if (kDebugMode) {
+        print("[Zoom service] jwtToken $jwtToken");
+        print("[Zoom Service] Meeting ID: $meetingID");
+        print("[Zoom Service] Password: $password");
         print("[Zoom Service] Preparing to initialize Zoom SDK");
         print("[Zoom Service] Meeting ID: $meetingID");
         print("[Zoom Service] Username: $username");

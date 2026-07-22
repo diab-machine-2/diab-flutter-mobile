@@ -9,7 +9,7 @@ import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/payment_package/payment_package.dart';
+import 'package:medical/src/widget/register_package/register_package_page.dart';
 import 'package:medical/src/widgets/avatar_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -232,12 +232,10 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                           if (!Utils.isEmpty(data?.prices))
                             NavigationUtil.navigatePage(
                                 context,
-                                PaymentPackagePage(
-                                  packageName:
-                                  data?.name ?? R.string.diab_pro.tr(),
-                                  packageCode: data?.code ?? 'Const.PRO',
-                                  price: data!.prices![_cubit.selectedPrice],
-                                  isBuyDirect: widget.isBuyDirect,
+                                RegisterPackagePage(
+                                  code:
+                                  data?.code ?? 'Const.PRO',
+                                  priceData: data!.prices![_cubit.selectedPrice],
                                 ));
                         },
                       ),

@@ -927,14 +927,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.7.3"
-  flutter_inapp_purchase:
-    dependency: "direct main"
-    description:
-      name: flutter_inapp_purchase
-      sha256: d67544e703439feefe91cab9cb4920cffc0f1576f7ce51a78e3a0a3c5f7d3f1e
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.6.1"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -1968,22 +1960,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  purchases_flutter:
-    dependency: "direct main"
-    description:
-      name: purchases_flutter
-      sha256: "8d34712aa3201f675eeccaacf45c0b7b025575fc9d0378b2619bb61246e76064"
-      url: "https://pub.dev"
-    source: hosted
-    version: "8.11.0"
-  purchases_ui_flutter:
-    dependency: "direct main"
-    description:
-      name: purchases_ui_flutter
-      sha256: "883caecc6065d3e079d2cf62c2b72c54b909668bd4c95ea51691f9708dea0dc6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "8.11.0"
   readmore:
     dependency: "direct main"
     description:
