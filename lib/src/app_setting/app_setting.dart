@@ -18,8 +18,6 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
-import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
-
 import '../modal/user/secure.dart';
 
 class AppSettings {
@@ -495,7 +493,6 @@ class AppSettings {
       userInfo = null;
       appPreference.setData(Const.hasInputedWaist, false);
       await FetchClient().checkNetwork();
-      await RevenueCatService.logout();
       await LoginClient().logout();
       await deleteHomeData();
       await clearToken();

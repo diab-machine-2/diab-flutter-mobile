@@ -150,9 +150,7 @@ android {
                 // 1.17.0-rc01 requires AGP 8.9.1+, but 1.15.0 works with AGP 8.7.3
                 force 'androidx.core:core-ktx:1.15.0'
                 force 'androidx.core:core:1.15.0'
-                // Force Billing Library 7.1.1 to be compatible with RevenueCat 8.10.6
-                // Billing Library 8.0.0+ removed queryPurchaseHistoryAsync which RevenueCat 8.10.6 still uses
-                force 'com.android.billingclient:billing:7.1.1'
+                // Removed: Billing Library force — all billing/in-app purchase code has been removed from the project
                 // Exclude conflicting transitive dependencies if needed
                 exclude group: 'com.google.guava', module: 'listenablefuture'
             }
@@ -189,7 +187,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
     implementation "io.reactivex.rxjava2:rxjava:2.1.7"
 
-    implementation "com.android.billingclient:billing:7.1.1"
+    // Removed: billingclient:billing — billing/in-app purchase code has been removed from the project
 
     // Provide legacy ExoPlayer UI classes used by Zoom SDK (com.google.android.exoplayer2.ui.*)
     implementation "com.google.android.exoplayer:exoplayer:2.19.1"
