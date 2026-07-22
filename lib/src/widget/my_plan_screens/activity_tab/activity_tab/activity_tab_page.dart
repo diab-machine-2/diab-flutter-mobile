@@ -110,9 +110,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     if (notifyName == 'mark_completed_calendar') {
       _checkExistZoomId();
     }
-    if (notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
-      _checkExistActivityId();
-    }
+    // NAVIGATE_TO_ACTIVITY_DETAIL is now handled globally in tabbar_v2.dart
     if (notifyName == 'refresh_activity_tab') {
       Future.delayed(Duration(milliseconds: 1000), () {
         if (isVisible) {
@@ -141,19 +139,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  void _checkExistActivityId() async {
-    final String? activityId = BranchioLinkConfig.instance.activityId;
-    if (activityId != null) {
-      SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
-      await Future.delayed(Duration(milliseconds: 500));
-      NavigationUtil.navigatePage(navigatorKey.currentState!.context,
-          IntroduceSurveyPage(survey: smartGoal));
-      Future.delayed(Duration(seconds: 1), () {
-        BranchioLinkConfig.instance.removeActivityId();
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -170,7 +155,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           }
           if (state is ActivityTabSuccess) {
             _checkExistZoomId();
-            _checkExistActivityId();
+            // Activity deeplinks are handled via the observer pattern
+            // (NAVIGATE_TO_ACTIVITY_DETAIL). Do NOT call _checkExistActivityId()
+            // here as it would create a duplicate navigation path.
             if (_pendingKnowledgeScrollWeek != null) {
               _scheduleScrollToPendingKnowledgeWeek();
             }

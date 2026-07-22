@@ -1,9 +1,8 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 import '../../../res/R.dart';
 import '../../utils/navigator_name.dart';
@@ -16,52 +15,52 @@ class PhotoPickerPage extends StatefulWidget {
 }
 
 class _PhotoPickerPageState extends State<PhotoPickerPage> {
-  List<AssetEntity> _photos = [];
-  AssetEntity? _selected; // chỉ giữ 1 ảnh được chọn
+  File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    _loadPhotos();
   }
 
-  Future<void> _loadPhotos() async {
-    final PermissionState ps = await PhotoManager.requestPermissionExtend();
-    if (!ps.isAuth) {
-      PhotoManager.openSetting();
-      return;
-    }
-
-    await PhotoManager.clearFileCache();
-    final albums = await PhotoManager.getAssetPathList(
-      type: RequestType.image,
-      onlyAll: true,
+  Future<void> _pickFromGallery() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920,
+      imageQuality: 85,
     );
 
-    if (albums.isNotEmpty) {
-      final recent = albums.first;
-      final photos = await recent.getAssetListPaged(page: 0, size: 100);
+    if (pickedFile != null) {
+      final file = File(pickedFile.path);
       setState(() {
-        _photos = photos;
+        _selectedImage = file;
       });
+      if (mounted) {
+        Navigator.pop(context, file);
+      }
     }
   }
 
-  void _toggleSelect(AssetEntity asset) {
-    setState(() {
-      if (_selected == asset) {
-        _selected = null; // bỏ chọn nếu nhấn lại
-      } else {
-        _selected = asset; // thay thế bằng ảnh mới
+  Future<void> _captureFromCamera() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 1920,
+      imageQuality: 85,
+    );
+
+    if (image != null) {
+      final file = File(image.path);
+      setState(() {
+        _selectedImage = file;
+      });
+      if (mounted) {
+        Navigator.pop(context, file);
       }
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final crossAxisCount = 3;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -132,120 +131,50 @@ class _PhotoPickerPageState extends State<PhotoPickerPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: GridView.builder(
-              itemCount: _photos.length + 1,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 1,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: _captureFromCamera,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.teal, width: 3),
+                ),
+                child: const Center(
+                  child: Icon(Icons.camera_alt, size: 40, color: Colors.teal),
+                ),
               ),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  // Ô chụp ảnh
-                  return GestureDetector(
-                    onTap: () {
-                      _captureFromCamera();
-                    },
-                    child: Container(
-                      color: Colors.grey[300],
-                      child: const Center(
-                        child: Icon(Icons.camera_alt, size: 40, color: Colors.black54),
-                      ),
-                    ),
-                  );
-                }
-
-                final asset = _photos[index - 1];
-                return FutureBuilder<Uint8List?>(
-                  future: asset.thumbnailDataWithSize(const ThumbnailSize(200, 200)),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Container(color: Colors.grey[200]);
-                    }
-
-                    final isSelected = _selected == asset;
-
-                    return GestureDetector(
-                      onTap: () => _toggleSelect(asset),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.memory(snapshot.data!, fit: BoxFit.cover),
-                          // Icon check ở góc trên bên phải
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Icon(
-                              isSelected
-                                  ? Icons.check_circle
-                                  : Icons.radio_button_unchecked,
-                              color: isSelected ? Colors.teal : Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                          if (isSelected)
-                            Container(
-                              color: Colors.black26,
-                            ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
             ),
-          ),
-          _buildNextButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNextButton() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      child: GestureDetector(
-        onTap: () async {
-          if (_selected != null) {
-            final file = await _selected!.file;
-            if (file != null) {
-              Navigator.pop(context, file); // trả về file cho màn hình trước
-            }
-          }
-        },
-        child: Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: R.color.mainColor,
-            borderRadius: BorderRadius.circular(200),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.centerRight,
-              colors: _selected != null
-                ? [R.color.greenGradientTop, R.color.greenGradientBottom]
-                : [R.color.grey, R.color.gray_1],
-            ),
-          ),
-          child: Center(
-            child: Text(
-              R.string.tiep_tuc.tr(),
+            const SizedBox(height: 16),
+            Text(
+              R.string.chup_anh.tr(),
               style: TextStyle(
-                color: R.color.white,
-                fontWeight: FontWeight.w600,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
-          ),
+            const SizedBox(height: 32),
+            GestureDetector(
+              onTap: _pickFromGallery,
+              child: const CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.grey,
+                child: Icon(Icons.photo, color: Colors.white, size: 30),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'T\u1EA3i \u1EA3nh l\u00EAn',
+              style: TextStyle(color: Colors.black),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  Future<void> _captureFromCamera() async {
-    await _picker.pickImage(source: ImageSource.camera);
-    _loadPhotos();
   }
 }

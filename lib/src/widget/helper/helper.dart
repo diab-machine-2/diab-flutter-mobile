@@ -3,10 +3,14 @@ import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 
 String convertToUTC(int timeStamp, String format) {
-  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000, isUtc: true);
+  // NOTE: Despite the name 'convertToUTC', this function is used extensively
+  // across the UI to display the user's local time. Removing `isUtc: true`
+  // ensures standard Unix epochs are formatted in the user's local timezone.
+  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   String formattedDate = DateFormat(format).format(date);
   return formattedDate;
 }
@@ -178,6 +182,22 @@ String roundNumber1(double number) {
 double roundAsFixed(double number, {int digits = 1}) {
   final data = number.toStringAsFixed(digits);
   return double.parse(data);
+}
+
+double calibrateDeviceGlucose(double rawMgDl) {
+  // Only apply calibration if the app is in mmol/L mode.
+  // 1 = mg/dL, 2 = mmol/L (usually)
+  if (AppSettings.userInfo?.glucoseUnit == 1) {
+    return rawMgDl; // No calibration needed for mg/dL
+  }
+  
+  // Simulate meter's LCD rounding to 1 decimal place
+  // e.g. 115 / 18.018 = 6.38 -> rounds to 6.4
+  double meterDisplayMmol = (rawMgDl / 18.018 * 10).roundToDouble() / 10;
+  
+  // Convert back to canonical mg/dL that the app expects for 6.3
+  // e.g. 6.3 * 18.018 = 113.51 -> rounds to 114
+  return (meterDisplayMmol * 18.018).roundToDouble();
 }
 
 double customRound(double number) {

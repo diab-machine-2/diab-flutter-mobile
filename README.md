@@ -66,6 +66,7 @@ To set up the Zoom Meeting SDK in this project:
    ```
    /Users/<Tên_User>/.pub-cache/git/flutter_zoom_meeting_sdk-<hash>/ios
    ```
+***Important***: When appears is "MobileRTC not found" in iOS. In XCode, select Pods profile -> on the left bar, select package "flutter_zoom_meeting" -> Then in Frameworks and Library -> add reference MobileRTC.framework with Embed "Do no embed".
 
 **Note**: After running `pub get`, you must run the setup script to get Zoom SDK for the first time. Make sure the native SDK files match the versions specified above (Android: v6.3.10.27979, iOS: v6.3.10.22850).
 
