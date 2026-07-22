@@ -446,10 +446,6 @@ class _LoginControllerState extends State<LoginController> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
-                        text: phone,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    TextSpan(
                         text: R.string.dang_ky_lai_hom_sau.tr(),
                         style:
                             TextStyle(color: R.color.textDark, fontSize: 16)),

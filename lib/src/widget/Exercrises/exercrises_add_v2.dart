@@ -947,9 +947,11 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           Message.showToastMessage(
               context, R.string.add_exercise_successfully.tr());
 
-          await HomeClient().completeSmartGoal(selectedDate!,
-              widget.goalId ?? '', 1, ScheduleType.exercise.typeIndex);
-              
+          if (widget.goalId != null) {
+            await HomeClient().completeSmartGoal(selectedDate!,
+                widget.goalId ?? '', 1, ScheduleType.exercise.typeIndex);
+          }
+
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data_v2");
 

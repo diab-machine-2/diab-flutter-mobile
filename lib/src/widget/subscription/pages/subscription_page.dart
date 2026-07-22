@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart' as cs;
@@ -9,20 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
-import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
-import 'package:medical/src/widget/subscription/subscription_payment_state.dart';
 import 'package:medical/src/widget/subscription/subscription_state.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class SubscriptionPage extends StatefulWidget {
@@ -35,12 +28,6 @@ class SubscriptionPage extends StatefulWidget {
 class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
   late SubscriptionCubit _cubit;
   int _currentCarouselIndex = 0;
-  // CarouselController removed in carousel_slider 5.0.0 - carousel navigation handled via onPageChanged
-
-  // Subscription state
-  CustomerInfo? customerInfo;
-  String packageTitle = '';
-  SubscriptionPaymentState? subscriptionState;
 
   // Fallback carousel data in case API fails
   final List<Map<String, dynamic>> _fallbackCarouselItems = [
@@ -66,259 +53,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
     super.initState();
     Observable.instance.addObserver(this);
     try {
-      // Try to get the cubit from context
       _cubit = context.read<SubscriptionCubit>();
-      // Check if we need to load data
       if (_cubit.state is SubscriptionInitial || !_cubit.isBannersLoaded) {
         _cubit.checkSubscriptionStatus();
       }
     } catch (e) {
-      // If reading from context fails, create a new cubit
       print('Error accessing SubscriptionCubit: $e');
       _cubit = SubscriptionCubit(AppRepository());
       _cubit.checkSubscriptionStatus();
     }
-
-    initSubscriptionState();
-  }
-
-  void initSubscriptionState() async {
-    final accountId = AppSettings.userInfo?.accountId ?? '';
-    if (accountId.isEmpty) {
-      return;
-    }
-
-    try {
-      // Login to RevenueCat with the user's accountId
-      log('[SUBSCRIPTION] revenueCate login accountId: $accountId');
-      await RevenueCatService.login(accountId);
-
-      // Get the latest customer info
-      customerInfo = await RevenueCatService.getCustomerInfo();
-      log('[SUBSCRIPTION] customerInfo: $customerInfo');
-
-      // Check subscription state
-      subscriptionState = await checkSubscriptionPaymentState();
-
-      // Update UI with current subscription info
-      final offering = await RevenueCatService.getCurrentOffering();
-      if (offering != null) {
-        packageTitle = await getActiveSubscriptionDescription();
-        if (mounted) setState(() {});
-      }
-
-      log('[SUBSCRIPTION] customerInfo activeSubscriptions: ${customerInfo?.activeSubscriptions}');
-      log('[SUBSCRIPTION] customerInfo entitlements: ${customerInfo?.entitlements}');
-      log('[SUBSCRIPTION] subscriptionState: ${subscriptionState?.expirationDate?.toLocal()}');
-
-      // Set up a listener for subscription changes
-      Purchases.addCustomerInfoUpdateListener((info) {
-        if (mounted) {
-          setState(() {
-            customerInfo = info;
-            _updateSubscriptionStatus();
-          });
-        }
-      });
-    } catch (e) {
-      print("RevenueCat login error: $e");
-    }
-  }
-
-  void _updateSubscriptionStatus() async {
-    try {
-      // Update subscription state
-      subscriptionState = await checkSubscriptionPaymentState();
-
-      final offering = await RevenueCatService.getCurrentOffering();
-      if (offering != null) {
-        packageTitle = await getActiveSubscriptionDescription();
-        if (mounted) setState(() {});
-      }
-    } catch (e) {
-      print("Error updating subscription status: $e");
-    }
-  }
-
-  void refreshSubscriptionStatus() async {
-    try {
-      await Purchases.syncPurchases();
-      customerInfo = await RevenueCatService.getCustomerInfo();
-      subscriptionState = await checkSubscriptionPaymentState();
-      if (mounted)
-        setState(() {
-          _updateSubscriptionStatus();
-        });
-    } catch (e) {
-      print("Error refreshing subscription: $e");
-    }
-  }
-
-  Future<SubscriptionPaymentState> checkSubscriptionPaymentState() async {
-    // Get updated customer info
-    final customerInfo = await RevenueCatService.getCustomerInfo();
-
-    if (customerInfo == null) return SubscriptionPaymentState.none();
-
-    // Check for active entitlements
-    if (customerInfo.isActivelySubscribed) {
-      // Check each active entitlement
-      for (final entitlementId in customerInfo.entitlements.active.keys) {
-        final entitlement = customerInfo.entitlements.active[entitlementId]!;
-
-        // If this is cancelled but still active
-        if (entitlement.isActive && !entitlement.willRenew) {
-          return SubscriptionPaymentState.activeCancelled(
-              entitlementId: entitlementId,
-              expirationDate: DateTime.parse(entitlement.expirationDate!),
-              productId: entitlement.productIdentifier);
-        }
-
-        // If this is active and will renew
-        if (entitlement.isActive && entitlement.willRenew) {
-          return SubscriptionPaymentState.activeRenewing(
-              entitlementId: entitlementId,
-              expirationDate: DateTime.parse(entitlement.expirationDate!),
-              productId: entitlement.productIdentifier);
-        }
-      }
-      log('[SUBSCRIPTION] customerInfo.allPurchasedProductIdentifiers: ${customerInfo.allPurchasedProductIdentifiers}');
-      // log expiration date
-      log('[SUBSCRIPTION] customerInfo.allExpirationDates: ${customerInfo.allExpirationDates}');
-      if (customerInfo.purchasedProductIdentifier != null) {
-        return SubscriptionPaymentState.active(
-          entitlementId: '-',
-          expirationDate: DateTime.now().add(Duration(days: 180)),
-          productId: customerInfo.purchasedProductIdentifier!,
-        );
-      }
-    }
-
-    // No active subscriptions
-    return SubscriptionPaymentState.none();
-  }
-
-  Future<String> getActiveSubscriptionDescription() async {
-    final offering = await RevenueCatService.getCurrentOffering();
-
-    // Get active entitlements
-    final activeEntitlements =
-        customerInfo?.entitlements.active.values.toList() ?? [];
-
-    for (var entitlement in activeEntitlements) {
-      // Create identifier in format "productIdentifier:productPlanIdentifier"
-      final identifier =
-          "${entitlement.productIdentifier}:${entitlement.productPlanIdentifier}";
-
-      // Find matching package in offerings
-      final package = offering?.availablePackages.firstWhereOrNull(
-        (package) => package.storeProduct.identifier == identifier,
-      );
-
-      if (package != null) {
-        return package.storeProduct.title;
-      }
-    }
-    if (customerInfo?.allPurchasedProductIdentifiers.isNotEmpty ?? false) {
-      final productId = customerInfo?.allPurchasedProductIdentifiers.first;
-      final package = offering?.availablePackages.firstWhereOrNull(
-        (package) => package.storeProduct.identifier == productId,
-      );
-      if (package != null) {
-        return package.storeProduct.title;
-      }
-    }
-    if (customerInfo?.allPurchasedProductIdentifiers.isNotEmpty ?? false) {
-      final productId = customerInfo?.allPurchasedProductIdentifiers.first;
-      final package = offering?.availablePackages.firstWhereOrNull(
-        (package) => package.storeProduct.identifier == productId,
-      );
-      if (package != null) {
-        return package.storeProduct.title;
-      }
-    }
-    return '';
-  }
-
-  Widget _buildSubscriptionStatusWidget() {
-    if (subscriptionState == null) {
-      return SizedBox.shrink();
-    }
-
-    if (subscriptionState!.isActive && !subscriptionState!.willRenew) {
-      return Container(
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.amber.shade100,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Your subscription is ending soon",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 4),
-            Text(
-              "Access until: ${DateFormat('yyyy-MM-dd, HH:mm').format(subscriptionState!.expirationDate!.toLocal())}",
-              style: TextStyle(fontSize: 12),
-            ),
-            SizedBox(height: 8),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PaywallScreen()),
-                );
-              },
-              child: Text(
-                "Renew now",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (subscriptionState!.isActive && subscriptionState!.willRenew) {
-      return Container(
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.green.shade50,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Active subscription",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade800,
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              packageTitle,
-              style: TextStyle(fontSize: 14),
-            ),
-            Text(
-              "Renews: ${DateFormat('yyyy-MM-dd').format(subscriptionState!.expirationDate!.toLocal())}",
-              style: TextStyle(fontSize: 12),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return SizedBox.shrink();
   }
 
   @override
@@ -333,7 +76,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'refresh_subscription') {
       _cubit.checkSubscriptionStatus();
-      refreshSubscriptionStatus();
     }
 
     if (notifyName == 'auto_trigger_paywall') {
@@ -397,8 +139,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
     final screenSize = MediaQuery.of(context).size;
     final isSmallScreen =
         screenSize.height < 650; // Adjust for Galaxy A5 and similar
-    final isMobile = screenSize.width < Const.TABLET_BREAKPOINT;
-
     // Bottom button height + padding + bottom navigation padding
     final bottomButtonAreaHeight =
         48 + 16 + 24; // button height + margins + bottom nav spacing
