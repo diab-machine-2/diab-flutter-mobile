@@ -684,18 +684,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final systolic = model?.bloodPressureIndex.systolic;
     final diastolic = model?.bloodPressureIndex.diastolic;
 
-    final isDefaultValue = (systolic != null && diastolic != null) &&
-        ((systolic == 120.0 || systolic == 120) &&
-            (diastolic == 90.0 || diastolic == 90));
+    // final isDefaultValue = (systolic != null && diastolic != null) &&
+    //     ((systolic == 120.0 || systolic == 120) &&
+    //         (diastolic == 90.0 || diastolic == 90));
 
-    print('  isDefaultValue: $isDefaultValue');
+    // print('  isDefaultValue: $isDefaultValue');
 
     final haveBloodPressure = systolic != null &&
         systolic > 0 &&
         diastolic != null &&
         diastolic > 0 &&
-        hasValidDateTime &&
-        !isDefaultValue;
+        hasValidDateTime 
+        // &&
+        // !isDefaultValue
+        ;
 
     print('  haveBloodPressure: $haveBloodPressure');
     final bloodPressure = HomeMeasurementData(

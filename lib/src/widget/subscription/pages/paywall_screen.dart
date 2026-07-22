@@ -11,7 +11,6 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_detail_page.dart';
 import 'package:medical/src/widget/subscription/pages/welcome_program_page.dart';
-import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
@@ -20,7 +19,6 @@ import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widget/subscription/widgets/package_detail_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_list_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PaywallScreen extends StatefulWidget {
   final bool autoTriggerBasicBottomSheet;
@@ -33,7 +31,6 @@ class PaywallScreen extends StatefulWidget {
 
 class _PaywallScreenState extends State<PaywallScreen> {
   List<SubscriptionPackage> _localPackages = [];
-  List<Package> _revenueCatPackages = [];
   bool _isLoading = true;
   int _selectedPackageIndex = 0;
   String _currentRoute = '/';
@@ -55,26 +52,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
     super.dispose();
   }
 
-  void _triggerBasicBottomSheet() {
-    int basicIndex = _localPackages.indexWhere((p) => p.id == 'co_ban');
-    if (basicIndex == -1) return;
-    setState(() {
-      _selectedPackageIndex = basicIndex;
-    });
-    final package = _localPackages[_selectedPackageIndex];
-    _cubit.setSelectedPackage(package);
-    SubscriptionTracking.programServiceRegister(
-      screenName: 'program_service',
-      objectTitle: package.title,
-    );
-    if (package.id == 'co_ban' && _revenueCatPackages.isNotEmpty) {
-      SubscriptionService.showSubscriptionOptionsSheet(context, package);
-    } else {
-      SubscriptionNavigationMixin.navigationKey.currentState
-          ?.pushNamed(NavigatorName.package_program_list);
-    }
-  }
-
   Future<void> _loadPackages() async {
     try {
       // Try to load from Firebase Remote Config first, fallback to local packages
@@ -94,14 +71,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
         localPackages = await SubscriptionService.getLocalPackages();
       }
 
-      _revenueCatPackages = await RevenueCatService.getOfferings();
-
       setState(() {
         _localPackages = localPackages;
         _isLoading = false;
         if (_autoTriggerBasicBottomSheet) {
           _autoTriggerBasicBottomSheet = false;
-          _triggerBasicBottomSheet();
+          _navigateToProgramList();
         }
       });
 
@@ -117,9 +92,18 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
   }
 
-  void _showPackageDetails(SubscriptionPackage package) {
-    // Find matching RevenueCat package if available and it's the "cơ bản" package
+  void _navigateToProgramList() {
+    final package = _localPackages[_selectedPackageIndex];
+    _cubit.setSelectedPackage(package);
+    SubscriptionTracking.programServiceRegister(
+      screenName: 'program_service',
+      objectTitle: package.title,
+    );
+    SubscriptionNavigationMixin.navigationKey.currentState
+        ?.pushNamed(NavigatorName.package_program_list);
+  }
 
+  void _showPackageDetails(SubscriptionPackage package) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -134,17 +118,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
               screenName: 'program_service',
               objectTitle: _localPackages[_selectedPackageIndex].title);
 
-          if (_localPackages[_selectedPackageIndex].id == 'co_ban' &&
-              _revenueCatPackages.isNotEmpty) {
-            // Show subscription options sheet only for "cơ bản" package
-            SubscriptionService.showSubscriptionOptionsSheet(context, package);
-
-            return;
-          } else {
-            // Navigate to package program list using the SubscriptionNavigationMixin for other packages
-            SubscriptionNavigationMixin.navigationKey.currentState
-                ?.pushNamed(NavigatorName.package_program_list);
-          }
+          // Navigate to package program list
+          SubscriptionNavigationMixin.navigationKey.currentState
+              ?.pushNamed(NavigatorName.package_program_list);
         },
       ),
     );
@@ -531,18 +507,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 screenName: 'program_service',
                 objectTitle: _localPackages[_selectedPackageIndex].title);
 
-            if (_localPackages[_selectedPackageIndex].id == 'co_ban' &&
-                _revenueCatPackages.isNotEmpty) {
-              // Show subscription options sheet only for "cơ bản" package
-              SubscriptionService.showSubscriptionOptionsSheet(
-                  context, package);
-
-              return;
-            } else {
-              // Navigate to package program list using the SubscriptionNavigationMixin for other packages
-              SubscriptionNavigationMixin.navigationKey.currentState
-                  ?.pushNamed(NavigatorName.package_program_list);
-            }
+            // Navigate to package program list
+            SubscriptionNavigationMixin.navigationKey.currentState
+                ?.pushNamed(NavigatorName.package_program_list);
           },
           child: Container(
             margin: EdgeInsets.fromLTRB(16, 0, 16, 24),
