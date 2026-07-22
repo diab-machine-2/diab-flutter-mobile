@@ -11,7 +11,6 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/congratulation/congratulation.dart';
 import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/payment_package/payment_package_page.dart';
 import 'package:medical/src/widget/register_package/register_package_page.dart';
 import 'package:medical/src/widgets/avatar_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -193,12 +192,9 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                               if (widget.code == 'Const.PRO') {
                                 NavigationUtil.navigatePage(
                                     context,
-                                    PaymentPackagePage(
-                                      packageName:
-                                          data?.name ?? R.string.diab_pro.tr(),
-                                      packageCode: data?.code ?? 'Const.PRO',
-                                      price: data!.prices![index],
-                                      isBuyDirect: widget.isBuyDirect,
+                                    RegisterPackagePage(
+                                      code: data?.code ?? 'Const.PRO',
+                                      priceData: data!.prices![index],
                                     ));
                               } else {
                                 if (Utils.isEmpty(_cubit.ownCode)) {

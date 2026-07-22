@@ -89,7 +89,7 @@ dependencies:
   #avatars
   avatars: 3.0.2
   cached_network_image: 3.3.1
-  flutter_inapp_purchase: 5.6.1
+  # flutter_inapp_purchase: 5.6.1 (removed - billing code eliminated)
   #video player
   # better_player: 0.0.83
   # better_player:
@@ -140,8 +140,8 @@ dependencies:
 
   flutter_in_app_pip: 1.7.3
   carp_serializable: 1.2.0
-  purchases_flutter: 8.11.0
-  purchases_ui_flutter: 8.11.0
+  # purchases_flutter: 8.11.0 (removed - billing code eliminated)
+  # purchases_ui_flutter: 8.11.0 (removed - billing code eliminated)
   youtube_explode_dart: 3.0.0
   saver_gallery: 3.0.6
 
