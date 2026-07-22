@@ -13,7 +13,12 @@ import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'benefit_introduce_bundle_cubit.dart';
 
 class BenefitIntroduceBundlePage extends StatefulWidget {
-  const BenefitIntroduceBundlePage({Key? key}) : super(key: key);
+  final bool hideBackButton;
+  
+  const BenefitIntroduceBundlePage({
+    Key? key,
+    this.hideBackButton = false,
+  }) : super(key: key);
 
   @override
   _BenefitIntroduceBundlePageState createState() =>
@@ -102,12 +107,14 @@ class _BenefitIntroduceBundlePageState
           color: R.color.color0xFF1F2937,
         ),
       ),
-      leadingIcon: IconButton(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        icon: Icon(Icons.arrow_back, color: R.color.color0xFF1F2937),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
+      leadingIcon: widget.hideBackButton
+          ? const SizedBox.shrink()
+          : IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              icon: Icon(Icons.arrow_back, color: R.color.color0xFF1F2937),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
       actions: [
         IconButton(
           splashColor: Colors.transparent,

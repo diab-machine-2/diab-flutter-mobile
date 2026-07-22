@@ -20,7 +20,10 @@ class HomeBenefitSection extends StatelessWidget {
   }
 
   void _onTapViewAll(BuildContext context) {
-    // Handle later
+    Navigator.pushNamed(
+      context,
+      NavigatorName.benefit_introduce_bundle,
+    );
   }
 
   void _onTapBenefitCalendar(BuildContext context) {

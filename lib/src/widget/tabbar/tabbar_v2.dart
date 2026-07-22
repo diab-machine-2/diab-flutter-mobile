@@ -45,6 +45,7 @@ import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_sur
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:medical/src/widget/benefit/benefit_introduce_bundle_page.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -290,7 +291,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     } else if (activityId != null) {
       _jumpTo(TabBarType.program.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
-      
+
       SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
       await Future.delayed(Duration(milliseconds: 500));
       NavigationUtil.navigatePage(navigatorKey.currentState!.context,
@@ -399,6 +400,18 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
       // _jumpTo(TabBarType.home.index);
       // _bottomTabbarKey.currentState?.setPage(TabBarType.home.index);
+    }
+
+    if (notifyName == Const.UPDATE_HAS_BUNDLE) {
+      setState(() {
+        tabs = [
+          HomeController(sharedCode: widget.sharedCode),
+          _buildProgramTab(),
+          MyPlanPage(index: 0),
+          Conversations(),
+          _buildStoreTab(),
+        ];
+      });
     }
 
     if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
@@ -526,7 +539,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     print('[ACTIVE] userPackageType: ${AppSettings.userInfo?.packageType}');
     print('[ACTIVE] ownPackage: ${AppSettings.userInfo?.ownPackage}');
     print('[ACTIVE] isOwnPackage: ${AppSettings.isOwnPackage}');
+    print('[ACTIVE] hasBundle: ${AppSettings.hasBundle}');
     if (AppSettings.userInfo?.packageType == PackageType.free) {
+      if (AppSettings.hasBundle == true) {
+        return const BenefitIntroduceBundlePage(hideBackButton: true);
+      }
       return MultiBlocProvider(
         providers: [
           BlocProvider<MyPlanCubit>(
