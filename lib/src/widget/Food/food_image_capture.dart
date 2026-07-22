@@ -1,19 +1,22 @@
 import 'dart:io';
 import 'dart:developer' as developer;
+import 'dart:typed_data';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/Food/food_gallery_picker.dart';
 import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:path/path.dart' as p;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,7 +36,6 @@ class FoodImageCapture extends StatefulWidget {
 class _FoodImageCaptureState extends State<FoodImageCapture>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   final String _refImagePathKey = 'last_captured_food_image';
-  final String _galleryPermissionRequestedKey = 'gallery_permission_requested';
   CameraController? _controller;
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
@@ -45,6 +47,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   bool _showFlashEffect = false;
   bool _requestingPermission = false;
   bool _isAnalyzing = false;
+  bool _isCapturing = false;
 
   @override
   void initState() {
@@ -115,7 +118,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     try {
       _requestingPermission = true;
 
-      // Request camera permission first
+      // Request camera permission
       final cameraStatus = await Permission.camera.request();
       developer.log(
           '[PERMISSION] Camera permission status: ${cameraStatus.name}, isGranted: ${cameraStatus.isGranted}',
@@ -124,42 +127,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         _requestingPermission = false;
         _showErrorDialog('Camera permission is required to take photos');
         return;
-      }
-
-      // Check if gallery permission is already granted (including limited access)
-      // before attempting to request. On Android 16, the limited access grant
-      // in compatibility mode is temporary — it can expire when the app goes
-      // to background and comes back. In that case, calling
-      // Permission.photos.request() would re-trigger the system photo picker
-      // dialog, even though the user already completed this flow once.
-      //
-      // To avoid re-showing the dialog on every visit, we:
-      //   1. Check if permission is already granted via the OS status API.
-      //   2. If not granted, check a SharedPreferences flag to see if the user
-      //      has ALREADY gone through this permission flow before.
-      //   3. Only call _requestGalleryPermission() if both OS status AND the
-      //      flag indicate it has never been requested.
-      final prefs = await SharedPreferences.getInstance();
-      final bool alreadyRequested =
-          prefs.getBool(_galleryPermissionRequestedKey) ?? false;
-      final bool alreadyGranted = await _checkGalleryPermission();
-
-      developer.log(
-          '[PERMISSION] Gallery already granted: $alreadyGranted, already requested: $alreadyRequested',
-          name: '[PERMISSION]');
-
-      if (!alreadyGranted && !alreadyRequested) {
-        // First time: request gallery permission (shows system photo picker)
-        final galleryGranted = await _requestGalleryPermission();
-        developer.log(
-            '[PERMISSION] Gallery permission result after request: $galleryGranted',
-            name: '[PERMISSION]');
-        // Mark that the user has completed this flow, so we never auto-prompt again
-        await prefs.setBool(_galleryPermissionRequestedKey, true);
-      } else {
-        developer.log(
-            '[PERMISSION] Skipping gallery permission request (alreadyGranted=$alreadyGranted, alreadyRequested=$alreadyRequested)',
-            name: '[PERMISSION]');
       }
 
       _requestingPermission = false;
@@ -287,10 +254,13 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   Future<void> _captureImage() async {
     if (_controller?.value == null ||
         !_controller!.value.isInitialized ||
-        _controller!.value.isStreamingImages ||
+        _isCapturing ||
+        _isAnalyzing ||
+        _controller!.value.isTakingPicture ||
         !_isInitialized) return;
 
     try {
+      _isCapturing = true;
       final XFile file = await _controller!.takePicture();
       final imageFile = File(file.path);
 
@@ -306,23 +276,18 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       // Haptic feedback
       HapticFeedback.mediumImpact();
 
-      // Small delay to let MediaStore index the newly saved image before
-      // querying for its asset ID, ensuring _getMostRecentImageAssetId()
-      // returns the just-captured photo.
-      await Future.delayed(const Duration(milliseconds: 300));
+      // Convert captured image to 480x480 JPEG for API processing
+      final String convertedPath = await _convertToJpeg480x480(imageFile.path);
 
-      // Navigate to FoodGalleryPicker with the captured image's path and
-      // most recent asset ID for reliable auto-selection. The file path alone
-      // cannot be used for matching because the camera cache path differs from
-      // the gallery path after SaverGallery.saveImage().
-      final String? recentAssetId = await _getMostRecentImageAssetId();
-      await _openGalleryPicker(
-        initialFilePath: imageFile.path,
-        initialAssetId: recentAssetId,
-      );
+      // Directly process the captured image
+      await _processSelectedImages([convertedPath]);
     } catch (e) {
       if (mounted) {
-        _showErrorDialog('Lỗi khi chụp ảnh: $e');
+        await _showErrorDialog('Lỗi khi chụp ảnh: $e');
+      }
+    } finally {
+      if (mounted && !_disposed) {
+        _isCapturing = false;
       }
     }
   }
@@ -356,19 +321,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Future<void> _saveToPhotoAlbum(File imageFile) async {
     try {
-      // Check current permission state without re-requesting (which could
-      // trigger the system photo picker on Android 16). On API 29+ the
-      // MediaStore insert used by SaverGallery.saveImage() does not require
-      // READ_MEDIA_IMAGES, but the plugin may internally check for it.
-      final bool hasGalleryAccess = await _checkGalleryPermission();
-      developer.log(
-          '[PERMISSION] _saveToPhotoAlbum: hasGalleryAccess=$hasGalleryAccess',
-          name: '[PERMISSION]');
-      if (!hasGalleryAccess) {
-        developer.log(
-            '[PERMISSION] _saveToPhotoAlbum: gallery permission not granted, attempting save anyway',
-            name: '[PERMISSION]');
-      }
+      // SaverGallery.saveImage() uses MediaStore insert on API 29+ which
+      // does not require READ_MEDIA_IMAGES permission.
 
       // Read image as bytes
       final Uint8List imageBytes = await imageFile.readAsBytes();
@@ -435,8 +389,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
+  Future<void> _showErrorDialog(String message) async {
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -446,7 +400,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
             TextButton(
               child: Text(R.string.close.tr()),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pop(context);
               },
             ),
@@ -791,16 +744,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Widget _buildCaptureButton() {
-    return GestureDetector(
-      onTap: _isInitialized ? _captureImage : null,
-      child: Container(
-        width: 68,
-        height: 68,
-        child: Image.asset(
-          R.drawable.im_food_capture,
+    return AbsorbPointer(
+      absorbing: !_isInitialized || _isCapturing || _isAnalyzing,
+      child: GestureDetector(
+        onTap: _isInitialized ? _captureImage : null,
+        child: Container(
           width: 68,
           height: 68,
-          fit: BoxFit.contain,
+          child: Image.asset(
+            R.drawable.im_food_capture,
+            width: 68,
+            height: 68,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
@@ -908,13 +864,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Future<void> _loadLastCapturedImage() async {
     try {
-      // Check gallery permissions first
-      bool hasPermission = await _checkGalleryPermission();
-      if (!hasPermission) {
-        print('Gallery permission not granted');
-        return;
-      }
-
       // Load the last captured image path from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final lastImagePath = prefs.getString(_refImagePathKey);
@@ -945,110 +894,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Future<bool> _checkGalleryPermission() async {
-    try {
-      PermissionStatus status;
-
-      if (Platform.isAndroid) {
-        // For Android 13+ (API 33), check photos permission first
-        status = await Permission.photos.status;
-        developer.log(
-            '[PERMISSION] _checkGalleryPermission Android photos.status: ${status.name}, isGranted: ${status.isGranted}, isLimited: ${status.isLimited}',
-            name: '[PERMISSION]');
-        if (!status.isGranted) {
-          // Fallback to storage permission for older Android versions
-          status = await Permission.storage.status;
-          developer.log(
-              '[PERMISSION] _checkGalleryPermission Android storage.status (fallback): ${status.name}, isGranted: ${status.isGranted}',
-              name: '[PERMISSION]');
-        }
-      } else if (Platform.isIOS) {
-        // For iOS, check photos permission
-        status = await Permission.photos.status;
-        developer.log(
-            '[PERMISSION] _checkGalleryPermission iOS photos.status: ${status.name}, isGranted: ${status.isGranted}',
-            name: '[PERMISSION]');
-      } else {
-        return false;
-      }
-
-      return status.isGranted;
-    } catch (e) {
-      developer.log(
-          '[PERMISSION] Error checking gallery permission: $e',
-          name: '[PERMISSION]');
-      return false;
-    }
-  }
-
-  Future<bool> _requestGalleryPermission() async {
-    try {
-      PermissionStatus status;
-
-      if (Platform.isAndroid) {
-        // For Android 13+ (API 33), use photos permission instead of storage
-        status = await Permission.photos.status;
-        developer.log(
-            '[PERMISSION] _requestGalleryPermission Android photos.status (before request): ${status.name}, isGranted: ${status.isGranted}, isLimited: ${status.isLimited}',
-            name: '[PERMISSION]');
-        if (!status.isGranted) {
-          status = await Permission.photos.request();
-          developer.log(
-              '[PERMISSION] _requestGalleryPermission Android photos.request() result: ${status.name}, isGranted: ${status.isGranted}, isLimited: ${status.isLimited}',
-              name: '[PERMISSION]');
-        }
-
-        // Fallback to storage permission for older Android versions
-        if (!status.isGranted) {
-          status = await Permission.storage.request();
-          developer.log(
-              '[PERMISSION] _requestGalleryPermission Android storage.request() fallback result: ${status.name}, isGranted: ${status.isGranted}',
-              name: '[PERMISSION]');
-        }
-      } else if (Platform.isIOS) {
-        // For iOS, request photos permission which is required for saving to Photos
-        status = await Permission.photos.status;
-        developer.log(
-            '[PERMISSION] _requestGalleryPermission iOS photos.status (before request): ${status.name}, isGranted: ${status.isGranted}',
-            name: '[PERMISSION]');
-        if (!status.isGranted) {
-          status = await Permission.photos.request();
-          developer.log(
-              '[PERMISSION] _requestGalleryPermission iOS photos.request() result: ${status.name}, isGranted: ${status.isGranted}',
-              name: '[PERMISSION]');
-        }
-
-        // Also check photoLibrary permission as a fallback
-        if (!status.isGranted) {
-          final photoLibraryStatus = await Permission.photosAddOnly.status;
-          developer.log(
-              '[PERMISSION] _requestGalleryPermission iOS photosAddOnly.status: ${photoLibraryStatus.name}, isGranted: ${photoLibraryStatus.isGranted}',
-              name: '[PERMISSION]');
-          if (!photoLibraryStatus.isGranted) {
-            status = await Permission.photosAddOnly.request();
-            developer.log(
-                '[PERMISSION] _requestGalleryPermission iOS photosAddOnly.request() result: ${status.name}, isGranted: ${status.isGranted}',
-                name: '[PERMISSION]');
-          } else {
-            status = photoLibraryStatus;
-          }
-        }
-      } else {
-        return false;
-      }
-
-      developer.log(
-          '[PERMISSION] _requestGalleryPermission final status: ${status.name}, isGranted: ${status.isGranted}',
-          name: '[PERMISSION]');
-      return status.isGranted;
-    } catch (e) {
-      developer.log(
-          '[PERMISSION] Error requesting gallery permission: $e',
-          name: '[PERMISSION]');
-      return false;
-    }
-  }
-
   Future<void> _saveImagePathToPreferences(String imagePath) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -1058,79 +903,114 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Future<String?> _getMostRecentImageAssetId() async {
+  /// Opens the system photo picker to select an image from the gallery.
+  /// Uses ImagePicker which delegates to the OS photo picker and does NOT
+  /// require READ_MEDIA_IMAGES permission.
+  Future<void> _openGalleryPicker() async {
     try {
-      final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
-        type: RequestType.image,
-        onlyAll: true,
-      );
-      if (albums.isEmpty) return null;
-      final AssetPathEntity recent = albums.first;
-      final List<AssetEntity> assets =
-          await recent.getAssetListPaged(page: 0, size: 1);
-      if (assets.isEmpty) return null;
-      return assets.first.id;
-    } catch (e) {
-      developer.log(
-          '[PERMISSION] Error fetching most recent image asset id: $e',
-          name: '[PERMISSION]');
-      return null;
-    }
-  }
-
-  Future<void> _openGalleryPicker(
-      {String? initialFilePath, String? initialAssetId}) async {
-    try {
-      // Safely dispose camera with proper error handling
-      await _safeDisposeCamera();
-
-      // Navigate to FoodGalleryPicker with skipPermissionRequest=true.
-      // Permission was already granted in _requestAllPermissions(), so
-      // telling FoodGalleryPicker to skip its own permission request avoids
-      // re-triggering the system photo picker on Android 16 (compatibility mode).
-      final List<String>? selectedImages = await Navigator.push<List<String>>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FoodGalleryPicker(
-            timeframe: widget.timeframe,
-            timeframeId: widget.timeframeId,
-            initialSelectedFilePath: initialFilePath,
-            initialSelectedAssetId: initialAssetId,
-            skipPermissionRequest: true,
-          ),
-        ),
+      final ImagePicker picker = ImagePicker();
+      final XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        imageQuality: 85,
       );
 
-      if (selectedImages != null && selectedImages.isNotEmpty) {
+      if (pickedFile != null) {
         developer.log(
-            '[CAPTURE] FoodImageCapture received filePaths count: ' +
-                selectedImages.length.toString() +
-                ', paths: ' +
-                selectedImages.join(', '),
+            '[CAPTURE] Image picked from gallery: ${pickedFile.path}',
             name: '[CAPTURE]');
-        // Process selected images
-        await _processSelectedImages(selectedImages);
+
+        // Convert to 480x480 JPEG for API processing
+        final String convertedPath = await _convertToJpeg480x480(pickedFile.path);
+
+        // Process the selected image
+        await _processSelectedImages([convertedPath]);
       } else {
-        // Restart camera if no images selected - wait a bit for proper state
         developer.log(
-            '[CAPTURE] No images selected, restarting camera',
+            '[CAPTURE] No image selected from gallery',
             name: '[CAPTURE]');
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted && !_disposed) {
-            _initializeCamera();
-          }
-        });
       }
     } catch (e) {
       developer.log(
-          '[CAPTURE] Error opening gallery picker: $e',
+          '[CAPTURE] Error picking image from gallery: $e',
           name: '[CAPTURE]');
-      // Restart camera on error - wait a bit for proper state
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted && !_disposed) {
-          _initializeCamera();
-        }
-      });
+      if (mounted) {
+        _showErrorDialog('Lỗi khi chọn ảnh: $e');
+      }
+    }
+  }
+
+  /// Convert image to 480x480 JPEG, auto-cropping to center square.
+  /// This is especially important on iOS where HEIC / HEIF / Live formats
+  /// can cause downstream decoding issues.
+  Future<String> _convertToJpeg480x480(String originalPath) async {
+    try {
+      final File originalFile = File(originalPath);
+      if (!await originalFile.exists()) {
+        return originalPath;
+      }
+
+      // Step 1: Use platform codecs (flutter_image_compress) to ensure
+      // HEIC/HEIF/LIVE inputs become JPEG bytes.
+      final Uint8List? compressedBytes =
+          await FlutterImageCompress.compressWithFile(
+        originalPath,
+        minWidth: 800,
+        minHeight: 800,
+        quality: 85,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedBytes == null || compressedBytes.isEmpty) {
+        return originalPath;
+      }
+
+      // Step 2: Decode JPEG bytes with `image` package and center-crop to square,
+      // then resize to exactly 480x480.
+      final img.Image? decoded = img.decodeImage(compressedBytes);
+      if (decoded == null) {
+        return originalPath;
+      }
+
+      final int cropSize =
+          decoded.width < decoded.height ? decoded.width : decoded.height;
+      final int offsetX = (decoded.width - cropSize) ~/ 2;
+      final int offsetY = (decoded.height - cropSize) ~/ 2;
+
+      final img.Image cropped = img.copyCrop(
+        decoded,
+        x: offsetX,
+        y: offsetY,
+        width: cropSize,
+        height: cropSize,
+      );
+
+      final img.Image resized =
+          img.copyResize(cropped, width: 480, height: 480);
+
+      final List<int> jpegBytes = img.encodeJpg(resized, quality: 85);
+
+      final Directory tempDir = Directory.systemTemp;
+      final int timestamp = DateTime.now().millisecondsSinceEpoch;
+      final String baseName = p.basenameWithoutExtension(originalPath);
+      final String fileName =
+          'DiaB_Food_${timestamp}_${baseName.isEmpty ? "image" : baseName}.jpg';
+      final File outFile = File(p.join(tempDir.path, fileName));
+      await outFile.writeAsBytes(jpegBytes, flush: true);
+
+      developer.log(
+        '[CAPTURE] Converted image to JPEG 480x480: ${outFile.path}',
+        name: '[CAPTURE]',
+      );
+
+      return outFile.path;
+    } catch (e) {
+      developer.log(
+        '[CAPTURE] Error converting image to JPEG 480x480: $e',
+        name: '[CAPTURE]',
+      );
+      // On any error, fall back to the original path so flow continues.
+      return originalPath;
     }
   }
 
@@ -1257,9 +1137,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               'goalId': widget.goalId,
             });
 
-        // Camera was disposed in _openGalleryPicker() before navigating
-        // to FoodGalleryPicker. Re-initialize it now that the user has
-        // returned from the confirm_food screen.
+        // Re-initialize camera after returning from the confirm_food screen.
         if (mounted && !_disposed) {
           _initializeCamera();
         }

@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -65,6 +66,8 @@ class UserClient extends FetchClient {
         } else {
           var user = UserModel.fromJson(response.data['data']);
           AppSettings.userInfo = user;
+          // Associate Branch session with the logged-in user for attribution
+          FlutterBranchSdk.setIdentity(user.accountId ?? user.id ?? '');
           AppSettings.isGetUser = true;
           AppSettings.isOwnPackage = user.ownPackage != null &&
               user.ownPackage?.logo != null &&

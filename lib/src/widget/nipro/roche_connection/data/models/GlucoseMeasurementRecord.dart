@@ -19,6 +19,8 @@ class GlucoseMeasurementRecord {
   String sampleLocation;
   bool isBloodGlucose;
   SensorStatusAnnunciation? sensorStatusAnnunciation;
+  int? mealContextInteger;
+  String? mealContextString;
 
   GlucoseMeasurementRecord({
     this.sequenceNumber = 0,
@@ -32,6 +34,8 @@ class GlucoseMeasurementRecord {
     this.sampleLocation = 'Earlobe',
     this.sensorStatusAnnunciation,
     this.isBloodGlucose = false,
+    this.mealContextInteger,
+    this.mealContextString,
   });
 
   String convertGlucoseConcentrationValueToMilligramsPerDeciliter() {
@@ -71,6 +75,17 @@ extension GlucoseMeasurementRecordExtensions on GlucoseMeasurementRecord {
         return 'Control Solution';
       default:
         return 'Reserved for future use';
+    }
+  }
+
+  String mealContextName() {
+    switch (mealContextInteger) {
+      case 1: return 'Preprandial (Trước bữa ăn)';
+      case 2: return 'Postprandial (Sau bữa ăn)';
+      case 3: return 'Fasting (Nhịn ăn)';
+      case 4: return 'Casual (Ăn vặt/Uống)';
+      case 5: return 'Bedtime (Trước khi ngủ)';
+      default: return 'Unknown';
     }
   }
 

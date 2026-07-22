@@ -277,7 +277,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                           child: Row(
                             children: [
                               SvgPicture.asset(R.icons.ic_edit, width: 16),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 6),
                               Text(
                                 R.string.input_medicine.tr(),
                                 style: TextStyle(

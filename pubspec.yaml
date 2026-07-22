@@ -144,7 +144,6 @@ dependencies:
   purchases_ui_flutter: 8.11.0
   youtube_explode_dart: 3.0.0
   saver_gallery: 3.0.6
-  photo_manager: 3.7.1
 
   # Social login
   # zalo_flutter: ^0.0.6
