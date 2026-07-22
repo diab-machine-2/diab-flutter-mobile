@@ -11,7 +11,6 @@ import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'src/utils/app_log.dart';
 import 'src/app_setting/branchio_link_config.dart';
 import 'package:flutter/foundation.dart';
@@ -143,12 +142,6 @@ Future<void> main() async {
   // await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();
   // Note: Firebase.initializeApp() is already called in initializeFlutterFire()
-
-  try {
-    await RevenueCatService.initialize();
-  } catch (e) {
-    debugPrint('RevenueCatService.initialize failed: $e');
-  }
 
   // tz.initializeTimeZones();
   // final timeZoneName = await FlutterTimezone.getLocalTimezone();
