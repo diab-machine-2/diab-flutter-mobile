@@ -1,0 +1,279 @@
+name: Upload to TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Run ID from ios-build.yml (leave empty to use latest successful run)"
+        required: false
+        type: string
+      release_notes:
+        description: 'Release notes (What to test) - Optional'
+        required: false
+        type: string
+
+jobs:
+  upload-testflight:
+    runs-on: macos-26
+    permissions:
+      actions: read
+
+    steps:
+      # ─────────────────────────────────────────────────────────────
+      # 1. Checkout repo FIRST so Fastfile is available
+      #    (must be first - checkout wipes the workspace)
+      # ─────────────────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+
+      # ─────────────────────────────────────────────────────────────
+      # 2. Resolve which build artifact to download
+      # ─────────────────────────────────────────────────────────────
+      - name: Resolve Run ID and Artifact Name
+        id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GIT_TOKEN }}
+        run: |
+          INPUT_ID="${{ inputs.run_id }}"
+          if [ -n "$INPUT_ID" ]; then
+            if [ ${#INPUT_ID} -lt 8 ]; then
+              echo "🔍 Converting Run Number #$INPUT_ID to Database ID..."
+              RUN_ID=$(gh run list --limit 100 --json databaseId,number -q ".[] | select(.number == ${INPUT_ID}) | .databaseId" --repo ${{ github.repository }})
+              if [ -z "$RUN_ID" ]; then
+                echo "❌ Could not find a run with number #$INPUT_ID"
+                exit 1
+              fi
+            else
+              RUN_ID="$INPUT_ID"
+            fi
+          else
+            RUN_ID=$(gh run list \
+              --workflow ios-build.yml \
+              --status success \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId' \
+              --repo ${{ github.repository }})
+          fi
+
+          if [ -z "$RUN_ID" ]; then
+            echo "❌ Could not find a successful ios-build.yml run"
+            exit 1
+          fi
+
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          echo "✅ Using Run ID: $RUN_ID"
+
+          echo "🔍 Looking for ios-artifacts-* artifact..."
+
+          ARTIFACT_NAME=$(gh api \
+            repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts \
+            --jq '.artifacts[] | select(.name | startswith("ios-artifacts-")) | .name' \
+            | head -1)
+
+          if [ -z "$ARTIFACT_NAME" ]; then
+            echo "❌ No ios-artifacts-* artifact found for run $RUN_ID"
+            exit 1
+          fi
+
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+          echo "✅ Found artifact: $ARTIFACT_NAME"
+
+      # ─────────────────────────────────────────────────────────────
+      # 3. Download the build artifact
+      # ─────────────────────────────────────────────────────────────
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ steps.resolve.outputs.artifact_name }}
+          github-token: ${{ secrets.GIT_TOKEN }}
+          run-id: ${{ steps.resolve.outputs.run_id }}
+          path: ./artifact
+
+      # ─────────────────────────────────────────────────────────────
+      # 4. Find the IPA inside the artifact
+      # ─────────────────────────────────────────────────────────────
+      - name: Find IPA
+        id: find_ipa
+        run: |
+          echo "📂 Files inside artifact:"
+          find ./artifact -type f
+
+          IPA_PATH=$(find ./artifact -name "*.ipa" | head -1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "❌ No IPA found in artifact!"
+            exit 1
+          fi
+
+          echo "ipa_path=$IPA_PATH" >> $GITHUB_OUTPUT
+          echo "✅ Found IPA: $IPA_PATH"
+
+      # ─────────────────────────────────────────────────────────────
+      # 5. Install Apple Distribution certificate into a temp keychain
+      # ─────────────────────────────────────────────────────────────
+      - name: Install Apple Distribution Certificate
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+        run: |
+          echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+
+          if [ ! -s certificate.p12 ]; then
+            echo "❌ certificate.p12 is empty – check CERTIFICATE_BASE64 secret"
+            exit 1
+          fi
+          echo "✅ certificate.p12 size: $(wc -c < certificate.p12) bytes"
+
+          KEYCHAIN_PASS="build_keychain_pass_$$"
+          security create-keychain -p "$KEYCHAIN_PASS" build.keychain
+          security list-keychains -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASS" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+
+          security import certificate.p12 \
+            -k build.keychain \
+            -P "${P12_PASSWORD:-}" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/xcodebuild \
+            -T /usr/bin/security 2>/dev/null \
+          && echo "✅ Imported with P12_PASSWORD" \
+          || {
+            security import certificate.p12 \
+              -k build.keychain \
+              -P "" \
+              -T /usr/bin/codesign \
+              -T /usr/bin/xcodebuild \
+              -T /usr/bin/security \
+            && echo "✅ Imported with empty password" \
+            || { echo "❌ Certificate import failed"; exit 1; }
+          }
+
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASS" build.keychain
+
+          echo "✅ Installed identities:"
+          security find-identity -v -p codesigning build.keychain
+
+          echo "KEYCHAIN_PASS=$KEYCHAIN_PASS" >> $GITHUB_ENV
+
+      # ─────────────────────────────────────────────────────────────
+      # 6. Install App Store Distribution provisioning profile
+      # ─────────────────────────────────────────────────────────────
+      - name: Install Provisioning Profile
+        env:
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision
+
+          if [ ! -s ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision ]; then
+            echo "❌ Provisioning profile is empty – check PROVISIONING_PROFILE_BASE64 secret"
+            exit 1
+          fi
+          echo "✅ Provisioning profile installed"
+
+          security cms -D \
+            -i ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision \
+            > /tmp/profile_decoded.plist 2>/dev/null || true
+
+          if [ -s /tmp/profile_decoded.plist ]; then
+            PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /tmp/profile_decoded.plist 2>/dev/null || echo "unknown")
+            echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+            echo "📋 Profile UUID: $PROFILE_UUID"
+          else
+            echo "⚠️ Could not decode profile UUID (non-fatal)"
+          fi
+          rm -f /tmp/profile_decoded.plist
+
+      # ─────────────────────────────────────────────────────────────
+      # 7. Re-sign the IPA with the Distribution certificate
+      # ─────────────────────────────────────────────────────────────
+      - name: Re-sign IPA for App Store / TestFlight
+        run: |
+          IPA_PATH="${{ steps.find_ipa.outputs.ipa_path }}"
+
+          IDENTITY=$(security find-identity -v -p codesigning build.keychain \
+            | grep -E "Apple Distribution|iPhone Distribution" \
+            | head -1 \
+            | sed -e 's/.*"\(.*\)".*/\1/')
+
+          if [ -z "$IDENTITY" ]; then
+            echo "❌ No Apple/iPhone Distribution identity found in keychain!"
+            echo "Identities available:"
+            security find-identity -v build.keychain
+            exit 1
+          fi
+          echo "✅ Signing identity: $IDENTITY"
+
+          mkdir -p resign_work
+          cp "$IPA_PATH" resign_work/app.ipa
+          cd resign_work
+          unzip -q app.ipa -d app_extracted
+
+          APP_PATH=$(find app_extracted/Payload -maxdepth 1 -name "*.app" | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ No .app bundle found inside Payload/"
+            exit 1
+          fi
+          echo "📦 App bundle: $APP_PATH"
+
+          cp ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision \
+            "$APP_PATH/embedded.mobileprovision"
+
+          # Extract entitlements from provisioning profile
+          security cms -D -i ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision > profile.plist
+          /usr/libexec/PlistBuddy -x -c "Print :Entitlements" profile.plist > entitlements.plist
+          echo "📋 Extracted entitlements:"
+          cat entitlements.plist
+
+          find "$APP_PATH/Frameworks" -name "*.framework" -o -name "*.dylib" 2>/dev/null | while read fw; do
+            codesign --force --sign "$IDENTITY" --timestamp "$fw" 2>/dev/null || true
+          done
+
+          codesign --force --sign "$IDENTITY" \
+            --entitlements entitlements.plist \
+            --timestamp \
+            "$APP_PATH"
+
+          cd app_extracted
+          zip -qr ../signed.ipa *
+          cd ../..
+
+          echo "signed_ipa=resign_work/signed.ipa" >> $GITHUB_ENV
+          echo "✅ Re-signed IPA ready"
+
+      # ─────────────────────────────────────────────────────────────
+      # 8. Install Fastlane
+      # ─────────────────────────────────────────────────────────────
+      - name: Install Fastlane
+        run: sudo gem install fastlane --no-document
+
+      # ─────────────────────────────────────────────────────────────
+      # 9. Upload to TestFlight via Fastlane
+      #    Fastfile is in fastlane/Fastfile (committed to repo)
+      # ─────────────────────────────────────────────────────────────
+      - name: Upload to TestFlight via Fastlane Pilot
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+          SIGNED_IPA: resign_work/signed.ipa
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+          PILOT_SKIP_WAITING_FOR_BUILD_PROCESSING: true
+        run: |
+          fastlane upload_tf
+          echo "✅ Uploaded to TestFlight!"
+
+      # ─────────────────────────────────────────────────────────────
+      # 10. Cleanup sensitive files
+      # ─────────────────────────────────────────────────────────────
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f certificate.p12
+          security delete-keychain build.keychain 2>/dev/null || true
