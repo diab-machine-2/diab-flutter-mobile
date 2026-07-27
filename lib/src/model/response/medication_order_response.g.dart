@@ -34,7 +34,7 @@ MedicationOrderItem _$MedicationOrderItemFromJson(Map<String, dynamic> json) =>
       accountId: json['accountId'] as String?,
       ocrType: json['ocrType'] as String?,
       medicationName: json['medicationName'] as String?,
-      quantity: json['quantity'] as num?,
+      quantity: json['quantity'] as String?,
       prescriptionName: json['prescriptionName'] as String?,
       diagnose: json['diagnose'] as String?,
       servicesRequest: json['servicesRequest'] as String?,

@@ -29,10 +29,12 @@ import 'package:medical/src/widget/helper/show_message.dart';
 /// [Const.BENEFIT_BOOKING_TELEMEDICINE].
 class BenefitPage extends StatefulWidget {
   final String bookingType;
+  final String? specialtyName;
 
   const BenefitPage({
     Key? key,
     required this.bookingType,
+    this.specialtyName,
   }) : super(key: key);
 
   @override
@@ -115,6 +117,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                         value: _cubit,
                         child: BenefitSpecialtyPage(
                           bookingType: widget.bookingType,
+                          specialtyName: widget.specialtyName,
                         ),
                       ),
                     );

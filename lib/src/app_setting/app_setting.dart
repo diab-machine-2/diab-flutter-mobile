@@ -45,7 +45,14 @@ class AppSettings {
   static bool isReloadCurrentUserInfo = false;
 
   static bool isOwnPackage = false;
-  static bool hasBundle = false;
+  static bool _hasBundle = false;
+  static bool get hasBundle => _hasBundle;
+  static set hasBundle(bool value) {
+    if (_hasBundle != value) {
+      _hasBundle = value;
+      Observable.instance.notifyObservers([], notifyName: Const.UPDATE_HAS_BUNDLE);
+    }
+  }
 
   static bool isFirstDownload = true;
 
@@ -327,6 +334,9 @@ class AppSettings {
   static Future<bool> saveHome(Map<String, dynamic>? data) async {
     final jsonString = jsonEncode(data);
     appPreference.setData('home_data', jsonString);
+    if (data != null && data['hasBundle'] != null) {
+      hasBundle = data['hasBundle'] == true;
+    }
     return true;
   }
 
@@ -337,11 +347,28 @@ class AppSettings {
     }
     final jsonData = json.decode(userData);
     final data = HomeModel.fromJson(jsonData);
+    hasBundle = data.hasBundle;
     return data;
+  }
+
+  static bool checkHasBundle() {
+    if (hasBundle) return true;
+    final userData = appPreference.getData('home_data') ?? '';
+    if (userData.isNotEmpty) {
+      try {
+        final jsonData = json.decode(userData);
+        if (jsonData is Map<String, dynamic> && jsonData['hasBundle'] == true) {
+          hasBundle = true;
+          return true;
+        }
+      } catch (_) {}
+    }
+    return false;
   }
 
   static Future<bool> deleteHomeData() async {
     appPreference.removeData('home_data');
+    hasBundle = false;
     return true;
   }
 

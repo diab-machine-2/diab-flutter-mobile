@@ -5,6 +5,7 @@ import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_selected_wish_slot.dart';
+import 'package:medical/src/model/response/my_benefit_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
@@ -41,6 +42,7 @@ import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
 import 'package:medical/src/widget/benefit/benefit_page.dart';
 import 'package:medical/src/widget/benefit/benefit_introduce_bundle_page.dart';
 import 'package:medical/src/widget/benefit/benefit_medication_order_detail_page.dart';
+import 'package:medical/src/widget/benefit/benefit_partner_intro_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_intro_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -467,7 +469,11 @@ class AppRoutes {
           final data = settings.arguments as Map<String, dynamic>?;
           final bookingType = data?['bookingType'] as String? ??
               Const.BENEFIT_BOOKING_AT_CLINIC;
-          page = BenefitPage(bookingType: bookingType);
+          final specialtyName = data?['specialtyName'] as String?;
+          page = BenefitPage(
+            bookingType: bookingType,
+            specialtyName: specialtyName,
+          );
           break;
         }
 
@@ -511,6 +517,15 @@ class AppRoutes {
           if (args == null) break;
           page = BenefitMedicationOrderDetailPage(
             order: args['order'],
+          );
+          break;
+        }
+
+      case NavigatorName.benefit_partner_intro:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BenefitPartnerIntroPage(
+            item: args?['item'] as MyBenefitItem?,
           );
           break;
         }

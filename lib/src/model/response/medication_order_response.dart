@@ -22,6 +22,13 @@ class MedicationOrderResponse {
   Map<String, dynamic> toJson() => _$MedicationOrderResponseToJson(this);
 }
 
+class Medication {
+  final String name;
+  final String quantity;
+
+  Medication({required this.name, required this.quantity});
+}
+
 @JsonSerializable()
 class MedicationOrderItem {
   final String? id;
@@ -30,7 +37,7 @@ class MedicationOrderItem {
   final String? accountId;
   final String? ocrType;
   final String? medicationName;
-  final num? quantity;
+  final String? quantity;
   final String? prescriptionName;
   final String? diagnose;
   final String? servicesRequest;
@@ -66,6 +73,50 @@ class MedicationOrderItem {
   DateTime? get createDate => createDatetime != null
       ? DateTime.fromMillisecondsSinceEpoch(createDatetime! * 1000)
       : null;
+
+  /// Splits a comma-separated string respecting parentheses nesting.
+  static List<String> _splitTopLevelCommas(String input) {
+    final result = <String>[];
+    int depth = 0;
+    int start = 0;
+    for (int i = 0; i < input.length; i++) {
+      final char = input[i];
+      if (char == '(') {
+        depth++;
+      } else if (char == ')') {
+        depth--;
+      } else if (char == ',' && depth == 0) {
+        result.add(input.substring(start, i));
+        start = i + 1;
+      }
+    }
+    if (start < input.length) {
+      result.add(input.substring(start));
+    }
+    return result;
+  }
+
+  /// Parses [medicationName] and [quantity] (both comma-separated strings)
+  /// into a list of [Medication] objects, matched by position.
+  List<Medication> get medications {
+    if (medicationName == null || medicationName!.isEmpty) return [];
+    final names = _splitTopLevelCommas(medicationName!);
+    List<String> quantities;
+    if (quantity == null || quantity!.isEmpty) {
+      quantities = List.filled(names.length, '');
+    } else {
+      quantities = quantity!.split(',');
+    }
+    final result = <Medication>[];
+    final len = names.length < quantities.length ? names.length : quantities.length;
+    for (var i = 0; i < len; i++) {
+      result.add(Medication(
+        name: names[i].trim(),
+        quantity: quantities[i].trim(),
+      ));
+    }
+    return result;
+  }
 
   List<String> get parsedServices {
     if (servicesRequest == null || servicesRequest!.isEmpty) return [];

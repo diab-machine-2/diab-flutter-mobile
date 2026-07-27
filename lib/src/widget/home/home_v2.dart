@@ -701,11 +701,7 @@ class _HomeControllerState extends State<HomeController>
           HomeLoaded? stateLoaded;
           if (state is HomeLoaded) {
             model = state.model;
-            bool oldHasBundle = AppSettings.hasBundle;
             AppSettings.hasBundle = model?.hasBundle ?? false;
-            if (oldHasBundle != AppSettings.hasBundle) {
-              Observable.instance.notifyObservers([], notifyName: Const.UPDATE_HAS_BUNDLE);
-            }
             stateLoaded = state;
             if (false == model?.packageAccount?.isDisplayedWelcome &&
                 !_isDisplayedWelcome) {

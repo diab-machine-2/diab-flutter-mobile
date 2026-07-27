@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
+import 'package:medical/src/model/response/my_benefit_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 
@@ -16,6 +17,87 @@ class HomeBenefitSection extends StatelessWidget {
       arguments: {
         'bookingType': bookingType,
       },
+    );
+  }
+
+  void _onTapBenefitAtHome(BuildContext context) {
+    final item = MyBenefitItem.fromJson({
+      'itemId': 'partner-003',
+      'itemType': BenefitBundleItemType.partnerIntro.value,
+      'name': 'WeCare247',
+      'isUnlimited': 0,
+      'quantity': 1,
+      'quantityUsed': 0,
+      'discountValue': 5,
+      'discountType': 0,
+      'benefitType': {
+        'id': 'b5bbd0ea-2fb9-4c75-0ca4-08dedbdbb8bc',
+        'title': 'WeCare247',
+        'contentType': 2,
+        'contentValue': '',
+        'description':
+            'WeCare247 là đơn vị cung cấp dịch vụ chăm sóc sức khỏe cá nhân tại nhà và tại bệnh viện, thành lập năm 2017 với sứ mệnh nâng cao chất lượng sống cho các gia đình Việt Nam.\n Đội ngũ chăm sóc viên và điều dưỡng được đào tạo bài bản, làm việc 24/7, hỗ trợ người cao tuổi và người bệnh trong sinh hoạt, theo dõi sức khỏe và phối hợp cùng bác sĩ điều trị.',
+        'location':
+            'Dịch vụ tại nhà & bệnh viện tại TP.HCM, mạng lưới hợp tác nhiều bệnh viện tuyến đầu',
+        'openTime':
+            'Hoạt động linh hoạt 24/7, kể cả Lễ Tết (đặt lịch trước để sắp xếp chăm sóc viên)',
+        'status': 1,
+        'tag': null,
+        'hasVoucher': 1,
+        'voucherName': 'GIẢM 10%',
+        'voucherSubName': 'Gói dịch vụ tại WeCare247',
+        'voucherCode': 'CFY-CORP-2024',
+        'voucherValue': 'Giảm 10% trên tổng hoá đơn',
+        'applicableTo': 'Nhân viên Axon',
+        'validUntil': 1784937600,
+        'applicableLocation': 'Tất cả cơ sở',
+        'order': 1,
+        'bundleTagId': '76771441-2222-44e7-1909-08dedbdbb239',
+        'media': [
+          {
+            'id': '21e703a4-60d8-452f-c851-08dee7df0a19',
+            'bundleBenefitTypeId': 'b5bbd0ea-2fb9-4c75-0ca4-08dedbdbb8bc',
+            'imageId': '1d0fdf24-5e06-4ca9-f212-08dee7defb35',
+            'url': null,
+            'type': 3,
+            'sortOrder': 0,
+            'imageUrl': {
+              'id': '1d0fdf24-5e06-4ca9-f212-08dee7defb35',
+              'url': 'lib/res/drawables/wecare_image_title.jpg',
+            },
+          },
+          {
+            'id': '4025aa68-d124-4ba7-c84f-08dee7df0a19',
+            'bundleBenefitTypeId': 'b5bbd0ea-2fb9-4c75-0ca4-08dedbdbb8bc',
+            'imageId': '4d15d771-3ecb-4c5e-f213-08dee7defb35',
+            'url': null,
+            'type': 1,
+            'sortOrder': 1,
+            'imageUrl': {
+              'id': '4d15d771-3ecb-4c5e-f213-08dee7defb35',
+              'url': 'lib/res/drawables/wecare_sub_image_1.jpg',
+            },
+          },
+          {
+            'id': '809c4faf-aff7-44f4-c850-08dee7df0a19',
+            'bundleBenefitTypeId': 'b5bbd0ea-2fb9-4c75-0ca4-08dedbdbb8bc',
+            'imageId': '958c06ee-afad-4d91-f214-08dee7defb35',
+            'url': null,
+            'type': 1,
+            'sortOrder': 2,
+            'imageUrl': {
+              'id': '958c06ee-afad-4d91-f214-08dee7defb35',
+              'url': 'lib/res/drawables/wecare_sub_image_2.jpg',
+            },
+          },
+        ],
+      },
+    });
+
+    Navigator.pushNamed(
+      context,
+      NavigatorName.benefit_partner_intro,
+      arguments: {'item': item},
     );
   }
 
@@ -129,7 +211,7 @@ class HomeBenefitSection extends StatelessWidget {
               _BenefitItem(
                 icon: R.icons.ic_benefit_at_home,
                 label: R.string.benefit_at_home.tr(),
-                onTap: null,
+                onTap: () => _onTapBenefitAtHome(context),
               ),
               _BenefitItem(
                 icon: R.icons.ic_benefit_calendar,

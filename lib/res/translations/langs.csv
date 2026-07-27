@@ -1691,7 +1691,7 @@ benefit_yes_have_prescription,"Có, tôi có đơn thuốc","Yes, I have a presc
 benefit_yes_take_photo,Chụp ảnh đơn thuốc để đặt hàng nhanh chóng,Take a photo of your prescription to order quickly,
 benefit_no_need_consult,"Không, tôi cần tư vấn","No, I need consultation",
 benefit_no_contact_diab,Liên hệ DiaB để được hỗ trợ đặt thuốc,Contact DiaB for medicine ordering support,
-benefit_have_lab_order,Có chỉ định y khoa không?,Do you have a lab test order?,
+benefit_have_lab_order,Bạn có chỉ định y khoa không?,Do you have a lab test order?,
 benefit_yes_have_lab_order,"Có, tôi có chỉ định","Yes, I have a lab order",
 benefit_yes_lab_take_photo,Thực hiện xét nghiệm theo chỉ định của bác sĩ,Perform tests as directed by the doctor,
 benefit_no_contact_lab,Liên hệ DiaB để được hỗ trợ tư vấn xét nghiệm,Contact DiaB for lab test consultation,
@@ -1743,25 +1743,43 @@ benefit_scan_diagnose,Chẩn đoán,Diagnosis,
 benefit_scan_diagnose_lab_title,Tên phiếu cận lâm sàng,Paraclinical Test Sheet Name,
 benefit_scan_prescription_name,Tên phiếu,Order name,
 medicine_quantity,Số lượng,Quantity,
-paraclinical,Cận lâm sàng,Paraclinical
-benefit_detail_title,Chi tiết quyền lợi,Benefit Details
-benefit_active,Hoạt động,Active
-benefit_progress_title,Tiến độ hoàn thành,Completion Progress
-benefit_service_count,{}/{} dịch vụ,{}/{} services
-benefit_remaining_count,Còn {} lượt,{} remaining
-benefit_booking_button,Đặt lịch hẹn ngay,Book Appointment Now
-benefit_discount_badge,-{}%,-{}%
-benefit_remaining_days,Còn {} ngày,{} days remaining
-benefit_unlimited,Không giới hạn,Unlimited
+paraclinical,Cận lâm sàng,Paraclinical,
+benefit_detail_title,Chi tiết quyền lợi,Benefit Details,
+benefit_active,Hoạt động,Active,
+benefit_progress_title,Tiến độ hoàn thành,Completion Progress,
+benefit_service_count,{}/{} dịch vụ,{}/{} services,
+benefit_remaining_count,Còn {} lượt,{} remaining,
+benefit_booking_button,Đặt lịch hẹn ngay,Book Appointment Now,
+benefit_discount_badge,-{}%,-{}%,
+benefit_remaining_days,Còn {} ngày,{} days remaining,
+benefit_unlimited,Không giới hạn,Unlimited,
 benefit_discount,Giảm {},Discount {},
-benefit_my_benefits,Quyền lợi của tôi,My Benefits
-benefit_already_requested,Đã yêu cầu,Requested
-benefit_order_type_medicine,Mua thuốc,Purchase Medicine
-benefit_order_type_lab,Cận lâm sàng,Lab Test
-benefit_order_detail_title,Chi tiết yêu cầu,Request Detail
-benefit_order_prescription_name,Tên đơn thuốc,Prescription Name
-benefit_order_diagnose,Chẩn đoán,Diagnosis
-benefit_order_medicine_list,Danh sách thuốc,Medicine List
-benefit_order_services_list,Danh sách dịch vụ,Services List
-benefit_order_note,Ghi chú,Note
-benefit_order_code,Mã yêu cầu,Request Code
+benefit_my_benefits,Quyền lợi của tôi,My Benefits,
+benefit_already_requested,Đã yêu cầu,Requested,
+benefit_order_type_medicine,Mua thuốc,Purchase Medicine,
+benefit_order_type_lab,Cận lâm sàng,Lab Test,
+benefit_order_detail_title,Chi tiết yêu cầu,Request Detail,
+benefit_order_prescription_name,Tên đơn thuốc,Prescription Name,
+benefit_order_diagnose,Chẩn đoán,Diagnosis,
+benefit_order_medicine_list,Danh sách thuốc,Medicine List,
+benefit_order_services_list,Danh sách dịch vụ,Services List,
+benefit_order_note,Ghi chú,Note,
+benefit_order_code,Mã yêu cầu,Request Code,
+benefit_program_locked,Chương trình chưa mở khoá!,Program not unlocked!,
+benefit_program_locked_desc,Vui lòng liên hệ quản trị viên để được hỗ trợ tham gia chương trình,Please contact administrator for support to join the program,
+loading,Đang tải,Loading,
+benefit_fallback_diagnose,Bệnh đái tháo đường không phụ thuộc insuline,Non-insulin-dependent diabetes mellitus,
+quantity_label,Số lượng:,Quantity:,
+benefit_partner,Đối tác,Partner,
+benefit_more_photos,+{} ảnh,+{} photos,
+benefit_your_voucher,Voucher của bạn,Your voucher,
+benefit_voucher_code,Mã voucher,Voucher code,
+benefit_copied_voucher_code,Đã sao chép mã voucher,Voucher code copied,
+benefit_copy,Sao chép,Copy,
+benefit_value,Giá trị,Value,
+benefit_apply_for,Áp dụng cho,Applicable to,
+benefit_valid_until,Hiệu lực đến,Valid until,
+benefit_applicable_location,Cơ sở áp dụng,Applicable location,
+benefit_voucher_terms_note,"* Voucher áp dụng 1 lần/người, không hoàn tiền, không kết hợp với ưu đãi khác. Áp dụng cho nhân viên thuộc Chương trình chăm sóc sức khoẻ Doanh nghiệp.","* Voucher applies once per person, non-refundable, cannot be combined with other offers. Applicable to employees under the Corporate Health Care Program.",
+benefit_voucher_expiry,Thời hạn voucher:,Voucher expiry:,
+benefit_all_branches,Tất cả cơ sở,All locations,

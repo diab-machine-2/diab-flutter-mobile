@@ -403,15 +403,17 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
 
     if (notifyName == Const.UPDATE_HAS_BUNDLE) {
-      setState(() {
-        tabs = [
-          HomeController(sharedCode: widget.sharedCode),
-          _buildProgramTab(),
-          MyPlanPage(index: 0),
-          Conversations(),
-          _buildStoreTab(),
-        ];
-      });
+      if (mounted) {
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+      }
     }
 
     if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
@@ -535,13 +537,14 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   Widget _buildProgramTab() {
+    final bool hasBundle = AppSettings.checkHasBundle();
     // log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
     print('[ACTIVE] userPackageType: ${AppSettings.userInfo?.packageType}');
     print('[ACTIVE] ownPackage: ${AppSettings.userInfo?.ownPackage}');
     print('[ACTIVE] isOwnPackage: ${AppSettings.isOwnPackage}');
-    print('[ACTIVE] hasBundle: ${AppSettings.hasBundle}');
+    print('[ACTIVE] hasBundle: $hasBundle');
     if (AppSettings.userInfo?.packageType == PackageType.free) {
-      if (AppSettings.hasBundle == true) {
+      if (hasBundle == true) {
         return const BenefitIntroduceBundlePage(hideBackButton: true);
       }
       return MultiBlocProvider(

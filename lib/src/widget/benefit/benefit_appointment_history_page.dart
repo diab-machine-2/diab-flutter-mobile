@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -72,7 +73,8 @@ class _BenefitAppointmentHistoryPageState
     }
 
     await Future.wait([
-      _cubit.getDsmesAppointmentList(page: 1, isRefresh: true, showLoading: false),
+      _cubit.getDsmesAppointmentList(
+          page: 1, isRefresh: true, showLoading: false),
       _loadMedicationOrders(),
     ]);
 
@@ -198,7 +200,7 @@ class _BenefitAppointmentHistoryPageState
       enablePullUp: _cubit.hasMore,
       footer: _cubit.hasMore
           ? ClassicFooter(
-              loadingText: 'Đang tải',
+              loadingText: R.string.loading.tr(),
               canLoadingText: R.string.pull_up_to_load_more.tr(),
             )
           : null,
@@ -223,8 +225,7 @@ class _BenefitAppointmentHistoryPageState
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         itemCount: 2,
         itemBuilder: (context, sectionIndex) {
-          final sectionItems =
-              sectionIndex == 0 ? upcomingItems : pastItems;
+          final sectionItems = sectionIndex == 0 ? upcomingItems : pastItems;
           final isExpanded = ValueNotifier<bool>(true);
 
           return StickyHeader(
@@ -297,10 +298,10 @@ class _BenefitAppointmentHistoryPageState
             final detailSuccess = await _cubit.getClinicDetail(
                 id: data.branchId ?? data.clinicId);
             if (!detailSuccess || _cubit.selectedClinic == null) return;
-            final appointment = await _cubit.getDsmesAppointmentDetail(
-                appointmentId: data.id);
-            final result = await Navigator.of(context, rootNavigator: true)
-                .pushNamed(
+            final appointment =
+                await _cubit.getDsmesAppointmentDetail(appointmentId: data.id);
+            final result =
+                await Navigator.of(context, rootNavigator: true).pushNamed(
               NavigatorName.benefit_booking_detail,
               arguments: {
                 'serviceType': appointment?.mode,
@@ -325,16 +326,11 @@ class _BenefitAppointmentHistoryPageState
   Widget _buildMedicationOrderItem(
       BuildContext context, MedicationOrderItem order) {
     final isMedicine = order.isMedicine;
-    final iconBgColor =
-        isMedicine ? const Color(0xFFE49F13) : const Color(0xFF01645A);
-    final iconPath =
-        isMedicine ? R.icons.ic_purchase_medicine : R.icons.ic_paraclinical;
     final typeLabel = isMedicine
         ? R.string.benefit_order_type_medicine.tr()
         : R.string.benefit_order_type_lab.tr();
-    final subtitle = isMedicine
-        ? (order.prescriptionName ?? '')
-        : (order.diagnose ?? '');
+    final subtitle =
+        isMedicine ? (order.prescriptionName ?? '') : (order.diagnose ?? '');
     final dateStr = order.createDate != null
         ? DateFormat('dd/MM/yyyy').format(order.createDate!)
         : '';
@@ -351,89 +347,122 @@ class _BenefitAppointmentHistoryPageState
           borderRadius: BorderRadius.circular(8),
           boxShadow: [Utils.getBoxShadowDropCard()],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  iconPath,
-                  width: 24,
-                  height: 24,
-                  color: Colors.white,
+            // Header: icon + type label | status badge
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    isMedicine
+                        ? SvgPicture.asset(
+                            R.icons.ic_purchase_medicine,
+                            width: 20,
+                            height: 20,
+                          )
+                        : SvgPicture.asset(
+                            R.icons.ic_paraclinical,
+                            width: 20,
+                            height: 20,
+                          ),
+                    const SizedBox(width: 10),
+                    Text(
+                      typeLabel,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF111515),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5F7F5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: Text(
+                    R.string.benefit_already_requested.tr(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF008479),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            GapW(12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            const GapH(12),
+            // Content: icon + name (matching _buildClinicInfo)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.asset(
+                    R.drawable.diab_logo,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const GapW(8),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        typeLabel,
-                        style: TextStyle(
+                        subtitle.isNotEmpty ? subtitle : typeLabel,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: R.color.color0xff111515,
+                          color: Color(0xFF111515),
                         ),
                       ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE5F7F5),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          R.string.benefit_already_requested.tr(),
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF008479),
-                          ),
-                        ),
-                      ),
+                      // if (order.medications.isNotEmpty) ...[
+                      //   const GapH(4),
+                      //   ...order.medications.map(
+                      //     (med) => Padding(
+                      //       padding: const EdgeInsets.only(bottom: 2),
+                      //       child: Text(
+                      //         med.name,
+                      //         maxLines: 1,
+                      //         overflow: TextOverflow.ellipsis,
+                      //         style: const TextStyle(
+                      //           fontSize: 13,
+                      //           color: Color(0xFF636A6B),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ],
                     ],
                   ),
-                  if (subtitle.isNotEmpty) ...[
-                    GapH(4),
-                    Text(
-                      subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF636A6B),
-                      ),
+                ),
+              ],
+            ),
+            if (dateStr.isNotEmpty) ...[
+              const GapH(4),
+              Row(
+                children: [
+                  const SizedBox(width: 48),
+                  Text(
+                    dateStr,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF111515),
                     ),
-                  ],
-                  if (dateStr.isNotEmpty) ...[
-                    GapH(6),
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today_outlined,
-                            size: 13, color: Color(0xFF636A6B)),
-                        GapW(4),
-                        Text(
-                          dateStr,
-                          style: const TextStyle(
-                              fontSize: 12, color: Color(0xFF636A6B)),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ],
               ),
-            ),
+            ],
           ],
         ),
       ),

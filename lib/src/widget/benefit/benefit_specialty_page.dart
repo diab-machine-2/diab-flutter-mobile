@@ -21,10 +21,12 @@ import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 /// [Const.BENEFIT_BOOKING_TELEMEDICINE].
 class BenefitSpecialtyPage extends StatefulWidget {
   final String bookingType;
+  final String? specialtyName;
 
   const BenefitSpecialtyPage({
     Key? key,
     required this.bookingType,
+    this.specialtyName,
   }) : super(key: key);
 
   @override
@@ -46,11 +48,27 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
 
   Future<void> _initData() async {
     await _cubit.getCLinicSpecialtyList();
+    if (!mounted) return;
+    if (widget.specialtyName != null && widget.specialtyName!.isNotEmpty) {
+      final target = widget.specialtyName!.toLowerCase().trim();
+      final ordered = _getOrderedSpecialties();
+      final matchIndex = ordered.indexWhere(
+          (s) => s.name.toLowerCase().trim() == target);
+      if (matchIndex != -1) {
+        _onSelectSpecialty(ordered[matchIndex]);
+      }
+    }
   }
 
   List<ClinicSpecialty> _getOrderedSpecialties() {
-    final specialties = _cubit.listSpecialty;
+    var specialties = _cubit.listSpecialty;
     if (specialties.isEmpty) return [];
+
+    if (_isTelemedicine) {
+      specialties = specialties
+          .where((s) => s.name.toLowerCase().trim() != 'cơ xương khớp')
+          .toList();
+    }
 
     final slugOrder = FirebaseRemoteSetting.instance.specialtyOrder ?? '';
     if (slugOrder.isEmpty) return specialties;

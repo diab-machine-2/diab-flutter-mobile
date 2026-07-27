@@ -2,8 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/response/medication_order_response.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class BenefitMedicationOrderDetailPage extends StatelessWidget {
@@ -25,31 +28,14 @@ class BenefitMedicationOrderDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildStatusCard(),
-                  GapH(12),
-                  if (order.isMedicine) ...[
-                    _buildInfoSection(
-                      R.string.benefit_order_prescription_name.tr(),
-                      order.prescriptionName ?? '—',
-                    ),
-                    GapH(12),
-                    _buildMedicineSection(),
-                  ] else ...[
-                    _buildInfoSection(
-                      R.string.benefit_order_diagnose.tr(),
-                      order.diagnose ?? '—',
-                    ),
-                    GapH(12),
-                    _buildServicesSection(),
-                  ],
+                  _buildPartnerInformation(),
+                  const GapH(12),
+                  _buildMedicationContentSection(),
                   if (order.note != null && order.note!.isNotEmpty) ...[
-                    GapH(12),
-                    _buildInfoSection(
-                      R.string.benefit_order_note.tr(),
-                      order.note!,
-                    ),
+                    const GapH(12),
+                    _buildNoteSection(),
                   ],
-                  GapH(24),
+                  const GapH(24),
                 ],
               ),
             ),
@@ -60,10 +46,13 @@ class BenefitMedicationOrderDetailPage extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context) {
-    return DecoratedBox(
+    return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [R.color.greenGradientTop02, R.color.greenGradientBottom],
+          colors: [
+            R.color.greenGradientTop02,
+            R.color.greenGradientBottom,
+          ],
           stops: const [0.01, 0.99],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
@@ -74,94 +63,57 @@ class BenefitMedicationOrderDetailPage extends StatelessWidget {
         title: Text(
           R.string.benefit_order_detail_title.tr(),
           style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w700, color: R.color.white),
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: R.color.white,
+          ),
         ),
         leadingIcon: IconButton(
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          icon: Icon(Icons.arrow_back, color: R.color.white),
+          icon: Icon(
+            Icons.arrow_back,
+            color: R.color.white,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatusCard() {
-    final isMedicine = order.isMedicine;
-    final iconBgColor =
-        isMedicine ? const Color(0xFFE49F13) : const Color(0xFF01645A);
-    final iconPath =
-        isMedicine ? R.icons.ic_purchase_medicine : R.icons.ic_paraclinical;
-    final typeLabel = isMedicine
-        ? R.string.benefit_order_type_medicine.tr()
-        : R.string.benefit_order_type_lab.tr();
-
-    final dateStr = order.createDate != null
-        ? DateFormat('dd/MM/yyyy').format(order.createDate!)
-        : '—';
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Color(0x0F000000), blurRadius: 8, offset: Offset(0, 2)),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Center(
-              child: SvgPicture.asset(iconPath, width: 24, height: 24,
-                  color: Colors.white),
-            ),
-          ),
-          GapW(12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  typeLabel,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.color0xff111515,
-                  ),
+        actions: [
+          InkWell(
+            onTap: () async {
+              HomeSupportFunctions.showModalAddData(context);
+            },
+            child: Container(
+              height: 36,
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              margin: const EdgeInsets.fromLTRB(0, 12, 16, 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: R.color.color0xffCAFAF5,
+                border: Border.all(
+                  color: R.color.color0xff8FEBE0,
                 ),
-                GapH(4),
-                if (order.code != null)
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    R.icons.ic_telephone,
+                    width: 16,
+                    height: 16,
+                    color: R.color.greenGradientBottom,
+                    fit: BoxFit.scaleDown,
+                  ),
+                  const GapW(8),
                   Text(
-                    '${R.string.benefit_order_code.tr()}: ${order.code}',
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF636A6B)),
+                    R.string.contact.tr(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.greenGradientBottom,
+                    ),
                   ),
-                GapH(2),
-                Text(
-                  dateStr,
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF636A6B)),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5F7F5),
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Text(
-              R.string.benefit_already_requested.tr(),
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF008479),
+                ],
               ),
             ),
           ),
@@ -170,31 +122,352 @@ class BenefitMedicationOrderDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection(String label, String value) {
+  Widget _buildPartnerInformation() {
+    final nameStr = AppSettings.userInfo?.fullName ?? '—';
+    final phoneStr = AppSettings.userInfo?.phoneNumber ?? '—';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                R.string.customer_information.tr(),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.color0xff111515,
+                ),
+              ),
+            ],
+          ),
+          const GapH(16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                R.string.name.tr(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.color0xff777E90,
+                ),
+              ),
+              Text(
+                nameStr,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.color0xff111515,
+                ),
+              ),
+            ],
+          ),
+          const GapH(4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                R.string.so_dien_thoai.tr(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.color0xff777E90,
+                ),
+              ),
+              Text(
+                phoneStr,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.color0xff111515,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMedicationContentSection() {
+    final isMedicine = order.isMedicine;
+    final titleText = isMedicine
+        ? R.string.benefit_order_medicine_list.tr()
+        : R.string.benefit_order_services_list.tr();
+
+    final headerSubTitle = order.prescriptionName ??
+        order.diagnose ??
+        R.string.benefit_fallback_diagnose.tr();
+
+    final medList = _getMedicationItems();
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        shadows: const [
+          BoxShadow(
+            color: Color(0x14032B27),
+            blurRadius: 8,
+            offset: Offset(1, 2),
+            spreadRadius: 0,
+          )
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                titleText,
+                style: const TextStyle(
+                  color: Color(0xFF111514),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  height: 1.46,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: const Color(0xFFE6E8EC),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            headerSubTitle,
+            style: const TextStyle(
+              color: Color(0xFF111515),
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              height: 1.46,
+              letterSpacing: 0.40,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: const Color(0xFFE6E8EC),
+          ),
+          const SizedBox(height: 10),
+          if (medList.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                '—',
+                style: TextStyle(color: Color(0xFF636A6B), fontSize: 14),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemCount: medList.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (_, index) {
+                final item = medList[index];
+                final indexStr = (index + 1).toString().padLeft(2, '0');
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      child: Text(
+                        indexStr,
+                        style: const TextStyle(
+                          color: Color(0xFF636A6B),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          height: 1.46,
+                          letterSpacing: 0.40,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.name,
+                            style: const TextStyle(
+                              color: Color(0xFF111515),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              height: 1.46,
+                              letterSpacing: 0.40,
+                            ),
+                          ),
+                          if (item.quantity.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                Text(
+                                  R.string.quantity_label.tr(),
+                                  style: TextStyle(
+                                    color: Color(0xFF636A6B),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.46,
+                                    letterSpacing: 0.40,
+                                  ),
+                                ),
+                                Text(
+                                  item.quantity,
+                                  style: const TextStyle(
+                                    color: Color(0xFF636A6B),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.46,
+                                    letterSpacing: 0.40,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+
+  List<_MedItemData> _getMedicationItems() {
+    if (order.isMedicine) {
+      final meds = order.medications;
+      if (meds.isNotEmpty) {
+        return meds
+            .map((m) => _MedItemData(name: m.name, quantity: m.quantity))
+            .toList();
+      }
+      final parsedGpt = _parseGptMedicines();
+      if (parsedGpt.isNotEmpty) {
+        return parsedGpt;
+      }
+      if (order.medicationName != null && order.medicationName!.isNotEmpty) {
+        return [
+          _MedItemData(
+            name: order.medicationName!,
+            quantity: order.quantity ?? '',
+          )
+        ];
+      }
+    } else {
+      final services = order.parsedServices;
+      if (services.isNotEmpty) {
+        return services.map((s) => _MedItemData(name: s, quantity: '')).toList();
+      }
+    }
+    return [];
+  }
+
+  List<_MedItemData> _parseGptMedicines() {
+    if (order.gptParsedResult == null || order.gptParsedResult!.isEmpty) {
+      return [];
+    }
+    try {
+      final raw = order.gptParsedResult!;
+      final List<_MedItemData> results = [];
+      final regex = RegExp(
+          r'"medication_name"\s*:\s*"([^"]+)"(?:,\s*"quantity"\s*:\s*"([^"]+)")?');
+      for (final match in regex.allMatches(raw)) {
+        final name = match.group(1);
+        final qty = match.group(2) ?? '';
+        if (name != null && name.isNotEmpty) {
+          results.add(_MedItemData(name: name, quantity: qty));
+        }
+      }
+      return results;
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Widget _buildNoteSection() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF636A6B),
-            ),
-          ),
-          GapH(6),
-          Text(
-            value,
+            R.string.benefit_order_note.tr(),
             style: TextStyle(
               fontSize: 15,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+              color: R.color.color0xff111515,
+            ),
+          ),
+          const GapH(12),
+          TextFormField(
+            initialValue: order.note,
+            minLines: 2,
+            maxLines: null,
+            readOnly: true,
+            decoration: InputDecoration(
+              counterText: null,
+              fillColor: R.color.textDark,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: R.color.color0xffDFE4E4,
+                  width: 1.0,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: R.color.color0xffDFE4E4,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: R.color.color0xffDFE4E4,
+                  width: 1.0,
+                ),
+              ),
+              contentPadding: const EdgeInsets.all(12),
+            ),
+            style: TextStyle(
+              fontSize: 14,
               color: R.color.color0xff111515,
             ),
           ),
@@ -202,155 +475,11 @@ class BenefitMedicationOrderDetailPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildMedicineSection() {
-    final medicines = _parseMedicines();
-    if (medicines.isEmpty) return const SizedBox.shrink();
+class _MedItemData {
+  final String name;
+  final String quantity;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              R.string.benefit_order_medicine_list.tr(),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF111515),
-              ),
-            ),
-          ),
-          const Divider(height: 1, color: Color(0xFFF0F0F0)),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemCount: medicines.length,
-            separatorBuilder: (_, __) =>
-                const Divider(height: 1, color: Color(0xFFF0F0F0)),
-            itemBuilder: (_, i) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF008479),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  GapW(10),
-                  Expanded(
-                    child: Text(
-                      medicines[i],
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: R.color.color0xff111515,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          GapH(8),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServicesSection() {
-    final services = order.parsedServices;
-    if (services.isEmpty) return const SizedBox.shrink();
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              R.string.benefit_order_services_list.tr(),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF111515),
-              ),
-            ),
-          ),
-          const Divider(height: 1, color: Color(0xFFF0F0F0)),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemCount: services.length,
-            separatorBuilder: (_, __) =>
-                const Divider(height: 1, color: Color(0xFFF0F0F0)),
-            itemBuilder: (_, i) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF008479),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  GapW(10),
-                  Expanded(
-                    child: Text(
-                      services[i],
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: R.color.color0xff111515,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          GapH(8),
-        ],
-      ),
-    );
-  }
-
-  List<String> _parseMedicines() {
-    if (order.gptParsedResult == null || order.gptParsedResult!.isEmpty) {
-      if (order.medicationName != null && order.medicationName!.isNotEmpty) {
-        return [order.medicationName!];
-      }
-      return [];
-    }
-    try {
-      final raw = order.gptParsedResult!;
-      final List<String> results = [];
-      final regex = RegExp(r'"medication_name"\s*:\s*"([^"]+)"');
-      for (final match in regex.allMatches(raw)) {
-        final name = match.group(1);
-        if (name != null && name.isNotEmpty) results.add(name);
-      }
-      if (results.isNotEmpty) return results;
-    } catch (_) {}
-    if (order.medicationName != null && order.medicationName!.isNotEmpty) {
-      return [order.medicationName!];
-    }
-    return [];
-  }
+  _MedItemData({required this.name, required this.quantity});
 }

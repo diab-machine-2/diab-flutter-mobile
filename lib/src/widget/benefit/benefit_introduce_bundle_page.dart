@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_benefit_response.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/utils/const.dart';
@@ -14,7 +17,7 @@ import 'benefit_introduce_bundle_cubit.dart';
 
 class BenefitIntroduceBundlePage extends StatefulWidget {
   final bool hideBackButton;
-  
+
   const BenefitIntroduceBundlePage({
     Key? key,
     this.hideBackButton = false,
@@ -57,7 +60,7 @@ class _BenefitIntroduceBundlePageState
             if (state is BenefitIntroduceBundleSuccess) {
               final data = state.data;
               if (data == null) {
-                return const Center(child: Text('No data'));
+                return Center(child: Text(R.string.no_data.tr()));
               }
               return _buildPage(context, data);
             }
@@ -89,7 +92,7 @@ class _BenefitIntroduceBundlePageState
               ),
             ),
           ),
-          _buildBottomBar(context, data),
+          // _buildBottomBar(context, data),
         ],
       ),
     );
@@ -206,6 +209,23 @@ class _BenefitIntroduceBundlePageState
                       ),
                     ),
                   ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Icon(Icons.schedule, size: 16, color: R.color.white),
+              const SizedBox(width: 6),
+              Text(
+                R.string.benefit_remaining_days.tr(
+                  args: ['${data.remainingDays ?? 0}'],
+                ),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.white,
                 ),
               ),
             ],
@@ -605,11 +625,30 @@ class _BenefitIntroduceBundlePageState
   ) {
     switch (type) {
       case BenefitBundleItemType.booking:
-        // TODO: Handle booking item tap
+        String mappedBookingType = Const.BENEFIT_BOOKING_AT_CLINIC;
+        if (item.bookingType == 'telemedicine' ||
+            item.bookingType == Const.BENEFIT_BOOKING_TELEMEDICINE) {
+          mappedBookingType = Const.BENEFIT_BOOKING_TELEMEDICINE;
+        } else if (item.bookingType == 'at_clinic' ||
+            item.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC) {
+          mappedBookingType = Const.BENEFIT_BOOKING_AT_CLINIC;
+        }
+        Navigator.pushNamed(
+          context,
+          NavigatorName.benefit_page,
+          arguments: {
+            'bookingType': mappedBookingType,
+            'specialtyName': item.specialtyName,
+          },
+        );
         break;
 
       case BenefitBundleItemType.partnerIntro:
-        // TODO: Handle partner intro item tap
+        Navigator.pushNamed(
+          context,
+          NavigatorName.benefit_partner_intro,
+          arguments: {'item': item},
+        );
         break;
 
       case BenefitBundleItemType.report:
@@ -621,12 +660,18 @@ class _BenefitIntroduceBundlePageState
         break;
 
       case BenefitBundleItemType.dsp:
-        // Navigate to program tab via existing observer notification
-        Observable.instance.notifyObservers(
-          [],
-          notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB,
-          map: {'position': 0},
-        );
+        final isFreeUser =
+            AppSettings.userInfo?.packageType == PackageType.free;
+        if (isFreeUser) {
+          _showUpgradePackageDialog(context);
+        } else {
+          // Navigate to program tab via existing observer notification
+          Observable.instance.notifyObservers(
+            [],
+            notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB,
+            map: {'position': 0},
+          );
+        }
         break;
 
       case BenefitBundleItemType.medicinePurchase:
@@ -643,5 +688,136 @@ class _BenefitIntroduceBundlePageState
         );
         break;
     }
+  }
+
+  void _showUpgradePackageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Container(
+          width: 344,
+          clipBehavior: Clip.antiAlias,
+          decoration: ShapeDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment(0.50, 0.00),
+              end: Alignment(0.50, 1.00),
+              colors: [Colors.white, Color(0xFFE4F5F4)],
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                R.drawable.img_upgrade_package,
+                height: 140,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                R.string.benefit_program_locked.tr(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF172823),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  height: 1.40,
+                  letterSpacing: 0.08,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                R.string.benefit_program_locked_desc.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFF172823),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  height: 1.38,
+                  letterSpacing: 0.40,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => Navigator.of(ctx).pop(),
+                      child: Container(
+                        height: 43,
+                        decoration: ShapeDecoration(
+                          color: const Color(0xFFE2E4E7),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(200),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            R.string.later.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF172823),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              height: 1.38,
+                              letterSpacing: 0.40,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        HomeSupportFunctions.showModalAddData(context);
+                      },
+                      child: Container(
+                        height: 43,
+                        decoration: ShapeDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment(-0.07, -0.37),
+                            end: Alignment(0.88, 1.00),
+                            colors: [
+                              Color(0xFF4BB2AB),
+                              Color(0xFF008479),
+                              Color(0xFF008479),
+                            ],
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(200),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            R.string.contact.tr(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              height: 1.38,
+                              letterSpacing: 0.40,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

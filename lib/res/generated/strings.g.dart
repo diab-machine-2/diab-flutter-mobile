@@ -1857,4 +1857,22 @@ class Strings {
   String get benefit_order_services_list => 'benefit_order_services_list';
   String get benefit_order_note => 'benefit_order_note';
   String get benefit_order_code => 'benefit_order_code';
+  String get benefit_program_locked => 'benefit_program_locked';
+  String get benefit_program_locked_desc => 'benefit_program_locked_desc';
+  String get loading => 'loading';
+  String get benefit_fallback_diagnose => 'benefit_fallback_diagnose';
+  String get quantity_label => 'quantity_label';
+  String get benefit_partner => 'benefit_partner';
+  String get benefit_more_photos => 'benefit_more_photos';
+  String get benefit_your_voucher => 'benefit_your_voucher';
+  String get benefit_voucher_code => 'benefit_voucher_code';
+  String get benefit_copied_voucher_code => 'benefit_copied_voucher_code';
+  String get benefit_copy => 'benefit_copy';
+  String get benefit_value => 'benefit_value';
+  String get benefit_apply_for => 'benefit_apply_for';
+  String get benefit_valid_until => 'benefit_valid_until';
+  String get benefit_applicable_location => 'benefit_applicable_location';
+  String get benefit_voucher_terms_note => 'benefit_voucher_terms_note';
+  String get benefit_voucher_expiry => 'benefit_voucher_expiry';
+  String get benefit_all_branches => 'benefit_all_branches';
 }
