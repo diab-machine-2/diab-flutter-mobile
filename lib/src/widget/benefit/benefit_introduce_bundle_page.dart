@@ -79,17 +79,21 @@ class _BenefitIntroduceBundlePageState
         children: [
           _buildAppBar(context, partnerHotline: data.partnerHotline),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderCard(context, data),
-                  const SizedBox(height: 16),
-                  _buildProgressCard(context, data),
-                  const SizedBox(height: 20),
-                  ..._buildSections(context, data),
-                  const SizedBox(height: 100),
-                ],
+            child: RefreshIndicator(
+              onRefresh: () => _cubit.refreshMyBenefit(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderCard(context, data),
+                    const SizedBox(height: 16),
+                    _buildProgressCard(context, data),
+                    const SizedBox(height: 20),
+                    ..._buildSections(context, data),
+                    const SizedBox(height: 100),
+                  ],
+                ),
               ),
             ),
           ),

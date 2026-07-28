@@ -15,6 +15,16 @@ class BenefitIntroduceBundleCubit extends Cubit<BenefitIntroduceBundleState> {
 
   Future<void> loadMyBenefit() async {
     emit(const BenefitIntroduceBundleLoading());
+    await _fetchMyBenefit();
+  }
+
+  /// Re-fetches without emitting [BenefitIntroduceBundleLoading] — used by
+  /// pull-to-refresh, where [BenefitIntroduceBundlePage] already shows its
+  /// own [RefreshIndicator] spinner and shouldn't be replaced by the
+  /// full-page loading state.
+  Future<void> refreshMyBenefit() => _fetchMyBenefit();
+
+  Future<void> _fetchMyBenefit() async {
     final ApiResult<MyBenefitResponse> result = await _repository.getMyBenefit();
     result.when(
       success: (MyBenefitResponse response) {
