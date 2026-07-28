@@ -13,6 +13,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'benefit_introduce_bundle_cubit.dart';
 
 class BenefitIntroduceBundlePage extends StatefulWidget {
@@ -213,6 +214,7 @@ class _BenefitIntroduceBundlePageState
               ),
             ],
           ),
+          GapH(8),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -307,7 +309,7 @@ class _BenefitIntroduceBundlePageState
     final List<Widget> widgets = [];
 
     for (final section in sections) {
-      final items = section.items ?? [];
+      final items = section.visibleItems;
       if (items.isEmpty) continue;
 
       // Section header
@@ -360,10 +362,10 @@ class _BenefitIntroduceBundlePageState
     MyBenefitItem item, {
     bool isLast = false,
   }) {
-    final type = item.bundleItemType;
+    final type = item.bundleItemType!;
     final bool hasDiscount = (item.discountValue ?? 0) > 0 &&
         type != BenefitBundleItemType.booking &&
-        type != BenefitBundleItemType.partnerIntro &&
+        // type != BenefitBundleItemType.partnerIntro &&
         type != BenefitBundleItemType.report;
     final bool isUnlimited = item.isUnlimitedBenefit;
     final int quantity = item.quantity ?? 0;
@@ -379,9 +381,36 @@ class _BenefitIntroduceBundlePageState
         ? 1.0
         : (quantity > 0 ? (used / quantity).clamp(0.0, 1.0) : 0.0);
 
-    // Secondary text
+    final bool reportNotReady =
+        type == BenefitBundleItemType.report && !isUsed;
+
+    // Status text (left side of row 2)
+    String statusText;
+    if (type == BenefitBundleItemType.dsp) {
+      statusText = isUsed
+          ? R.string.benefit_dsp_joined.tr()
+          : R.string.benefit_dsp_not_joined.tr();
+    } else if (type == BenefitBundleItemType.report) {
+      statusText = isUsed
+          ? R.string.benefit_report_ready.tr()
+          : R.string.benefit_report_not_ready.tr();
+    } else {
+      statusText =
+          isUsed ? R.string.benefit_used.tr() : R.string.benefit_not_used.tr();
+    }
+
+    // Secondary text (right side of row 2)
     String? secondaryText;
-    if (hasDiscount) {
+    if (type == BenefitBundleItemType.report) {
+      secondaryText = null;
+    } else if (type == BenefitBundleItemType.dsp) {
+      final totalWeek = item.totalWeek ?? 0;
+      final currentWeek = item.currentWeek ?? 0;
+      secondaryText = isUsed
+          ? R.string.benefit_dsp_current_week
+              .tr(args: ['$currentWeek', '$totalWeek'])
+          : R.string.benefit_dsp_total_weeks.tr(args: ['$totalWeek']);
+    } else if (hasDiscount) {
       secondaryText = null;
     } else if (isUnlimited) {
       secondaryText = R.string.benefit_unlimited.tr();
@@ -393,7 +422,7 @@ class _BenefitIntroduceBundlePageState
       mainAxisSize: MainAxisSize.min,
       children: [
         InkWell(
-          onTap: () => _onItemTap(context, item, type),
+          onTap: reportNotReady ? null : () => _onItemTap(context, item, type),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(
@@ -433,9 +462,7 @@ class _BenefitIntroduceBundlePageState
                       Row(
                         children: [
                           Text(
-                            isUsed
-                                ? R.string.used.tr()
-                                : R.string.not_used.tr(),
+                            statusText,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -501,7 +528,6 @@ class _BenefitIntroduceBundlePageState
       case BenefitBundleItemType.report:
         iconPath = R.icons.ic_benefit_item_bao_cao;
         break;
-      case BenefitBundleItemType.medicine:
       case BenefitBundleItemType.medicinePurchase:
         iconPath = R.icons.ic_benefit_item_thuoc;
         break;
@@ -639,6 +665,8 @@ class _BenefitIntroduceBundlePageState
           arguments: {
             'bookingType': mappedBookingType,
             'specialtyName': item.specialtyName,
+            'specialtyId': item.specialtyId,
+            'clinicId': item.clinicId,
           },
         );
         break;
@@ -653,10 +681,6 @@ class _BenefitIntroduceBundlePageState
 
       case BenefitBundleItemType.report:
         Navigator.pushNamed(context, NavigatorName.view_test_result);
-        break;
-
-      case BenefitBundleItemType.medicine:
-        // Temporarily no action for medicine
         break;
 
       case BenefitBundleItemType.dsp:

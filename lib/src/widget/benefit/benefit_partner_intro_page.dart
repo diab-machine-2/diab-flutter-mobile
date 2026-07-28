@@ -1,11 +1,14 @@
+import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/my_benefit_response.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/video_widget.dart';
 
 class BenefitPartnerIntroPage extends StatelessWidget {
   final MyBenefitItem? item;
@@ -18,11 +21,13 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     final partnerName = benefitType?.title ?? R.string.benefit_partner.tr();
     final mediaList = benefitType?.media ?? [];
 
-    // Filter cover image (media type == 3)
-    final coverMedia = mediaList.firstWhere(
-      (m) => m.type == 3,
-      orElse: () => mediaList.isNotEmpty ? mediaList.first : BenefitMedia(),
-    );
+    // Banner media (type == 1): sortOrder == 0 is the cover, the rest
+    // (sorted ascending) form the gallery.
+    final bannerMedia = mediaList.where((m) => m.type == 1).toList()
+      ..sort((a, b) => (a.sortOrder ?? 0).compareTo(b.sortOrder ?? 0));
+    final coverMedia = bannerMedia.firstWhereOrNull((m) => m.sortOrder == 0) ??
+        (bannerMedia.isNotEmpty ? bannerMedia.first : BenefitMedia());
+    final galleryMedia = bannerMedia.where((m) => m.sortOrder != 0).toList();
     final String coverUrl = coverMedia.imageUrl?.url ?? coverMedia.url ?? '';
 
     // Expiration date string
@@ -34,10 +39,10 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     }
 
     // Voucher value string
-    final String voucherValueStr =
-        (benefitType?.voucherValue != null && benefitType!.voucherValue!.isNotEmpty)
-            ? benefitType.voucherValue!
-            : '';
+    final String voucherValueStr = (benefitType?.voucherValue != null &&
+            benefitType!.voucherValue!.isNotEmpty)
+        ? benefitType.voucherValue!
+        : '';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -52,13 +57,15 @@ class BenefitPartnerIntroPage extends StatelessWidget {
                   _buildCoverBanner(coverUrl),
                   _buildPartnerCard(partnerName, benefitType),
                   const SizedBox(height: 16),
-                  if (mediaList.isNotEmpty) _buildImageGallery(mediaList),
+                  if (galleryMedia.isNotEmpty) _buildImageGallery(galleryMedia),
                   const SizedBox(height: 20),
-                  _buildVoucherSection(
+                  _buildBenefitContentSection(
                     context,
                     benefitType,
+                    mediaList,
                     validUntilStr,
                     voucherValueStr,
+                    coverUrl,
                   ),
                   const SizedBox(height: 30),
                 ],
@@ -130,12 +137,9 @@ class BenefitPartnerIntroPage extends StatelessWidget {
   }
 
   Widget _buildPartnerCard(String name, BenefitType? benefitType) {
-    final locationText =
-        benefitType?.location ?? '';
-    final subName = benefitType?.description ??
-        '';
-    final openTime =
-        benefitType?.openTime ?? '';
+    final locationText = benefitType?.location ?? '';
+    final subName = benefitType?.description ?? '';
+    final openTime = benefitType?.openTime ?? '';
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 20, left: 16, right: 16),
@@ -241,9 +245,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     );
   }
 
-  Widget _buildImageGallery(List<BenefitMedia> mediaList) {
-    // Filter media items where type == 1
-    final galleryMedia = mediaList.where((m) => m.type == 1).toList();
+  Widget _buildImageGallery(List<BenefitMedia> galleryMedia) {
     final urls = galleryMedia
         .map((m) => m.imageUrl?.url ?? m.url)
         .where((u) => u != null && u.isNotEmpty)
@@ -302,6 +304,64 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     );
   }
 
+  /// Renders the voucher card when [BenefitType.hasVoucher] is set; otherwise
+  /// falls back to a promo image (media type == 4) or a playable promo video
+  /// (media type == 2).
+  Widget _buildBenefitContentSection(
+    BuildContext context,
+    BenefitType? benefitType,
+    List<BenefitMedia> mediaList,
+    String validUntilStr,
+    String voucherValueStr,
+    String coverUrl,
+  ) {
+    if (benefitType?.hasVoucher == 1) {
+      return _buildVoucherSection(
+        context,
+        benefitType,
+        validUntilStr,
+        voucherValueStr,
+      );
+    }
+
+    final promoImage = mediaList.firstWhereOrNull((m) => m.type == 4);
+    if (promoImage != null) {
+      final url = promoImage.imageUrl?.url ?? promoImage.url ?? '';
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: _buildImage(
+            url,
+            width: double.infinity,
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+      );
+    }
+
+    final promoVideo = mediaList.firstWhereOrNull(
+      (m) => m.type == 2 && (m.url ?? '').isNotEmpty,
+    );
+    if (promoVideo != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: VideoWidget(
+            url: promoVideo.url!,
+            onComplete: () {},
+            setVideoManager: (_) {},
+            videoTitle: benefitType?.title,
+            videoThumbnail: coverUrl,
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
   Widget _buildVoucherSection(
     BuildContext context,
     BenefitType? benefitType,
@@ -343,11 +403,19 @@ class BenefitPartnerIntroPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top section (Green background 0xFF01645A)
+            // The border sits 2px inside the container's edge (its own
+            // rounded rect deflated by the stroke width), but Container's
+            // own clipBehavior would clip children to the outer (un-deflated)
+            // path — letting the opaque child paint flush over the border at
+            // the rounded corners and cut it off. Clipping the child
+            // ourselves to the deflated radius (16 - 2 = 14) keeps it fully
+            // inside the stroke everywhere, corners included.
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top section (Green background 0xFF01645A)
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.only(
@@ -399,7 +467,9 @@ class BenefitPartnerIntroPage extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          R.string.benefit_active.tr(),
+                          benefitType?.status == 1
+                              ? R.string.benefit_active.tr()
+                              : R.string.benefit_inactive.tr(),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -556,6 +626,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
               ],
             ),
           ),
+          ),
         ],
       ),
     );
@@ -612,26 +683,27 @@ class BenefitPartnerIntroPage extends StatelessWidget {
   }
 
   Widget _buildBottomBar(BuildContext context, BenefitType? benefitType) {
-    String remainingDaysStr =
-        R.string.benefit_remaining_days.tr(args: ['181']);
+    String remainingDaysStr = R.string.benefit_remaining_days.tr(args: ['181']);
     if (benefitType?.validUntil != null) {
       final expiry =
           DateTime.fromMillisecondsSinceEpoch(benefitType!.validUntil! * 1000);
       final now = DateTime.now();
       final diffDays = expiry.difference(now).inDays;
-      if (diffDays > 0) {
-        remainingDaysStr =
-            R.string.benefit_remaining_days.tr(args: ['$diffDays']);
-      }
+      remainingDaysStr = diffDays > 0
+          ? R.string.benefit_remaining_days.tr(args: ['$diffDays'])
+          : R.string.benefit_voucher_expired.tr();
     }
 
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
           top: BorderSide(color: Color(0xFFE5E7EB)),
         ),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       padding: EdgeInsets.fromLTRB(
         16,
@@ -715,6 +787,8 @@ class BenefitPartnerIntroPage extends StatelessWidget {
         height: height,
         fit: fit,
         errorBuilder: (_, __, ___) => Container(
+          width: width,
+          height: height ?? 200,
           color: Colors.grey[200],
           child: const Center(
             child: Icon(Icons.image, size: 48, color: Colors.grey),
@@ -728,6 +802,8 @@ class BenefitPartnerIntroPage extends StatelessWidget {
       height: height,
       fit: fit,
       errorBuilder: (_, __, ___) => Container(
+        width: width,
+        height: height ?? 200,
         color: Colors.grey[200],
         child: const Center(
           child: Icon(Icons.image, size: 48, color: Colors.grey),

@@ -217,5 +217,6 @@ class NavigatorName {
   static const String benefit_service_request_success = '/benefit_service_request_success';
   static const String benefit_medication_order_detail = '/benefit_medication_order_detail';
   static const String benefit_partner_intro = '/benefit_partner_intro';
+  static const String benefit_my_voucher = '/benefit_my_voucher';
 }
 

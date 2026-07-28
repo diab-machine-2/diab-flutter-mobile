@@ -43,6 +43,7 @@ import 'package:medical/src/widget/benefit/benefit_page.dart';
 import 'package:medical/src/widget/benefit/benefit_introduce_bundle_page.dart';
 import 'package:medical/src/widget/benefit/benefit_medication_order_detail_page.dart';
 import 'package:medical/src/widget/benefit/benefit_partner_intro_page.dart';
+import 'package:medical/src/widget/benefit/benefit_my_voucher_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_intro_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -470,9 +471,13 @@ class AppRoutes {
           final bookingType = data?['bookingType'] as String? ??
               Const.BENEFIT_BOOKING_AT_CLINIC;
           final specialtyName = data?['specialtyName'] as String?;
+          final specialtyId = data?['specialtyId'] as int?;
+          final clinicId = data?['clinicId'] as int?;
           page = BenefitPage(
             bookingType: bookingType,
             specialtyName: specialtyName,
+            specialtyId: specialtyId,
+            clinicId: clinicId,
           );
           break;
         }
@@ -529,6 +534,10 @@ class AppRoutes {
           );
           break;
         }
+
+      case NavigatorName.benefit_my_voucher:
+        page = const BenefitMyVoucherPage();
+        break;
 
       case NavigatorName.benefit_booking_detail:
         {

@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,11 +23,15 @@ import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 class BenefitSpecialtyPage extends StatefulWidget {
   final String bookingType;
   final String? specialtyName;
+  final int? specialtyId;
+  final int? clinicId;
 
   const BenefitSpecialtyPage({
     Key? key,
     required this.bookingType,
     this.specialtyName,
+    this.specialtyId,
+    this.clinicId,
   }) : super(key: key);
 
   @override
@@ -39,6 +44,9 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
   bool get _isTelemedicine =>
       widget.bookingType == Const.BENEFIT_BOOKING_TELEMEDICINE;
 
+  bool get _isClinic =>
+      widget.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC;
+
   @override
   void initState() {
     super.initState();
@@ -49,14 +57,25 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
   Future<void> _initData() async {
     await _cubit.getCLinicSpecialtyList();
     if (!mounted) return;
-    if (widget.specialtyName != null && widget.specialtyName!.isNotEmpty) {
+
+    final ordered = _getOrderedSpecialties();
+    ClinicSpecialty? matched;
+    if (widget.specialtyId != null) {
+      matched = ordered.firstWhereOrNull((s) => s.id == widget.specialtyId);
+    }
+    if (matched == null &&
+        widget.specialtyName != null &&
+        widget.specialtyName!.isNotEmpty) {
       final target = widget.specialtyName!.toLowerCase().trim();
-      final ordered = _getOrderedSpecialties();
-      final matchIndex = ordered.indexWhere(
+      matched = ordered.firstWhereOrNull(
           (s) => s.name.toLowerCase().trim() == target);
-      if (matchIndex != -1) {
-        _onSelectSpecialty(ordered[matchIndex]);
-      }
+    }
+    if (matched == null) return;
+
+    if (_isClinic && widget.clinicId != null) {
+      _onSelectAtClinicPreselected(matched, widget.clinicId!);
+    } else {
+      _onSelectSpecialty(matched);
     }
   }
 
@@ -64,9 +83,23 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
     var specialties = _cubit.listSpecialty;
     if (specialties.isEmpty) return [];
 
+    // Filter out excluded specialties from Firebase Remote Config
+    final excludeSlugs = <String>{};
     if (_isTelemedicine) {
+      final raw = FirebaseRemoteSetting.instance.excludeSpecialtyTelemedicine;
+      if (raw.isNotEmpty) {
+        excludeSlugs.addAll(raw.split(','));
+      }
+    }
+    if (_isClinic) {
+      final raw = FirebaseRemoteSetting.instance.excludeSpecialtyClinic;
+      if (raw.isNotEmpty) {
+        excludeSlugs.addAll(raw.split(','));
+      }
+    }
+    if (excludeSlugs.isNotEmpty) {
       specialties = specialties
-          .where((s) => s.name.toLowerCase().trim() != 'cơ xương khớp')
+          .where((s) => !excludeSlugs.contains(_nameToSlug(s.name)))
           .toList();
     }
 
@@ -103,6 +136,30 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
     final fileName = segments.last;
     final dotIndex = fileName.lastIndexOf('.');
     return dotIndex > 0 ? fileName.substring(0, dotIndex) : fileName;
+  }
+
+  /// Converts a Vietnamese specialty name to a canonical slug for exclusion matching.
+  /// E.g. "Cơ xương khớp" → "co-xuong-khop", "Thừa cân/Béo phì" → "thua-can-beo-phi"
+  String _nameToSlug(String name) {
+    const withDiacritics =
+        'àáạãảâấầậẫẩăắằặẵẳđèéẹẽẻêếềệễểìíịĩỉòóọõỏôốồộỗổơớờợỡởùúụũủưứừựữửýỳỵỹỷ';
+    const withoutDiacritics =
+        'aaaaaaaaaaaaaaaaadeeeeeeeeeeeeiiiiiooooooooooooooooooouuuuuuuuuuuyyyyy';
+
+    return name
+        .toLowerCase()
+        .trim()
+        .split('')
+        .map((c) {
+          final idx = withDiacritics.indexOf(c);
+          return idx >= 0 ? withoutDiacritics[idx] : c;
+        })
+        .join()
+        .replaceAll('/', '-')
+        .replaceAll(RegExp(r'\s+'), '-')
+        .replaceAll(RegExp(r'[^a-z0-9-]'), '')
+        .replaceAll(RegExp(r'-{2,}'), '-')
+        .replaceAll(RegExp(r'^-|-$'), '');
   }
 
   /// Maps a banner slug from the API to a local drawable asset path.
@@ -217,6 +274,87 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
           'serviceType': serviceType,
           'action': 'create',
           'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
+          'specialtyName': specialty.name,
+        },
+      );
+    } catch (_) {
+      BotToast.closeAllLoading();
+    }
+  }
+
+  /// Auto-books the given [clinicId] for an at-clinic benefit item, skipping
+  /// the manual clinic-list selection step — mirrors [_onSelectTelemedicine]'s
+  /// auto-pick pattern but targets one specific clinic instead of the first
+  /// search result.
+  Future<void> _onSelectAtClinicPreselected(
+    ClinicSpecialty specialty,
+    int clinicId,
+  ) async {
+    final clinicIdStr = clinicId.toString();
+
+    _cubit.initSearchBookingClinicListRequest(
+      page: 1,
+      specialtyId: '',
+      kind: Const.BOOKING_TYPE_CLINIC,
+      isFilterDistance: 0,
+      clinicIds: [clinicIdStr],
+    );
+
+    final request = _cubit.searchBookingClinicListRequest;
+    if (request == null) {
+      await _onSelectAtClinic(specialty);
+      return;
+    }
+
+    BotToast.showLoading(allowClick: false);
+    try {
+      final clinics = await _cubit.searchBookingClinicList(
+        request: request,
+        isRefresh: true,
+      );
+      BotToast.closeAllLoading();
+
+      final matchedClinic =
+          clinics.firstWhereOrNull((c) => c.id.toString() == clinicIdStr) ??
+              (clinics.isNotEmpty ? clinics.first : null);
+      if (matchedClinic == null) {
+        BotToast.showSimpleNotification(
+            title: R.string.empty_clinic_content.tr());
+        await _onSelectAtClinic(specialty);
+        return;
+      }
+
+      final detailSuccess = await _cubit.getClinicDetail(
+        id: matchedClinic.id,
+        isLoading: false,
+      );
+      if (!detailSuccess || _cubit.selectedClinic == null) {
+        BotToast.showSimpleNotification(
+            title: R.string.empty_clinic_content.tr());
+        return;
+      }
+
+      for (final cluster in _cubit.listClinicClusters) {
+        if (cluster.clinicId == matchedClinic.id) {
+          _cubit.selectedClinicBranches = cluster.branches;
+          break;
+        }
+      }
+
+      _cubit.initCreateDsmesBookingRequest(
+        locale: context.locale.languageCode,
+        clearExamination: true,
+      );
+
+      final serviceType = DsmesAppointmentMode.atClinic.toString();
+
+      if (!mounted) return;
+      BenefitNavigatorScope.of(context).currentState?.pushNamed(
+        NavigatorName.benefit_calendar,
+        arguments: {
+          'serviceType': serviceType,
+          'action': 'create',
+          'bookingType': Const.BENEFIT_BOOKING_AT_CLINIC,
           'specialtyName': specialty.name,
         },
       );

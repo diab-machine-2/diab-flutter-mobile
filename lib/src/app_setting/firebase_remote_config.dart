@@ -18,6 +18,8 @@ class FirebaseRemoteSetting {
   late String _linkStoreNavigation;
   String? _utilitiesOrder;
   String? _specialtyOrder;
+  late String _excludeSpecialtyClinic;
+  late String _excludeSpecialtyTelemedicine;
   List<GlucoseFaq> _glucoseFaqs = [
     GlucoseFaq(
       title: 'Máy đo của bạn không thuộc danh sách thiết bị hỗ trợ?',
@@ -51,6 +53,8 @@ class FirebaseRemoteSetting {
   String? get specialtyOrder => _specialtyOrder;
   String? get vnpayIntegratedInfo => _vnpayIntegratedInfo;
   String? get subscriptionPackageInfo => _subscriptionPackageInfo;
+  String get excludeSpecialtyClinic => _excludeSpecialtyClinic;
+  String get excludeSpecialtyTelemedicine => _excludeSpecialtyTelemedicine;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
@@ -79,7 +83,11 @@ class FirebaseRemoteSetting {
       "VNPAY_INTEGRATED_INFO_DEV":
           localSetting["VNPAY_INTEGRATED_INFO_DEV"] ?? '',
       "SUBSCRIPTION_PACKAGE_INFO":
-          localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? ''
+          localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? '',
+      "EXCLUDE_SPECIALTY_CLINIC":
+          localSetting["EXCLUDE_SPECIALTY_CLINIC"] ?? '',
+      "EXCLUDE_SPECIALTY_TELEMEDICINE":
+          localSetting["EXCLUDE_SPECIALTY_TELEMEDICINE"] ?? 'co-xuong-khop'
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -128,5 +136,8 @@ class FirebaseRemoteSetting {
         : remoteConfig.getString('VNPAY_INTEGRATED_INFO_DEV');
     _subscriptionPackageInfo =
         remoteConfig.getString('SUBSCRIPTION_PACKAGE_INFO');
+    _excludeSpecialtyClinic = remoteConfig.getString('EXCLUDE_SPECIALTY_CLINIC');
+    _excludeSpecialtyTelemedicine =
+        remoteConfig.getString('EXCLUDE_SPECIALTY_TELEMEDICINE');
   }
 }

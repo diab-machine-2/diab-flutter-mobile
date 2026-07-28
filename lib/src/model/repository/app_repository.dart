@@ -1526,7 +1526,7 @@ class AppRepository {
   }
 
   /// TODO: Remove mock when API is ready.
-  static const bool _useMyBenefitMock = true;
+  static const bool _useMyBenefitMock = false;
 
   Future<ApiResult<MyBenefitResponse>> getMyBenefit() async {
     if (_useMyBenefitMock) {

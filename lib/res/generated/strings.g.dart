@@ -1845,6 +1845,15 @@ class Strings {
   String get benefit_discount_badge => 'benefit_discount_badge';
   String get benefit_remaining_days => 'benefit_remaining_days';
   String get benefit_unlimited => 'benefit_unlimited';
+  String get benefit_used => 'benefit_used';
+  String get benefit_not_used => 'benefit_not_used';
+  String get benefit_dsp_joined => 'benefit_dsp_joined';
+  String get benefit_dsp_not_joined => 'benefit_dsp_not_joined';
+  String get benefit_dsp_total_weeks => 'benefit_dsp_total_weeks';
+  String get benefit_dsp_current_week => 'benefit_dsp_current_week';
+  String get benefit_report_ready => 'benefit_report_ready';
+  String get benefit_report_not_ready => 'benefit_report_not_ready';
+  String get benefit_inactive => 'benefit_inactive';
   String get benefit_discount => 'benefit_discount';
   String get benefit_my_benefits => 'benefit_my_benefits';
   String get benefit_already_requested => 'benefit_already_requested';
@@ -1875,4 +1884,7 @@ class Strings {
   String get benefit_voucher_terms_note => 'benefit_voucher_terms_note';
   String get benefit_voucher_expiry => 'benefit_voucher_expiry';
   String get benefit_all_branches => 'benefit_all_branches';
+  String get benefit_my_voucher_title => 'benefit_my_voucher_title';
+  String get benefit_voucher_subtext => 'benefit_voucher_subtext';
+  String get benefit_voucher_expired => 'benefit_voucher_expired';
 }

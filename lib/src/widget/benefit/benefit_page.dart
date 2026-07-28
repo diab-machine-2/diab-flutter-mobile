@@ -30,11 +30,15 @@ import 'package:medical/src/widget/helper/show_message.dart';
 class BenefitPage extends StatefulWidget {
   final String bookingType;
   final String? specialtyName;
+  final int? specialtyId;
+  final int? clinicId;
 
   const BenefitPage({
     Key? key,
     required this.bookingType,
     this.specialtyName,
+    this.specialtyId,
+    this.clinicId,
   }) : super(key: key);
 
   @override
@@ -118,6 +122,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                         child: BenefitSpecialtyPage(
                           bookingType: widget.bookingType,
                           specialtyName: widget.specialtyName,
+                          specialtyId: widget.specialtyId,
+                          clinicId: widget.clinicId,
                         ),
                       ),
                     );

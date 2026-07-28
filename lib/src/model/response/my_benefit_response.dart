@@ -110,27 +110,51 @@ class MyBenefitSection {
 
   String? get tagName => _tagName;
   List<MyBenefitItem>? get items => _items;
+
+  /// Items whose [MyBenefitItem.bundleItemType] resolves to a known type.
+  /// `itemType == 0` (or any unrecognized itemType/appFeature combo) is
+  /// ignored by the API contract and must never reach the UI.
+  List<MyBenefitItem> get visibleItems =>
+      (items ?? []).where((i) => i.bundleItemType != null).toList();
 }
 
-/// Item types for benefit bundle items.
-/// API is not finalized; these values are used in mock data.
+/// Semantic item types for benefit bundle items, resolved from the raw
+/// `itemType`/`appFeature` pair via [BenefitBundleItemType.resolve].
 enum BenefitBundleItemType {
-  medicine(0),
-  booking(1),
-  partnerIntro(2),
-  report(3),
-  dsp(4),
-  medicinePurchase(5),
-  labTest(6);
+  dsp,
+  booking,
+  partnerIntro,
+  report,
+  medicinePurchase,
+  labTest;
 
-  const BenefitBundleItemType(this.value);
-  final int value;
-
-  static BenefitBundleItemType fromValue(int? value) {
-    return BenefitBundleItemType.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => BenefitBundleItemType.medicine,
-    );
+  /// Maps the wire `itemType`/`appFeature` pair to a semantic type.
+  /// `itemType == 0` has no meaning in the UI and resolves to `null`.
+  /// `itemType == 1` is always `dsp`. `itemType == 2` is disambiguated by
+  /// `appFeature`: 1/2 = booking (telemedicine/at-clinic), 3 = partnerIntro,
+  /// 4 = report, 5 = medicinePurchase, 6 = labTest.
+  static BenefitBundleItemType? resolve({int? itemType, int? appFeature}) {
+    switch (itemType) {
+      case 1:
+        return BenefitBundleItemType.dsp;
+      case 2:
+        switch (appFeature) {
+          case 1:
+          case 2:
+            return BenefitBundleItemType.booking;
+          case 3:
+            return BenefitBundleItemType.partnerIntro;
+          case 4:
+            return BenefitBundleItemType.report;
+          case 5:
+            return BenefitBundleItemType.medicinePurchase;
+          case 6:
+            return BenefitBundleItemType.labTest;
+        }
+        return null;
+      default:
+        return null;
+    }
   }
 }
 
@@ -139,32 +163,50 @@ class MyBenefitItem {
     String? itemId,
     int? itemType,
     String? name,
+    int? category,
+    int? appFeature,
+    int? reportType,
+    int? specialtyId,
+    String? specialtyName,
+    int? clinicId,
     int? isUnlimited,
     int? quantity,
     int? quantityUsed,
     int? discountValue,
     int? discountType,
     BenefitType? benefitType,
-    String? bookingType,
-    String? specialtyName,
+    int? totalWeek,
+    int? currentWeek,
   }) {
     _itemId = itemId;
     _itemType = itemType;
     _name = name;
+    _category = category;
+    _appFeature = appFeature;
+    _reportType = reportType;
+    _specialtyId = specialtyId;
+    _specialtyName = specialtyName;
+    _clinicId = clinicId;
     _isUnlimited = isUnlimited;
     _quantity = quantity;
     _quantityUsed = quantityUsed;
     _discountValue = discountValue;
     _discountType = discountType;
     _benefitType = benefitType;
-    _bookingType = bookingType;
-    _specialtyName = specialtyName;
+    _totalWeek = totalWeek;
+    _currentWeek = currentWeek;
   }
 
   MyBenefitItem.fromJson(dynamic json) {
     _itemId = json['itemId'];
     _itemType = json['itemType'];
     _name = json['name'];
+    _category = json['category'];
+    _appFeature = json['appFeature'];
+    _reportType = json['reportType'];
+    _specialtyId = json['specialtyId'];
+    _specialtyName = json['specialtyName'];
+    _clinicId = json['clinicId'];
     _isUnlimited = json['isUnlimited'];
     _quantity = json['quantity'];
     _quantityUsed = json['quantityUsed'];
@@ -173,36 +215,60 @@ class MyBenefitItem {
     _benefitType = json['benefitType'] != null
         ? BenefitType.fromJson(json['benefitType'])
         : null;
-    _bookingType = json['bookingType'];
-    _specialtyName = json['specialtyName'];
+    _totalWeek = json['totalWeek'];
+    _currentWeek = json['currentWeek'];
   }
 
   String? _itemId;
   int? _itemType;
   String? _name;
+  int? _category;
+  int? _appFeature;
+  int? _reportType;
+  int? _specialtyId;
+  String? _specialtyName;
+  int? _clinicId;
   int? _isUnlimited;
   int? _quantity;
   int? _quantityUsed;
   int? _discountValue;
   int? _discountType;
   BenefitType? _benefitType;
-  String? _bookingType;
-  String? _specialtyName;
+  int? _totalWeek;
+  int? _currentWeek;
 
   String? get itemId => _itemId;
   int? get itemType => _itemType;
   String? get name => _name;
+  int? get category => _category;
+  int? get appFeature => _appFeature;
+  int? get reportType => _reportType;
+  int? get specialtyId => _specialtyId;
+  String? get specialtyName => _specialtyName;
+  int? get clinicId => _clinicId;
   int? get isUnlimited => _isUnlimited;
   int? get quantity => _quantity;
   int? get quantityUsed => _quantityUsed;
   int? get discountValue => _discountValue;
   int? get discountType => _discountType;
   BenefitType? get benefitType => _benefitType;
-  String? get bookingType => _bookingType;
-  String? get specialtyName => _specialtyName;
 
-  BenefitBundleItemType get bundleItemType =>
-      BenefitBundleItemType.fromValue(itemType);
+  /// Only meaningful for [BenefitBundleItemType.dsp] items.
+  int? get totalWeek => _totalWeek;
+
+  /// Only meaningful for [BenefitBundleItemType.dsp] items.
+  int? get currentWeek => _currentWeek;
+
+  BenefitBundleItemType? get bundleItemType =>
+      BenefitBundleItemType.resolve(itemType: itemType, appFeature: appFeature);
+
+  /// Derived from `itemType`/`appFeature` — the API no longer sends this
+  /// directly on the wire.
+  String? get bookingType {
+    if (itemType == 2 && appFeature == 1) return 'telemedicine';
+    if (itemType == 2 && appFeature == 2) return 'at_clinic';
+    return null;
+  }
 
   int get remainingQuantity =>
       ((quantity ?? 0) - (quantityUsed ?? 0)).clamp(0, quantity ?? 0);

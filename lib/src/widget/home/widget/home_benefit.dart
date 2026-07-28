@@ -23,7 +23,8 @@ class HomeBenefitSection extends StatelessWidget {
   void _onTapBenefitAtHome(BuildContext context) {
     final item = MyBenefitItem.fromJson({
       'itemId': 'partner-003',
-      'itemType': BenefitBundleItemType.partnerIntro.value,
+      'itemType': 2,
+      'appFeature': 3,
       'name': 'WeCare247',
       'isUnlimited': 0,
       'quantity': 1,
@@ -59,7 +60,7 @@ class HomeBenefitSection extends StatelessWidget {
             'bundleBenefitTypeId': 'b5bbd0ea-2fb9-4c75-0ca4-08dedbdbb8bc',
             'imageId': '1d0fdf24-5e06-4ca9-f212-08dee7defb35',
             'url': null,
-            'type': 3,
+            'type': 1,
             'sortOrder': 0,
             'imageUrl': {
               'id': '1d0fdf24-5e06-4ca9-f212-08dee7defb35',
@@ -246,7 +247,10 @@ class HomeBenefitSection extends StatelessWidget {
               _BenefitItem(
                 icon: R.icons.ic_benefit_other,
                 label: R.string.benefit_other.tr(),
-                onTap: null,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  NavigatorName.benefit_my_voucher,
+                ),
               ),
               // Invisible spacer to match the 4-column grid
               const Expanded(child: SizedBox()),

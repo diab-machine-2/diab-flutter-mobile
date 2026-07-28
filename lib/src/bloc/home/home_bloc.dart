@@ -489,7 +489,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         slug: "kham-tu-xa",
         navigatorName: NavigatorName.booking_doctor,
       ),
-      if (bcbStatus && hasBundle == false)
+      if (bcbStatus && hasBundle == true)
         HomeUtilityData(
           icon: R.drawable.ic_lab_result,
           title: R.string.bcb_medical_examination_result.tr(),
