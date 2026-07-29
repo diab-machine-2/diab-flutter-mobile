@@ -47,6 +47,22 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
   bool get _isClinic =>
       widget.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC;
 
+  /// True when the caller already supplied enough info (specialty + clinic
+  /// for at-clinic, or specialty for telemedicine) that [_initData] will try
+  /// to auto-navigate straight to [NavigatorName.benefit_calendar] without
+  /// the user picking anything here. While true (and resolution hasn't
+  /// failed), the specialty grid is never rendered — avoids a visible flash
+  /// of this screen before the auto-redirect completes.
+  bool get _hasAutoResolveIntent =>
+      (_isTelemedicine || (_isClinic && widget.clinicId != null)) &&
+      (widget.specialtyId != null ||
+          (widget.specialtyName?.trim().isNotEmpty ?? false));
+
+  /// Flips true if auto-resolution can't complete (no specialty match,
+  /// clinic search/detail failure, etc.) so the grid reveals itself as a
+  /// manual fallback instead of leaving the user on a spinner forever.
+  bool _autoResolveFailed = false;
+
   @override
   void initState() {
     super.initState();
@@ -70,10 +86,15 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       matched = ordered.firstWhereOrNull(
           (s) => s.name.toLowerCase().trim() == target);
     }
-    if (matched == null) return;
+    if (matched == null) {
+      if (_hasAutoResolveIntent) setState(() => _autoResolveFailed = true);
+      return;
+    }
 
     if (_isClinic && widget.clinicId != null) {
       _onSelectAtClinicPreselected(matched, widget.clinicId!);
+    } else if (_isTelemedicine) {
+      _onSelectTelemedicine(matched, isAutoResolve: true);
     } else {
       _onSelectSpecialty(matched);
     }
@@ -211,7 +232,10 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
     );
   }
 
-  Future<void> _onSelectTelemedicine(ClinicSpecialty specialty) async {
+  Future<void> _onSelectTelemedicine(
+    ClinicSpecialty specialty, {
+    bool isAutoResolve = false,
+  }) async {
     final clinicIds = specialty.telemedicine_clinic_ids
         .map((e) => e.toString())
         .toList();
@@ -244,6 +268,9 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       if (clinics.isEmpty) {
         BotToast.showSimpleNotification(
             title: R.string.empty_clinic_content.tr());
+        if (isAutoResolve && mounted) {
+          setState(() => _autoResolveFailed = true);
+        }
         return;
       }
 
@@ -256,6 +283,9 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       if (!detailSuccess || _cubit.selectedClinic == null) {
         BotToast.showSimpleNotification(
             title: R.string.empty_clinic_content.tr());
+        if (isAutoResolve && mounted) {
+          setState(() => _autoResolveFailed = true);
+        }
         return;
       }
 
@@ -268,17 +298,29 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       final serviceType = DsmesAppointmentMode.telemedicine.toString();
 
       if (!mounted) return;
-      BenefitNavigatorScope.of(context).currentState?.pushNamed(
-        NavigatorName.benefit_calendar,
-        arguments: {
-          'serviceType': serviceType,
-          'action': 'create',
-          'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
-          'specialtyName': specialty.name,
-        },
-      );
+      final navigatorState = BenefitNavigatorScope.of(context).currentState;
+      final args = {
+        'serviceType': serviceType,
+        'action': 'create',
+        'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
+        'specialtyName': specialty.name,
+      };
+      if (isAutoResolve) {
+        navigatorState?.pushReplacementNamed(
+          NavigatorName.benefit_calendar,
+          arguments: args,
+        );
+      } else {
+        navigatorState?.pushNamed(
+          NavigatorName.benefit_calendar,
+          arguments: args,
+        );
+      }
     } catch (_) {
       BotToast.closeAllLoading();
+      if (isAutoResolve && mounted) {
+        setState(() => _autoResolveFailed = true);
+      }
     }
   }
 
@@ -302,6 +344,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
 
     final request = _cubit.searchBookingClinicListRequest;
     if (request == null) {
+      if (mounted) setState(() => _autoResolveFailed = true);
       await _onSelectAtClinic(specialty);
       return;
     }
@@ -320,6 +363,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       if (matchedClinic == null) {
         BotToast.showSimpleNotification(
             title: R.string.empty_clinic_content.tr());
+        if (mounted) setState(() => _autoResolveFailed = true);
         await _onSelectAtClinic(specialty);
         return;
       }
@@ -331,6 +375,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       if (!detailSuccess || _cubit.selectedClinic == null) {
         BotToast.showSimpleNotification(
             title: R.string.empty_clinic_content.tr());
+        if (mounted) setState(() => _autoResolveFailed = true);
         return;
       }
 
@@ -349,7 +394,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       final serviceType = DsmesAppointmentMode.atClinic.toString();
 
       if (!mounted) return;
-      BenefitNavigatorScope.of(context).currentState?.pushNamed(
+      BenefitNavigatorScope.of(context).currentState?.pushReplacementNamed(
         NavigatorName.benefit_calendar,
         arguments: {
           'serviceType': serviceType,
@@ -360,6 +405,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       );
     } catch (_) {
       BotToast.closeAllLoading();
+      if (mounted) setState(() => _autoResolveFailed = true);
     }
   }
 
@@ -408,26 +454,29 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
                 ),
               ),
               Expanded(
-                child:
-                    BlocBuilder<DsmesAppointmentCubit, DsmesAppointmentState>(
-                  builder: (context, state) {
-                    if (state is DsmesAppointmentLoading &&
-                        _cubit.listSpecialty.isEmpty) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                child: (_hasAutoResolveIntent && !_autoResolveFailed)
+                    ? const Center(child: CircularProgressIndicator())
+                    : BlocBuilder<DsmesAppointmentCubit,
+                        DsmesAppointmentState>(
+                        builder: (context, state) {
+                          if (state is DsmesAppointmentLoading &&
+                              _cubit.listSpecialty.isEmpty) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
 
-                    if (_cubit.listSpecialty.isEmpty) {
-                      return Center(
-                        child: Text(
-                          R.string.empty_clinic_content.tr(),
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      );
-                    }
+                          if (_cubit.listSpecialty.isEmpty) {
+                            return Center(
+                              child: Text(
+                                R.string.empty_clinic_content.tr(),
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            );
+                          }
 
-                    return _buildSpecialtyGrid();
-                  },
-                ),
+                          return _buildSpecialtyGrid();
+                        },
+                      ),
               ),
             ],
           ),

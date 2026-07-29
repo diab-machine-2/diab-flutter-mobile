@@ -38,6 +38,7 @@ class FirebaseRemoteSetting {
   bool? _appDeveloperMode = false;
   String? _vnpayIntegratedInfo;
   String? _subscriptionPackageInfo;
+  String? _benefitAtHomeInfo;
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
@@ -53,6 +54,7 @@ class FirebaseRemoteSetting {
   String? get specialtyOrder => _specialtyOrder;
   String? get vnpayIntegratedInfo => _vnpayIntegratedInfo;
   String? get subscriptionPackageInfo => _subscriptionPackageInfo;
+  String? get benefitAtHomeInfo => _benefitAtHomeInfo;
   String get excludeSpecialtyClinic => _excludeSpecialtyClinic;
   String get excludeSpecialtyTelemedicine => _excludeSpecialtyTelemedicine;
 
@@ -84,6 +86,7 @@ class FirebaseRemoteSetting {
           localSetting["VNPAY_INTEGRATED_INFO_DEV"] ?? '',
       "SUBSCRIPTION_PACKAGE_INFO":
           localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? '',
+      "BENEFIT_AT_HOME_INFO": localSetting["BENEFIT_AT_HOME_INFO"] ?? '',
       "EXCLUDE_SPECIALTY_CLINIC":
           localSetting["EXCLUDE_SPECIALTY_CLINIC"] ?? '',
       "EXCLUDE_SPECIALTY_TELEMEDICINE":
@@ -136,6 +139,7 @@ class FirebaseRemoteSetting {
         : remoteConfig.getString('VNPAY_INTEGRATED_INFO_DEV');
     _subscriptionPackageInfo =
         remoteConfig.getString('SUBSCRIPTION_PACKAGE_INFO');
+    _benefitAtHomeInfo = remoteConfig.getString('BENEFIT_AT_HOME_INFO');
     _excludeSpecialtyClinic = remoteConfig.getString('EXCLUDE_SPECIALTY_CLINIC');
     _excludeSpecialtyTelemedicine =
         remoteConfig.getString('EXCLUDE_SPECIALTY_TELEMEDICINE');

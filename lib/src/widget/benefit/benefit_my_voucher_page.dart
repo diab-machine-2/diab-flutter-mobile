@@ -73,11 +73,17 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
   /// to a promo image/video with no voucher value or expiry to show here.
   List<MyBenefitItem> _partnerIntroItems(MyBenefitData? data) {
     final sections = data?.sections ?? [];
+    final now = DateTime.now();
     return sections
         .expand((section) => section.visibleItems)
         .where((item) =>
-            item.bundleItemType == BenefitBundleItemType.partnerIntro &&
-            item.benefitType?.hasVoucher == 1)
+            item.bundleItemType == BenefitBundleItemType.partnerIntro)
+        .where((item) {
+          final validUntil = item.benefitType?.validUntil;
+          if (validUntil == null) return true;
+          return DateTime.fromMillisecondsSinceEpoch(validUntil * 1000)
+              .isAfter(now);
+        })
         .toList();
   }
 
@@ -131,9 +137,12 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
       validUntilStr = DateFormat('dd/MM/yyyy').format(dt);
     }
 
-    final subtitle = R.string.benefit_voucher_subtext.tr(
-      args: [benefitType?.voucherValue ?? '', validUntilStr],
-    );
+    final voucherValue = benefitType?.voucherValue ?? '';
+    final String? subtitle = (voucherValue.isEmpty && validUntilStr.isEmpty)
+        ? null
+        : R.string.benefit_voucher_subtext.tr(
+            args: [voucherValue, validUntilStr],
+          );
 
     final isActive = benefitType?.status == 1;
 
@@ -181,18 +190,20 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  subtitle,
-                                  style: TextStyle(
-                                    color: R.color.color0xFF6B7280,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    height: 1.50,
+                                if (subtitle != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    subtitle,
+                                    style: TextStyle(
+                                      color: R.color.color0xFF6B7280,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.50,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                ],
                               ],
                             ),
                           ),

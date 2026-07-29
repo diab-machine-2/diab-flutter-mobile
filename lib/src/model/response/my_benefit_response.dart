@@ -177,6 +177,7 @@ class MyBenefitItem {
     BenefitType? benefitType,
     int? totalWeek,
     int? currentWeek,
+    String? servicePackageId,
   }) {
     _itemId = itemId;
     _itemType = itemType;
@@ -195,6 +196,7 @@ class MyBenefitItem {
     _benefitType = benefitType;
     _totalWeek = totalWeek;
     _currentWeek = currentWeek;
+    _servicePackageId = servicePackageId;
   }
 
   MyBenefitItem.fromJson(dynamic json) {
@@ -217,6 +219,7 @@ class MyBenefitItem {
         : null;
     _totalWeek = json['totalWeek'];
     _currentWeek = json['currentWeek'];
+    _servicePackageId = json['servicePackageId'];
   }
 
   String? _itemId;
@@ -236,6 +239,7 @@ class MyBenefitItem {
   BenefitType? _benefitType;
   int? _totalWeek;
   int? _currentWeek;
+  String? _servicePackageId;
 
   String? get itemId => _itemId;
   int? get itemType => _itemType;
@@ -258,6 +262,9 @@ class MyBenefitItem {
 
   /// Only meaningful for [BenefitBundleItemType.dsp] items.
   int? get currentWeek => _currentWeek;
+
+  /// Only meaningful for [BenefitBundleItemType.dsp] items.
+  String? get servicePackageId => _servicePackageId;
 
   BenefitBundleItemType? get bundleItemType =>
       BenefitBundleItemType.resolve(itemType: itemType, appFeature: appFeature);

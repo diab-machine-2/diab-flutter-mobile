@@ -21,13 +21,12 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     final partnerName = benefitType?.title ?? R.string.benefit_partner.tr();
     final mediaList = benefitType?.media ?? [];
 
-    // Banner media (type == 1): sortOrder == 0 is the cover, the rest
-    // (sorted ascending) form the gallery.
+    // Banner media (type == 1): whichever has the smallest sortOrder is the
+    // cover, the rest (sorted ascending) form the gallery.
     final bannerMedia = mediaList.where((m) => m.type == 1).toList()
       ..sort((a, b) => (a.sortOrder ?? 0).compareTo(b.sortOrder ?? 0));
-    final coverMedia = bannerMedia.firstWhereOrNull((m) => m.sortOrder == 0) ??
-        (bannerMedia.isNotEmpty ? bannerMedia.first : BenefitMedia());
-    final galleryMedia = bannerMedia.where((m) => m.sortOrder != 0).toList();
+    final coverMedia = bannerMedia.isNotEmpty ? bannerMedia.first : BenefitMedia();
+    final galleryMedia = bannerMedia.skip(1).toList();
     final String coverUrl = coverMedia.imageUrl?.url ?? coverMedia.url ?? '';
 
     // Expiration date string
@@ -138,7 +137,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
 
   Widget _buildPartnerCard(String name, BenefitType? benefitType) {
     final locationText = benefitType?.location ?? '';
-    final subName = benefitType?.description ?? '';
+    final subName = (benefitType?.description ?? '').replaceAll('\\n', '\n');
     final openTime = benefitType?.openTime ?? '';
     return Container(
       width: double.infinity,
@@ -203,7 +202,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Icon(Icons.location_on_outlined,
                   size: 16, color: Color(0xFF6B7280)),
@@ -223,7 +222,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(Icons.access_time, size: 16, color: Color(0xFF6B7280)),
               SizedBox(width: 6),
@@ -254,51 +253,37 @@ class BenefitPartnerIntroPage extends StatelessWidget {
 
     if (urls.isEmpty) return const SizedBox.shrink();
 
-    final showCount = urls.length > 2;
-    final displayUrls = showCount ? urls.take(2).toList() : urls;
-    final extraCount = urls.length - 2;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            ...displayUrls.map(
-              (url) => Container(
-                width: 140,
-                height: 90,
-                margin: const EdgeInsets.only(right: 8),
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: _buildImage(url, width: 140, height: 90),
-              ),
+      child: SizedBox(
+        height: 90,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: urls.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          itemBuilder: (context, index) => GestureDetector(
+            onTap: () => _openImageViewer(context, urls, index),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: _buildImage(urls[index], width: 140, height: 90),
             ),
-            if (showCount)
-              Container(
-                width: 140,
-                height: 90,
-                decoration: ShapeDecoration(
-                  color: const Color(0xFFF0FDF4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    R.string.benefit_more_photos.tr(args: ['$extraCount']),
-                    style: const TextStyle(
-                      color: Color(0xFF01645A),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      height: 1.50,
-                    ),
-                  ),
-                ),
-              ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openImageViewer(
+    BuildContext context,
+    List<String> urls,
+    int initialIndex,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _BenefitImageGalleryViewer(
+          urls: urls,
+          initialIndex: initialIndex,
         ),
       ),
     );
@@ -808,6 +793,97 @@ class BenefitPartnerIntroPage extends StatelessWidget {
         child: const Center(
           child: Icon(Icons.image, size: 48, color: Colors.grey),
         ),
+      ),
+    );
+  }
+}
+
+/// Full-screen swipeable viewer for a partner intro's gallery images,
+/// opened by tapping a thumbnail in [BenefitPartnerIntroPage]'s carousel.
+class _BenefitImageGalleryViewer extends StatefulWidget {
+  final List<String> urls;
+  final int initialIndex;
+
+  const _BenefitImageGalleryViewer({
+    required this.urls,
+    required this.initialIndex,
+  });
+
+  @override
+  State<_BenefitImageGalleryViewer> createState() =>
+      _BenefitImageGalleryViewerState();
+}
+
+class _BenefitImageGalleryViewerState
+    extends State<_BenefitImageGalleryViewer> {
+  late final PageController _controller;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _controller = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _buildViewerImage(String url) {
+    final errorBuilder = (BuildContext _, Object __, StackTrace? ___) =>
+        const Center(
+          child: Icon(Icons.image, size: 64, color: Colors.white54),
+        );
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return Image.network(url, errorBuilder: errorBuilder);
+    }
+    return Image.asset(url, errorBuilder: errorBuilder);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _controller,
+            itemCount: widget.urls.length,
+            onPageChanged: (index) => setState(() => _currentIndex = index),
+            itemBuilder: (context, index) => Center(
+              child: InteractiveViewer(
+                child: _buildViewerImage(widget.urls[index]),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 40,
+            left: 16,
+            child: SafeArea(
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+          if (widget.urls.length > 1)
+            Positioned(
+              top: 48,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                child: Center(
+                  child: Text(
+                    '${_currentIndex + 1}/${widget.urls.length}',
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
