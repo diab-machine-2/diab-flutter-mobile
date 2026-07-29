@@ -76,15 +76,14 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
     final now = DateTime.now();
     return sections
         .expand((section) => section.visibleItems)
-        .where((item) =>
-            item.bundleItemType == BenefitBundleItemType.partnerIntro)
+        .where(
+            (item) => item.bundleItemType == BenefitBundleItemType.partnerIntro)
         .where((item) {
-          final validUntil = item.benefitType?.validUntil;
-          if (validUntil == null) return true;
-          return DateTime.fromMillisecondsSinceEpoch(validUntil * 1000)
-              .isAfter(now);
-        })
-        .toList();
+      final validUntil = item.benefitType?.validUntil;
+      if (validUntil == null) return true;
+      return DateTime.fromMillisecondsSinceEpoch(validUntil * 1000)
+          .isAfter(now);
+    }).toList();
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -122,8 +121,7 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
       padding: const EdgeInsets.all(16),
       itemCount: items.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) =>
-          _buildVoucherCard(context, items[index]),
+      itemBuilder: (context, index) => _buildVoucherCard(context, items[index]),
     );
   }
 
@@ -132,8 +130,8 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
 
     String validUntilStr = '';
     if (benefitType?.validUntil != null) {
-      final dt = DateTime.fromMillisecondsSinceEpoch(
-          benefitType!.validUntil! * 1000);
+      final dt =
+          DateTime.fromMillisecondsSinceEpoch(benefitType!.validUntil! * 1000);
       validUntilStr = DateFormat('dd/MM/yyyy').format(dt);
     }
 
@@ -187,7 +185,7 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
                                     fontWeight: FontWeight.w600,
                                     height: 1.40,
                                   ),
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 if (subtitle != null) ...[
@@ -200,7 +198,7 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
                                       fontWeight: FontWeight.w400,
                                       height: 1.50,
                                     ),
-                                    maxLines: 1,
+                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
@@ -210,7 +208,7 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: R.color.accentColor,
                               borderRadius: BorderRadius.circular(100),
@@ -219,6 +217,7 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
                               isActive
                                   ? R.string.benefit_active.tr()
                                   : R.string.benefit_inactive.tr(),
+                              textAlign: TextAlign.center,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
