@@ -52,10 +52,13 @@ class _BenefitLabTestScanResultPageState
         } else {
           BotToast.closeAllLoading();
           if (state is BenefitServiceRequestSubmitSuccess) {
+            final fromBenefitBundle =
+                context.read<BenefitServiceRequestCubit>().itemId != null;
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => const BenefitServiceRequestSuccessPage(
-                    type: BenefitServiceType.labTest),
+                builder: (_) => BenefitServiceRequestSuccessPage(
+                    type: BenefitServiceType.labTest,
+                    fromBenefitBundle: fromBenefitBundle),
               ),
             );
           } else if (state is BenefitServiceRequestError) {

@@ -32,12 +32,16 @@ class BenefitClinicListPage extends StatefulWidget {
   final String bookingType;
   final List<String> clinicIds;
   final String? specialtyName;
+  final String? itemId;
+  final int? itemType;
 
   const BenefitClinicListPage({
     Key? key,
     required this.bookingType,
     required this.clinicIds,
     this.specialtyName,
+    this.itemId,
+    this.itemType,
   }) : super(key: key);
 
   @override
@@ -187,6 +191,8 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
         'action': 'create',
         'bookingType': Const.BENEFIT_BOOKING_AT_CLINIC,
         'specialtyName': widget.specialtyName,
+        'itemId': widget.itemId,
+        'itemType': widget.itemType,
       });
     } finally {
       BotToast.closeAllLoading();

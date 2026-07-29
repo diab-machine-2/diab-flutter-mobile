@@ -12,14 +12,28 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class BenefitServiceIntroPage extends StatelessWidget {
   final BenefitServiceType serviceType;
+  /// Originating [MyBenefitItem.itemId] when this flow started from a tap on
+  /// a bundle item in `BenefitIntroduceBundlePage` — `null` otherwise.
+  final String? itemId;
+  /// The item's raw wire `itemType` (see `BenefitBundleItemType.resolve`),
+  /// passed through to `useBenefitService` alongside [itemId].
+  final int? itemType;
 
-  const BenefitServiceIntroPage({Key? key, required this.serviceType})
-      : super(key: key);
+  const BenefitServiceIntroPage({
+    Key? key,
+    required this.serviceType,
+    this.itemId,
+    this.itemType,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BenefitServiceRequestCubit(AppRepository()),
+      create: (_) => BenefitServiceRequestCubit(
+        AppRepository(),
+        itemId: itemId,
+        itemType: itemType,
+      ),
       child: _BenefitServiceIntroView(serviceType: serviceType),
     );
   }

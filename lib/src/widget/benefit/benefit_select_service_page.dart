@@ -28,6 +28,8 @@ class BenefitSelectServicePage extends StatefulWidget {
   final String? branchName;
   final String? branchAddress;
   final int? branchId;
+  final String? itemId;
+  final int? itemType;
 
   const BenefitSelectServicePage({
     Key? key,
@@ -39,6 +41,8 @@ class BenefitSelectServicePage extends StatefulWidget {
     this.branchName,
     this.branchAddress,
     this.branchId,
+    this.itemId,
+    this.itemType,
   }) : super(key: key);
 
   @override
@@ -375,6 +379,8 @@ class _BenefitSelectServicePageState extends State<BenefitSelectServicePage> {
         'branchName': widget.branchName,
         'branchAddress': widget.branchAddress,
         'branchId': widget.branchId,
+        'itemId': widget.itemId,
+        'itemType': widget.itemType,
       },
     );
   }

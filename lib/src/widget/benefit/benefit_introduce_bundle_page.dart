@@ -11,6 +11,7 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -30,7 +31,7 @@ class BenefitIntroduceBundlePage extends StatefulWidget {
 }
 
 class _BenefitIntroduceBundlePageState
-    extends State<BenefitIntroduceBundlePage> {
+    extends BaseState<BenefitIntroduceBundlePage> {
   late final BenefitIntroduceBundleCubit _cubit;
 
   @override
@@ -38,6 +39,15 @@ class _BenefitIntroduceBundlePageState
     super.initState();
     _cubit = BenefitIntroduceBundleCubit(AppRepository());
     _cubit.loadMyBenefit();
+  }
+
+  @override
+  void didPopNext() {
+    // A booking/medicinePurchase/labTest flow returned here via
+    // popUntil(benefit_introduce_bundle) after marking an item used —
+    // refresh so quantities/status reflect the latest state.
+    _cubit.refreshMyBenefit();
+    super.didPopNext();
   }
 
   @override
@@ -671,6 +681,8 @@ class _BenefitIntroduceBundlePageState
             'specialtyName': item.specialtyName,
             'specialtyId': item.specialtyId,
             'clinicId': item.clinicId,
+            'itemId': item.itemId,
+            'itemType': item.itemType,
           },
         );
         break;
@@ -706,6 +718,7 @@ class _BenefitIntroduceBundlePageState
         Navigator.pushNamed(
           context,
           NavigatorName.benefit_medicine_intro,
+          arguments: {'itemId': item.itemId, 'itemType': item.itemType},
         );
         break;
 
@@ -713,6 +726,7 @@ class _BenefitIntroduceBundlePageState
         Navigator.pushNamed(
           context,
           NavigatorName.benefit_lab_test_intro,
+          arguments: {'itemId': item.itemId, 'itemType': item.itemType},
         );
         break;
     }

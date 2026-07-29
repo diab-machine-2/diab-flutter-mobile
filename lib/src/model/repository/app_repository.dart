@@ -1540,4 +1540,17 @@ class AppRepository {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
+
+  Future<ApiResult<CommonResponse>> useBenefitService({
+    required String itemId,
+    required int itemType,
+  }) async {
+    try {
+      final response = await appClient.useBenefitService(
+          itemId: itemId, itemType: itemType);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }

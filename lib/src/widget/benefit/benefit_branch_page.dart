@@ -22,6 +22,8 @@ class BenefitBranchPage extends StatefulWidget {
   final String bookingType;
   final bool isBypassPayment;
   final String? specialtyName;
+  final String? itemId;
+  final int? itemType;
 
   const BenefitBranchPage({
     Key? key,
@@ -31,6 +33,8 @@ class BenefitBranchPage extends StatefulWidget {
     this.bookingType = Const.BOOKING_TYPE_CLINIC,
     this.isBypassPayment = false,
     this.specialtyName,
+    this.itemId,
+    this.itemType,
   }) : super(key: key);
 
   @override
@@ -269,6 +273,8 @@ class _BenefitBranchPageState extends State<BenefitBranchPage> {
         'branchAddress': _selectedBranch!.address,
         'branchId': _selectedBranch!.clinicId,
         'specialtyName': widget.specialtyName,
+        'itemId': widget.itemId,
+        'itemType': widget.itemType,
       },
     );
   }

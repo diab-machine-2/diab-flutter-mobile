@@ -16,8 +16,15 @@ enum BenefitServiceType { medicine, labTest }
 class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
   final AppRepository _repository;
   final MedicineClient _medicineClient = MedicineClient();
+  /// Originating [MyBenefitItem.itemId] when this flow started from a tap on
+  /// a bundle item in `BenefitIntroduceBundlePage` — `null` otherwise. When
+  /// set, a successful submit marks the item used via `useBenefitService`.
+  final String? itemId;
+  /// The item's raw wire `itemType` (see `BenefitBundleItemType.resolve`),
+  /// passed through to `useBenefitService` alongside [itemId].
+  final int? itemType;
 
-  BenefitServiceRequestCubit(this._repository)
+  BenefitServiceRequestCubit(this._repository, {this.itemId, this.itemType})
       : super(const BenefitServiceRequestInitial());
 
   // ── Scan prescription (medicine) ──────────────────────────────────────────
@@ -93,6 +100,10 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
       );
 
       await _repository.submitMedicationRequest(body.toJson());
+      if (itemId != null && itemType != null) {
+        await _repository.useBenefitService(
+            itemId: itemId!, itemType: itemType!);
+      }
       emit(const BenefitServiceRequestSubmitSuccess(
           type: BenefitServiceType.medicine));
     } catch (e) {
@@ -122,6 +133,10 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
       );
 
       await _repository.submitMedicationRequest(body.toJson());
+      if (itemId != null && itemType != null) {
+        await _repository.useBenefitService(
+            itemId: itemId!, itemType: itemType!);
+      }
       emit(const BenefitServiceRequestSubmitSuccess(
           type: BenefitServiceType.labTest));
     } catch (e) {

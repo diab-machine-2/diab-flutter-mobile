@@ -31,6 +31,8 @@ class BenefitCalendarSection extends StatefulWidget {
   final String? specialtyName;
   final String? branchName;
   final String? branchAddress;
+  final String? itemId;
+  final int? itemType;
 
   const BenefitCalendarSection({
     Key? key,
@@ -41,6 +43,8 @@ class BenefitCalendarSection extends StatefulWidget {
     this.specialtyName,
     this.branchName,
     this.branchAddress,
+    this.itemId,
+    this.itemType,
   }) : super(key: key);
 
   @override
@@ -211,6 +215,8 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
               'specialtyName': widget.specialtyName,
               'branchName': widget.branchName ?? _cubit.selectedClinic?.name ?? '',
               'branchAddress': widget.branchAddress ?? _cubit.selectedClinic?.address ?? '',
+              'itemId': widget.itemId,
+              'itemType': widget.itemType,
             },
           );
         } else {
@@ -225,6 +231,8 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
               'specialtyName': widget.specialtyName,
               'branchName': widget.branchName ?? _cubit.selectedClinic?.name ?? '',
               'branchAddress': widget.branchAddress ?? _cubit.selectedClinic?.address ?? '',
+              'itemId': widget.itemId,
+              'itemType': widget.itemType,
             },
           );
         }
@@ -257,6 +265,8 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
             'specialtyName': widget.specialtyName,
             'branchName': widget.branchName ?? _cubit.selectedClinic?.name ?? '',
             'branchAddress': widget.branchAddress ?? _cubit.selectedClinic?.address ?? '',
+            'itemId': widget.itemId,
+            'itemType': widget.itemType,
           },
         );
       }

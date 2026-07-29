@@ -32,6 +32,16 @@ class BenefitPage extends StatefulWidget {
   final String? specialtyName;
   final int? specialtyId;
   final int? clinicId;
+  /// Originating [MyBenefitItem.itemId] when this flow started from a tap on
+  /// a bundle item in `BenefitIntroduceBundlePage` — `null` otherwise (e.g.
+  /// Home's generic booking quick actions). Threaded down to
+  /// [BenefitConfirmPage] to mark the item used on success and to return to
+  /// the bundle page instead of the tabbar.
+  final String? itemId;
+  /// The item's raw wire `itemType` (see `BenefitBundleItemType.resolve`) —
+  /// threaded alongside [itemId] so `useBenefitService` can report the
+  /// actual item type instead of assuming a fixed value.
+  final int? itemType;
 
   const BenefitPage({
     Key? key,
@@ -39,6 +49,8 @@ class BenefitPage extends StatefulWidget {
     this.specialtyName,
     this.specialtyId,
     this.clinicId,
+    this.itemId,
+    this.itemType,
   }) : super(key: key);
 
   @override
@@ -124,6 +136,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           specialtyName: widget.specialtyName,
                           specialtyId: widget.specialtyId,
                           clinicId: widget.clinicId,
+                          itemId: widget.itemId,
+                          itemType: widget.itemType,
                         ),
                       ),
                     );
@@ -138,6 +152,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           bookingType: args!['bookingType'] ?? widget.bookingType,
                           clinicIds: (args['clinicIds'] as List<dynamic>?)?.cast<String>() ?? [],
                           specialtyName: args['specialtyName'] as String?,
+                          itemId: args['itemId'] as String?,
+                          itemType: args['itemType'] as int?,
                         ),
                       );
                     }
@@ -154,6 +170,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           appointmentId: args['appointmentId'],
                           bookingType: args['bookingType'],
                           specialtyName: args['specialtyName'] as String?,
+                          itemId: args['itemId'] as String?,
+                          itemType: args['itemType'] as int?,
                         ),
                       );
                     }
@@ -195,6 +213,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                             isBypassPayment: false,
                             specialtyName:
                                 args['specialtyName'] as String?,
+                            itemId: args['itemId'] as String?,
+                            itemType: args['itemType'] as int?,
                           ),
                         );
                       }
@@ -215,6 +235,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           branchId: args['branchId'] as int?,
                           specialtyName:
                               args['specialtyName'] as String?,
+                          itemId: args['itemId'] as String?,
+                          itemType: args['itemType'] as int?,
                         ),
                       );
                     }
@@ -262,6 +284,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           isBypassPayment: false,
                           specialtyName:
                               args['specialtyName'] as String?,
+                          itemId: args['itemId'] as String?,
+                          itemType: args['itemType'] as int?,
                         ),
                       );
                     }
@@ -282,6 +306,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           branchName: args['branchName'] as String?,
                           branchAddress: args['branchAddress'] as String?,
                           branchId: args['branchId'] as int?,
+                          itemId: args['itemId'] as String?,
+                          itemType: args['itemType'] as int?,
                         ),
                       );
                     }

@@ -473,11 +473,15 @@ class AppRoutes {
           final specialtyName = data?['specialtyName'] as String?;
           final specialtyId = data?['specialtyId'] as int?;
           final clinicId = data?['clinicId'] as int?;
+          final itemId = data?['itemId'] as String?;
+          final itemType = data?['itemType'] as int?;
           page = BenefitPage(
             bookingType: bookingType,
             specialtyName: specialtyName,
             specialtyId: specialtyId,
             clinicId: clinicId,
+            itemId: itemId,
+            itemType: itemType,
           );
           break;
         }
@@ -503,14 +507,26 @@ class AppRoutes {
         }
 
       case NavigatorName.benefit_medicine_intro:
-        page = const BenefitServiceIntroPage(
-            serviceType: BenefitServiceType.medicine);
-        break;
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BenefitServiceIntroPage(
+            serviceType: BenefitServiceType.medicine,
+            itemId: args?['itemId'] as String?,
+            itemType: args?['itemType'] as int?,
+          );
+          break;
+        }
 
       case NavigatorName.benefit_lab_test_intro:
-        page = const BenefitServiceIntroPage(
-            serviceType: BenefitServiceType.labTest);
-        break;
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BenefitServiceIntroPage(
+            serviceType: BenefitServiceType.labTest,
+            itemId: args?['itemId'] as String?,
+            itemType: args?['itemType'] as int?,
+          );
+          break;
+        }
 
       case NavigatorName.benefit_appointment_history:
         page = const BenefitAppointmentHistoryPage();

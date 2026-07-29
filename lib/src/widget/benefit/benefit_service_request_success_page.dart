@@ -10,9 +10,16 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class BenefitServiceRequestSuccessPage extends StatefulWidget {
   final BenefitServiceType type;
+  /// True when this request started from a tap on a bundle item in
+  /// `BenefitIntroduceBundlePage` — "Về trang chủ" then returns there
+  /// instead of wiping to the tabbar.
+  final bool fromBenefitBundle;
 
-  const BenefitServiceRequestSuccessPage({Key? key, required this.type})
-      : super(key: key);
+  const BenefitServiceRequestSuccessPage({
+    Key? key,
+    required this.type,
+    this.fromBenefitBundle = false,
+  }) : super(key: key);
 
   @override
   State<BenefitServiceRequestSuccessPage> createState() =>
@@ -323,9 +330,19 @@ class _BenefitServiceRequestSuccessPageState
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onTap: () => Navigator.of(context, rootNavigator: true)
-                  .pushNamedAndRemoveUntil(
-                      NavigatorName.tabbar, (route) => false),
+              onTap: () {
+                final navigator =
+                    Navigator.of(context, rootNavigator: true);
+                if (widget.fromBenefitBundle) {
+                  navigator.popUntil((route) =>
+                      route.settings.name ==
+                          NavigatorName.benefit_introduce_bundle ||
+                      route.isFirst);
+                } else {
+                  navigator.pushNamedAndRemoveUntil(
+                      NavigatorName.tabbar, (route) => false);
+                }
+              },
               child: Container(
                 width: double.infinity,
                 height: 44,

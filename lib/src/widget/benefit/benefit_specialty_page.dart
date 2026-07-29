@@ -25,6 +25,8 @@ class BenefitSpecialtyPage extends StatefulWidget {
   final String? specialtyName;
   final int? specialtyId;
   final int? clinicId;
+  final String? itemId;
+  final int? itemType;
 
   const BenefitSpecialtyPage({
     Key? key,
@@ -32,6 +34,8 @@ class BenefitSpecialtyPage extends StatefulWidget {
     this.specialtyName,
     this.specialtyId,
     this.clinicId,
+    this.itemId,
+    this.itemType,
   }) : super(key: key);
 
   @override
@@ -228,6 +232,8 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
         'bookingType': widget.bookingType,
         'clinicIds': clinicIds,
         'specialtyName': specialty.name,
+        'itemId': widget.itemId,
+        'itemType': widget.itemType,
       },
     );
   }
@@ -304,6 +310,8 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
         'action': 'create',
         'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
         'specialtyName': specialty.name,
+        'itemId': widget.itemId,
+        'itemType': widget.itemType,
       };
       if (isAutoResolve) {
         navigatorState?.pushReplacementNamed(
@@ -401,6 +409,8 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
           'action': 'create',
           'bookingType': Const.BENEFIT_BOOKING_AT_CLINIC,
           'specialtyName': specialty.name,
+          'itemId': widget.itemId,
+          'itemType': widget.itemType,
         },
       );
     } catch (_) {

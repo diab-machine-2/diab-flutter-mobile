@@ -53,10 +53,13 @@ class _BenefitMedicineScanResultPageState
         } else {
           BotToast.closeAllLoading();
           if (state is BenefitServiceRequestSubmitSuccess) {
+            final fromBenefitBundle =
+                context.read<BenefitServiceRequestCubit>().itemId != null;
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => const BenefitServiceRequestSuccessPage(
-                    type: BenefitServiceType.medicine),
+                builder: (_) => BenefitServiceRequestSuccessPage(
+                    type: BenefitServiceType.medicine,
+                    fromBenefitBundle: fromBenefitBundle),
               ),
             );
           } else if (state is BenefitServiceRequestError) {

@@ -714,4 +714,10 @@ abstract class AppApi {
   // Benefit Bundle
   @GET("App/UserBundleOrders/my-benefit")
   Future<MyBenefitResponse> getMyBenefit();
+
+  @POST("App/UserBundleOrders/my-benefit/use-service")
+  Future<CommonResponse> useBenefitService({
+    @Query("itemId") required String itemId,
+    @Query("itemType") required int itemType,
+  });
 }

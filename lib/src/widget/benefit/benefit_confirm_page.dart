@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -42,9 +43,21 @@ class BenefitConfirmPage extends StatefulWidget {
   final String? branchAddress;
   final int? branchId;
   final String? specialtyName;
+
   /// Carries the originating route so reschedule success can restore the
   /// correct navigation stack (history vs. tabbar).
   final String? previousRoute;
+
+  /// Originating [MyBenefitItem.itemId] when this booking started from a tap
+  /// on a bundle item in `BenefitIntroduceBundlePage` — `null` for bookings
+  /// started elsewhere (e.g. Home's generic booking quick actions). When set,
+  /// a successful booking marks the item used via `useBenefitService`, and
+  /// "Về trang chủ" returns to the bundle page instead of the tabbar.
+  final String? itemId;
+
+  /// The item's raw wire `itemType` (see `BenefitBundleItemType.resolve`),
+  /// passed through to `useBenefitService` alongside [itemId].
+  final int? itemType;
 
   const BenefitConfirmPage({
     Key? key,
@@ -58,6 +71,8 @@ class BenefitConfirmPage extends StatefulWidget {
     this.branchId,
     this.specialtyName,
     this.previousRoute,
+    this.itemId,
+    this.itemType,
   }) : super(key: key);
 
   @override
@@ -353,6 +368,15 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
     if (resp == null) return;
 
+    if (widget.itemId != null && widget.itemType != null) {
+      // Best-effort — never blocks the success dialog, and the repo method
+      // itself never throws (failures come back as ApiResult.failure).
+      AppRepository().useBenefitService(
+        itemId: widget.itemId!,
+        itemType: widget.itemType!,
+      );
+    }
+
     final startTime = DateFormat('HH:mm')
         .format(DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
     final startDate = DateFormat('dd/MM/yyyy')
@@ -370,10 +394,20 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
       onNavigateHome: () async {
         BranchioLinkConfig.instance.resetPageTracking();
         await PhoneValidationManager.setShouldShowPhoneValidation();
-        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-          NavigatorName.tabbar,
-          (route) => false,
-        );
+        if (widget.itemId != null) {
+          // Booked from a specific bundle item — return to the bundle list
+          // instead of wiping to the tabbar. `BenefitPage` (this whole nested
+          // flow) is a single route on the root navigator, so popping until
+          // `benefit_introduce_bundle` pops it off in one go.
+          Navigator.of(context, rootNavigator: true).popUntil((route) =>
+              route.settings.name == NavigatorName.benefit_introduce_bundle ||
+              route.isFirst);
+        } else {
+          Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+            NavigatorName.tabbar,
+            (route) => false,
+          );
+        }
       },
       onShowInfo: () async {
         final myAppointment =
@@ -402,7 +436,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [Utils.getBoxShadowDropCard()],
-    ),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -516,9 +550,9 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                   if (isProcessing['editConsultInfo']!) return;
                   setState(() => isProcessing['editConsultInfo'] = true);
                   try {
-                    await Navigator.of(context, rootNavigator: true)
-                        .pushNamed(NavigatorName.dsmes_booking_select_date,
-                            arguments: {
+                    await Navigator.of(context, rootNavigator: true).pushNamed(
+                        NavigatorName.dsmes_booking_select_date,
+                        arguments: {
                           'serviceType': widget.serviceType,
                           'action': widget.action,
                           'isEditing': true,
@@ -679,8 +713,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
   /// Sums up fromPrice for all selected services.
   int _calculateTotalPrice() {
-    final services =
-        _cubit.createDsmesBookingRequest!.paymentInfo!.services;
+    final services = _cubit.createDsmesBookingRequest!.paymentInfo!.services;
     int total = 0;
     for (final item in services) {
       final service = _findSelectedClinicServiceById(item.id);
@@ -707,10 +740,8 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     final clinic = _cubit.selectedClinic;
     final paymentInfo = _cubit.createDsmesBookingRequest?.paymentInfo;
 
-    final allServices = clinic?.serviceList.categories
-            .expand((c) => c.data)
-            .toList() ??
-        [];
+    final allServices =
+        clinic?.serviceList.categories.expand((c) => c.data).toList() ?? [];
 
     ServiceData? serviceData;
 
@@ -728,7 +759,8 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
             .where((s) => s.serviceItemId == saleItems.first.id)
             .toList();
         if (matched.isNotEmpty) {
-          serviceData = _findSelectedClinicServiceById(matched.first.serviceItemId);
+          serviceData =
+              _findSelectedClinicServiceById(matched.first.serviceItemId);
           serviceData ??= allServices.isNotEmpty ? allServices.first : null;
         }
       }
@@ -818,8 +850,8 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
         ),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.only(
-              top: 16, left: 10, right: 4, bottom: 16),
+          padding:
+              const EdgeInsets.only(top: 16, left: 10, right: 4, bottom: 16),
           decoration: ShapeDecoration(
             color: R.color.white,
             shape: RoundedRectangleBorder(
@@ -1030,7 +1062,9 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
     // Try saleServices (find via serviceItemId → SaleServiceItem → then use its nameVi)
     final saleItems = paymentInfo.saleServices;
-    if (saleItems != null && saleItems.isNotEmpty && clinic.saleServiceList != null) {
+    if (saleItems != null &&
+        saleItems.isNotEmpty &&
+        clinic.saleServiceList != null) {
       try {
         final matched = clinic.saleServiceList!.services
             .firstWhere((s) => s.serviceItemId == saleItems.first.id);
@@ -1039,9 +1073,8 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     }
 
     // Fallback: first available service
-    final allServices = clinic.serviceList.categories
-        .expand((c) => c.data)
-        .toList();
+    final allServices =
+        clinic.serviceList.categories.expand((c) => c.data).toList();
     return allServices.isNotEmpty ? allServices.first.name : null;
   }
 
@@ -1056,13 +1089,12 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     return '${buffer}đ';
   }
 
-
   Future<void> _handleRescheduleBooking() async {
     final resp = await _cubit.rescheduleDsmesBooking(
       request: RescheduleDsmesBookingRequest(
         appointmentId: AppointmentId(id: widget.appointmentId!),
-        startTime: _cubit.ensureTimeWithSeconds(
-            _cubit.createDsmesBookingRequest!.startTime),
+        startTime: _cubit
+            .ensureTimeWithSeconds(_cubit.createDsmesBookingRequest!.startTime),
       ),
     );
     if (resp == null) return;
