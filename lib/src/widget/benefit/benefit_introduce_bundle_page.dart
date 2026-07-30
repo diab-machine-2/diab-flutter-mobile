@@ -396,16 +396,14 @@ class _BenefitIntroduceBundlePageState
         ? 1.0
         : (quantity > 0 ? (used / quantity).clamp(0.0, 1.0) : 0.0);
 
-    // Status text (left side of row 2)
-    String statusText;
-    if (type == BenefitBundleItemType.dsp) {
+    // Status text (left side of row 2) — not shown for `report` items.
+    String? statusText;
+    if (type == BenefitBundleItemType.report) {
+      statusText = null;
+    } else if (type == BenefitBundleItemType.dsp) {
       statusText = isUsed
           ? R.string.benefit_dsp_joined.tr()
           : R.string.benefit_dsp_not_joined.tr();
-    } else if (type == BenefitBundleItemType.report) {
-      statusText = isUsed
-          ? R.string.benefit_report_ready.tr()
-          : R.string.benefit_report_not_ready.tr();
     } else {
       statusText =
           isUsed ? R.string.benefit_used.tr() : R.string.benefit_not_used.tr();
@@ -469,33 +467,35 @@ class _BenefitIntroduceBundlePageState
                             ),
                         ],
                       ),
-                      const SizedBox(height: 8),
                       // Row 2: Status + secondary text
-                      Row(
-                        children: [
-                          Text(
-                            statusText,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: isUsed
-                                  ? const Color(0xFF6B7280)
-                                  : const Color(0xFF01645A),
-                            ),
-                          ),
-                          if (secondaryText != null) ...[
-                            const Spacer(),
+                      if (statusText != null) ...[
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
                             Text(
-                              secondaryText,
-                              style: const TextStyle(
+                              statusText,
+                              style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF6B7280),
+                                fontWeight: FontWeight.w500,
+                                color: isUsed
+                                    ? const Color(0xFF6B7280)
+                                    : const Color(0xFF01645A),
                               ),
                             ),
+                            if (secondaryText != null) ...[
+                              const Spacer(),
+                              Text(
+                                secondaryText,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF6B7280),
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
-                      ),
+                        ),
+                      ],
                       // Progress bar
                       if (showProgress) ...[
                         const SizedBox(height: 8),

@@ -571,35 +571,35 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
               textColor: R.color.white,
               hideAllBackButton: true,
               appBarAction: AppSettings.hasBundle == true
-                  ? InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.benefit_introduce_bundle);
-                      },
-                      child: Container(
-                        height: double.infinity,
-                        margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
-                        decoration: ShapeDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment(1.00, 0.00),
-                            end: Alignment(0.00, 1.00),
-                            colors: [
-                              const Color(0xFF3CB38D),
-                              const Color(0xFF01635A),
-                            ],
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          shadows: const [
-                            BoxShadow(
-                              color: Color(0x3F000000),
-                              blurRadius: 5,
-                              offset: Offset(0, 0),
-                              spreadRadius: 0,
-                            ),
+                  ? Container(
+                      height: double.infinity,
+                      margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
+                      decoration: ShapeDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(1.00, 0.00),
+                          end: Alignment(0.00, 1.00),
+                          colors: [
+                            const Color(0xFF3CB38D),
+                            const Color(0xFF01635A),
                           ],
                         ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        shadows: const [
+                          BoxShadow(
+                            color: Color(0x3F000000),
+                            blurRadius: 5,
+                            offset: Offset(0, 0),
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, NavigatorName.benefit_introduce_bundle);
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           clipBehavior: Clip.antiAlias,
