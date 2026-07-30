@@ -390,13 +390,11 @@ class _BenefitIntroduceBundlePageState
     // Show progress bar for items with quantity tracking or unlimited
     final bool showProgress = !hasDiscount &&
         type != BenefitBundleItemType.report &&
+        type != BenefitBundleItemType.dsp &&
         (quantity > 0 || isUnlimited);
     final double progressValue = isUnlimited
         ? 1.0
         : (quantity > 0 ? (used / quantity).clamp(0.0, 1.0) : 0.0);
-
-    final bool reportNotReady =
-        type == BenefitBundleItemType.report && !isUsed;
 
     // Status text (left side of row 2)
     String statusText;
@@ -436,7 +434,7 @@ class _BenefitIntroduceBundlePageState
       mainAxisSize: MainAxisSize.min,
       children: [
         InkWell(
-          onTap: reportNotReady ? null : () => _onItemTap(context, item, type),
+          onTap: () => _onItemTap(context, item, type),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(

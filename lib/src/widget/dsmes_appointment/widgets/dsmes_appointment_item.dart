@@ -20,6 +20,11 @@ class DsmesAppointmentItem extends StatelessWidget {
   final DsmesAppointmentCubit cubit;
   final bool displayActionButtons;
   final String bookingType;
+  /// When true, only ever shows the "Tham gia ngay" join button for
+  /// telemedicine bookings (active/inactive per [_shouldShowJoinButton]) and
+  /// nothing otherwise — skips the legacy Hỗ trợ/Đặt lại buttons entirely.
+  /// Used by the Benefit flow, which doesn't offer support/rebooking here.
+  final bool joinButtonOnly;
 
   const DsmesAppointmentItem({
     Key? key,
@@ -28,6 +33,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     required this.cubit,
     this.displayActionButtons = true,
     this.bookingType = Const.BOOKING_TYPE_CENTER,
+    this.joinButtonOnly = false,
   }) : super(key: key);
 
   @override
@@ -73,16 +79,14 @@ class DsmesAppointmentItem extends StatelessWidget {
               GapH(8),
               _buildHomeAddress(),
             ],
-            if (displayActionButtons)
+            if (displayActionButtons && _hasActionButtons) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Divider(color: R.color.color0xffEFEFEF),
               ),
-            // _buildDescription(),
-            // if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
-            if (displayActionButtons)
               _buildActionButtons(
                   locale: context.locale.languageCode, context: context),
+            ],
           ],
         ),
       ),
@@ -326,8 +330,34 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
+  /// Mirrors the branching in [_buildActionButtons] to answer whether it
+  /// will render actual button content vs. an empty [SizedBox.shrink] —
+  /// so the divider above it can be hidden when there's nothing to divide.
+  bool get _hasActionButtons {
+    if (joinButtonOnly) {
+      return DsmesAppointmentMode.fromString(data.mode) ==
+          DsmesAppointmentMode.telemedicine;
+    }
+
+    final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
+    final isPast = endDateTime.isBefore(DateTime.now());
+    if (data.status == DSMES_STATUS_APPROVE && isPast) return true;
+
+    final mode = DsmesAppointmentMode.fromString(data.mode);
+    if (mode == DsmesAppointmentMode.atClinic) return true;
+    if (data.isExaminationAtHome) return false;
+    return true;
+  }
+
   Widget _buildActionButtons(
       {String locale = 'vi', required BuildContext context}) {
+    if (joinButtonOnly) {
+      final mode = DsmesAppointmentMode.fromString(data.mode);
+      return mode == DsmesAppointmentMode.telemedicine
+          ? _buildButtonOnline()
+          : const SizedBox.shrink();
+    }
+
     final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
     if (data.status == DSMES_STATUS_APPROVE && isPast) {

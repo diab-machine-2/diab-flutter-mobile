@@ -67,6 +67,13 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
   /// manual fallback instead of leaving the user on a spinner forever.
   bool _autoResolveFailed = false;
 
+  /// Guards against double/rapid taps on a specialty card pushing the next
+  /// route twice. Stays true for the whole async selection flow (including
+  /// while the pushed route is on screen) and only clears once that route is
+  /// popped back to this page, so a retry is possible on failure but a
+  /// second tap mid-navigation is ignored.
+  bool _isSelectingSpecialty = false;
+
   @override
   void initState() {
     super.initState();
@@ -217,16 +224,24 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
   }
 
   void _onSelectSpecialty(ClinicSpecialty specialty) {
-    if (_isTelemedicine) {
-      _onSelectTelemedicine(specialty);
-    } else {
-      _onSelectAtClinic(specialty);
-    }
+    if (_isSelectingSpecialty) return;
+    _isSelectingSpecialty = true;
+
+    final future = _isTelemedicine
+        ? _onSelectTelemedicine(specialty)
+        : _onSelectAtClinic(specialty);
+    future.whenComplete(() {
+      if (mounted) {
+        setState(() => _isSelectingSpecialty = false);
+      } else {
+        _isSelectingSpecialty = false;
+      }
+    });
   }
 
   Future<void> _onSelectAtClinic(ClinicSpecialty specialty) async {
     final clinicIds = specialty.clinic_ids.map((e) => e.toString()).toList();
-    BenefitNavigatorScope.of(context).currentState?.pushNamed(
+    await BenefitNavigatorScope.of(context).currentState?.pushNamed(
       NavigatorName.benefit_clinic_list,
       arguments: {
         'bookingType': widget.bookingType,
@@ -314,12 +329,12 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
         'itemType': widget.itemType,
       };
       if (isAutoResolve) {
-        navigatorState?.pushReplacementNamed(
+        await navigatorState?.pushReplacementNamed(
           NavigatorName.benefit_calendar,
           arguments: args,
         );
       } else {
-        navigatorState?.pushNamed(
+        await navigatorState?.pushNamed(
           NavigatorName.benefit_calendar,
           arguments: args,
         );

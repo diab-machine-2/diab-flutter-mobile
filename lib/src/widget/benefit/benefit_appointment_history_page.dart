@@ -289,8 +289,9 @@ class _BenefitAppointmentHistoryPageState
               : Const.BENEFIT_BOOKING_AT_CLINIC;
       return DsmesAppointmentItem(
         data: data,
-        displayActionButtons: false,
+        displayActionButtons: true,
         bookingType: '',
+        joinButtonOnly: true,
         onChooseService: () async {
           if (isProcessing['chooseService']!) return;
           isProcessing['chooseService'] = true;
