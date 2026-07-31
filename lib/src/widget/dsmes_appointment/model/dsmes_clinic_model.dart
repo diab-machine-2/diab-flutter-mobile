@@ -30,6 +30,7 @@ class DsmesClinicModel {
   final List<ServiceAvailable>
       svAvailable; // 'at_clinic', 'telemedicine', 'at_home'
   final String profileType; // 'booking' or 'premium'
+  final SaleServiceList? saleServiceList;
 
   DsmesClinicModel({
     required this.id,
@@ -59,6 +60,7 @@ class DsmesClinicModel {
     required this.extraAvatar,
     required this.svAvailable,
     required this.profileType,
+    this.saleServiceList,
   });
 
   factory DsmesClinicModel.fromJson(Map<String, dynamic> json) {
@@ -111,6 +113,11 @@ class DsmesClinicModel {
               .toList() ??
           [],
       profileType: json['profile_type'] ?? '',
+      saleServiceList: json['sale_service_list'] != null &&
+              json['sale_service_list'] is! List
+          ? SaleServiceList.fromJson(
+              json['sale_service_list'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -312,6 +319,12 @@ class ServiceData {
   final String description;
   final int isPayment;
   final String value;
+  // ── Sale / voucher fields (from sale_service_list) ─────────────────
+  final int discount;
+  final int priceDiscount;
+  final int serviceItemId;
+  final String voucherCode;
+  final int voucherPrice;
 
   ServiceData({
     required this.name,
@@ -324,6 +337,11 @@ class ServiceData {
     required this.description,
     required this.isPayment,
     required this.value,
+    this.discount = 0,
+    this.priceDiscount = 0,
+    this.serviceItemId = 0,
+    this.voucherCode = '',
+    this.voucherPrice = 0,
   });
 
   factory ServiceData.fromJson(Map<String, dynamic> json) {
@@ -338,6 +356,116 @@ class ServiceData {
       description: json['description'] ?? '',
       isPayment: int.tryParse(json['is_payable']?.toString() ?? '0') ?? 0,
       value: json['value'] ?? '',
+      discount: (json['discount'] as num?)?.toInt() ?? 0,
+      priceDiscount: (json['price_discount'] as num?)?.toInt() ?? 0,
+      serviceItemId: json['service_item_id'] ?? 0,
+      voucherCode: json['voucher_code'] ?? '',
+      voucherPrice: (json['voucher_price'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  /// Creates a [ServiceData] with sale fields populated from a [SaleServiceItem].
+  factory ServiceData.fromSaleItem(SaleServiceItem saleItem, {required String name}) {
+    return ServiceData(
+      name: name,
+      id: saleItem.serviceItemId,
+      priceType: 'paid',
+      fromPrice: saleItem.price,
+      toPrice: saleItem.price,
+      unit: '',
+      currencyUnit: saleItem.currencyUnit,
+      description: '',
+      isPayment: saleItem.priceDiscount > 0 ? 1 : 0,
+      value: saleItem.priceDiscount == 0 ? 'Miễn phí' : '',
+      discount: saleItem.discount,
+      priceDiscount: saleItem.priceDiscount,
+      serviceItemId: saleItem.serviceItemId,
+      voucherCode: saleItem.voucherCode,
+      voucherPrice: saleItem.voucherPrice,
+    );
+  }
+}
+
+// ─── Sale service list (promotions / vouchers) ────────────────────────────────
+
+class SaleServiceList {
+  final int id;
+  final String nameVi;
+  final String descriptionVi;
+  final String startDate;
+  final String endDate;
+  final List<SaleServiceItem> services;
+
+  SaleServiceList({
+    required this.id,
+    required this.nameVi,
+    required this.descriptionVi,
+    required this.startDate,
+    required this.endDate,
+    required this.services,
+  });
+
+  factory SaleServiceList.fromJson(Map<String, dynamic> json) {
+    return SaleServiceList(
+      id: json['id'] ?? 0,
+      nameVi: json['name_vi'] ?? '',
+      descriptionVi: json['description_vi'] ?? '',
+      startDate: json['start_date'] ?? '',
+      endDate: json['end_date'] ?? '',
+      services: (json['services'] as List?)
+              ?.map((e) => SaleServiceItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+
+  /// Returns the first matching [SaleServiceItem] for a given service id,
+  /// where [serviceId] corresponds to [SaleServiceItem.serviceItemId].
+  SaleServiceItem? findByServiceId(int serviceId) {
+    try {
+      return services.firstWhere((s) => s.serviceItemId == serviceId);
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+class SaleServiceItem {
+  /// Internal ID of the sale-service record.
+  final int id;
+  final String nameVi;
+  final int price;
+  final int discount;
+  final int priceDiscount;
+  final String currencyUnit;
+  /// The `service_item_id` — used as `id` in the `sale_services` payload.
+  final int serviceItemId;
+  final String voucherCode;
+  final int voucherPrice;
+
+  SaleServiceItem({
+    required this.id,
+    required this.nameVi,
+    required this.price,
+    required this.discount,
+    required this.priceDiscount,
+    required this.currencyUnit,
+    required this.serviceItemId,
+    required this.voucherCode,
+    required this.voucherPrice,
+  });
+
+  factory SaleServiceItem.fromJson(Map<String, dynamic> json) {
+    return SaleServiceItem(
+      id: json['id'] ?? 0,
+      nameVi: json['name_vi'] ?? '',
+      price: (json['price'] as num?)?.toInt() ?? 0,
+      discount: (json['discount'] as num?)?.toInt() ?? 0,
+      priceDiscount: (json['price_discount'] as num?)?.toInt() ?? 0,
+      currencyUnit: json['currency_unit'] ?? '',
+      serviceItemId: json['service_item_id'] ?? 0,
+      voucherCode: json['voucher_code'] ?? '',
+      voucherPrice: (json['voucher_price'] as num?)?.toInt() ?? 0,
     );
   }
 }

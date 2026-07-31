@@ -7,14 +7,20 @@ import 'package:medical/src/modal/notification/notification_model.dart';
 
 class Message {
   static showToastMessage(BuildContext context, String? title, {int seconds = 2}) {
-    final FToast fToast = FToast();
-    fToast.init(context);
-    Future.delayed(Duration.zero, () async {
-      fToast.showToast(
-        child: ToastMessage(title: title),
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: Duration(seconds: seconds),
-      );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        if (!context.mounted) return;
+        final FToast fToast = FToast();
+        fToast.init(context);
+        fToast.showToast(
+          child: ToastMessage(title: title),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: seconds),
+        );
+      } catch (_) {
+        // Overlay may not be available (e.g. context is a Navigator/MaterialApp
+        // level context). Silently ignore to avoid crashing the app.
+      }
     });
   }
 

@@ -25,6 +25,7 @@ class SectionAddSymptom extends StatefulWidget {
     this.isDisplayRemove = true,
     this.readOnly = false,
     this.isDisplayTextField = true,
+    this.hintText,
   });
 
   final FocusNode? focusNode;
@@ -35,6 +36,7 @@ class SectionAddSymptom extends StatefulWidget {
   final bool isDisplayRemove;
   final bool readOnly;
   final bool isDisplayTextField;
+  final String? hintText;
 
   @override
   State<SectionAddSymptom> createState() => SectionAddSymptomState();
@@ -161,7 +163,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
               maxLength: widget.maxLength,
               maxLengthEnforcement: MaxLengthEnforcement.enforced,
               decoration: InputDecoration(
-                hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                hintText: widget.hintText ?? R.string.nhap_ghi_chu_cua_ban.tr(),
                 counterText: '',
                 contentPadding: EdgeInsets.only(bottom: 8),
                 border: InputBorder.none,

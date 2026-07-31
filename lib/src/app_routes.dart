@@ -5,6 +5,8 @@ import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_selected_wish_slot.dart';
+import 'package:medical/src/model/response/my_benefit_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
@@ -35,6 +37,19 @@ import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dar
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_detail_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_detail_appointment_screen.dart';
+import 'package:medical/src/widget/benefit/benefit_appointment_history_page.dart';
+import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
+import 'package:medical/src/widget/benefit/benefit_page.dart';
+import 'package:medical/src/widget/benefit/benefit_introduce_bundle_page.dart';
+import 'package:medical/src/widget/benefit/benefit_medication_order_detail_page.dart';
+import 'package:medical/src/widget/benefit/benefit_partner_intro_page.dart';
+import 'package:medical/src/widget/benefit/benefit_my_voucher_page.dart';
+import 'package:medical/src/widget/benefit/benefit_service_intro_page.dart';
+import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 
 import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
@@ -76,7 +91,7 @@ class AppRoutes {
               sharedCode = settings.arguments! as String;
             } else if (settings.arguments is Map<String, dynamic>) {
               final data = settings.arguments as Map<String, dynamic>?;
-              isRedirectFromNotification = data!['isRedirectFromNotification'];
+              isRedirectFromNotification = data?['isRedirectFromNotification'] ?? false;
             }
           }
 
@@ -446,8 +461,119 @@ class AppRoutes {
         {
           final data = settings.arguments as Map<String, dynamic>?;
           final campaignId = data?['campaignId'] as String?;
-          if (campaignId == null || campaignId.isEmpty) break;
-          page = BcbDetailAppointmentScreen(campaignId: campaignId);
+          final fromBenefitHistory =
+              data?['fromBenefitHistory'] as bool? ?? false;
+          page = BcbDetailAppointmentScreen(
+            campaignId: campaignId,
+            fromBenefitHistory: fromBenefitHistory,
+          );
+          break;
+        }
+      case NavigatorName.benefit_page:
+        {
+          final data = settings.arguments as Map<String, dynamic>?;
+          final bookingType = data?['bookingType'] as String? ??
+              Const.BENEFIT_BOOKING_AT_CLINIC;
+          final specialtyName = data?['specialtyName'] as String?;
+          final specialtyId = data?['specialtyId'] as int?;
+          final clinicId = data?['clinicId'] as int?;
+          final itemId = data?['itemId'] as String?;
+          final itemType = data?['itemType'] as int?;
+          page = BenefitPage(
+            bookingType: bookingType,
+            specialtyName: specialtyName,
+            specialtyId: specialtyId,
+            clinicId: clinicId,
+            itemId: itemId,
+            itemType: itemType,
+          );
+          break;
+        }
+
+      case NavigatorName.benefit_introduce_bundle:
+        page = const BenefitIntroduceBundlePage();
+        break;
+
+      case NavigatorName.dsmes_booking_detail:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          if (args == null) break;
+          final bookingCubit = DsmesAppointmentCubit(AppRepository());
+          page = BlocProvider<DsmesAppointmentCubit>.value(
+            value: bookingCubit,
+            child: DsmesBookingDetail(
+              serviceType: args['serviceType'] as String? ?? '',
+              appointment: args['appointment'] as DsmesAppointment,
+              bookingType: args['bookingType'] as String? ?? '',
+            ),
+          );
+          break;
+        }
+
+      case NavigatorName.benefit_medicine_intro:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BenefitServiceIntroPage(
+            serviceType: BenefitServiceType.medicine,
+            itemId: args?['itemId'] as String?,
+            itemType: args?['itemType'] as int?,
+          );
+          break;
+        }
+
+      case NavigatorName.benefit_lab_test_intro:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BenefitServiceIntroPage(
+            serviceType: BenefitServiceType.labTest,
+            itemId: args?['itemId'] as String?,
+            itemType: args?['itemType'] as int?,
+          );
+          break;
+        }
+
+      case NavigatorName.benefit_appointment_history:
+        page = const BenefitAppointmentHistoryPage();
+        break;
+
+      case NavigatorName.benefit_medication_order_detail:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          if (args == null) break;
+          page = BenefitMedicationOrderDetailPage(
+            order: args['order'],
+          );
+          break;
+        }
+
+      case NavigatorName.benefit_partner_intro:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BenefitPartnerIntroPage(
+            item: args?['item'] as MyBenefitItem?,
+          );
+          break;
+        }
+
+      case NavigatorName.benefit_my_voucher:
+        page = const BenefitMyVoucherPage();
+        break;
+
+      case NavigatorName.benefit_booking_detail:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          if (args == null) break;
+          final bookingCubit = DsmesAppointmentCubit(AppRepository());
+          page = BlocProvider<DsmesAppointmentCubit>.value(
+            value: bookingCubit,
+            child: BenefitBookingDetailPage(
+              serviceType: args['serviceType'] as String? ?? '',
+              appointment: args['appointment'] as DsmesAppointment,
+              bookingType: args['bookingType'] as String? ?? '',
+              previousRoute: args['previousRoute'] as String?,
+              branchAddress: args['branchAddress'] as String?,
+            ),
+          );
           break;
         }
 
