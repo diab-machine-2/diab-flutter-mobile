@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_benefit_response.dart';
-import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/utils/const.dart';
@@ -197,31 +195,24 @@ class _BenefitIntroduceBundlePageState
               ),
               Flexible(
                 flex: 3,
-                child: GestureDetector(
-                  onTap: () => Observable.instance.notifyObservers(
-                    [],
-                    notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB,
-                    map: {'position': 0},
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
                   ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
+                  decoration: ShapeDecoration(
+                    color: Colors.white.withValues(alpha: 0.20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16777200),
                     ),
-                    decoration: ShapeDecoration(
-                      color: Colors.white.withValues(alpha: 0.20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16777200),
-                      ),
-                    ),
-                    child: Text(
-                      R.string.benefit_active.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        height: 1.50,
-                      ),
+                  ),
+                  child: Text(
+                    R.string.benefit_active.tr(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      height: 1.50,
                     ),
                   ),
                 ),
@@ -710,9 +701,8 @@ class _BenefitIntroduceBundlePageState
         break;
 
       case BenefitBundleItemType.dsp:
-        final isFreeUser =
-            AppSettings.userInfo?.packageType == PackageType.free;
-        if (isFreeUser) {
+        final isUsed = (item.quantityUsed ?? 0) > 0;
+        if (!isUsed) {
           _showUpgradePackageDialog(context);
         } else {
           // Navigate to program tab via existing observer notification
