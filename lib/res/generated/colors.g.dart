@@ -219,4 +219,22 @@ class Colors {
   Color get color0xffFEF2F2 => Color(0xffFEF2F2);
   Color get color0xffF3F4F6 => Color(0xffF3F4F6);
   Color get color0xff126B56 => Color(0xff126B56);
+  Color get benefitArrowButtonBg => Color(0xFF088078);
+  Color get benefitDividerColor => Color(0xFF01645A);
+  Color get benefitIconGradientStart => Color(0xFF3CB38D);
+  Color get benefitIconGradientEnd => Color(0xFF01635A);
+  Color get benefitIconBorder => Color(0xFFE5B542);
+  Color get benefitTextColor => Color(0xFF01645A);
+  Color get benefitTitleColor => Color(0xFF088078);
+  Color get benefitBgGradientStart => Color(0xFFCAE9DF);
+  Color get benefitBgGradientEnd => Color(0xFFF8FEFD);
+  Color get serviceCardShadow => Color(0x19000000);
+  Color get color0xFFF2F4F5 => Color(0xffF2F4F5);
+  Color get color0xFF999999 => Color(0xFF999999);
+  Color get color0xFFE5F7F5 => Color(0xFFE5F7F5);
+  Color get color0x14016961 => Color(0x14016961);
+  Color get color0xFFF0FDF4 => Color(0xFFF0FDF4);
+  Color get color0xFF1F2937 => Color(0xFF1F2937);
+  Color get color0xFF6B7280 => Color(0xFF6B7280);
+  Color get color0xFFE5E7EB => Color(0xFFE5E7EB);
 }

@@ -44,6 +44,10 @@ abstract class DocosanApi {
   Future<CreateDsmesOfflineBookingResponse> createDsmesOfflineBooking(
       @Body() CreateDsmesBookingRequest request);
 
+  @POST("api/doctors/patient-appointments-partner-diab")
+  Future<CreateDsmesOfflineBookingResponse> createDsmesPartnerDiabBooking(
+      @Body() CreateDsmesBookingRequest request);
+
   @GET("api/patients/my-appointment-detail")
   Future<GetDsmesAppointmentDetailResponse> getDsmesAppointmentDetail(
     @Query('appointment_id') int? appointmentId,
@@ -76,8 +80,17 @@ abstract class DocosanApi {
     @Query('version') String? version,
   });
 
+  @GET("api/diseases-configuration-diab")
+  Future<ClinicSpecialtyListResponse> getCLinicSpecialtyListDiab({
+    @Query('language') String? language,
+  });
+
   @POST("api/seo-static-link-multi")
   Future<SearchListClinicResponse> searchBookingClinicList(
+      @Body() SearchBookingClinicListRequest request);
+
+  @POST("api/seo-static-link-multi-diab")
+  Future<SearchListClinicResponse> searchBookingClinicListDiab(
       @Body() SearchBookingClinicListRequest request);
 
   @GET("api/partner-doctor")
