@@ -198,4 +198,25 @@ class NavigatorName {
   static const String view_test_result = '/bcb-campaign/view-test-result';
   static const String campaign_test_result_detail =
       '/bcb-campaign/test-result-detail';
+
+  // BENEFIT FLOW
+  static const String benefit_page = '/benefit_page';
+  static const String benefit_introduce_bundle = '/benefit_introduce_bundle';
+  static const String benefit_clinic_list = '/benefit_clinic_list';
+  static const String benefit_branch = '/benefit_branch';
+  static const String benefit_calendar = '/benefit_calendar';
+  static const String benefit_appointment_history = '/benefit_appointment_history';
+  static const String benefit_select_service = '/benefit_select_service';
+  static const String benefit_confirm_information = '/benefit_confirm_information';
+  static const String benefit_booking_detail = '/benefit_booking_detail';
+  static const String benefit_medicine_intro = '/benefit_medicine_intro';
+  static const String benefit_lab_test_intro = '/benefit_lab_test_intro';
+  static const String benefit_capture_image = '/benefit_capture_image';
+  static const String benefit_medicine_scan_result = '/benefit_medicine_scan_result';
+  static const String benefit_lab_test_scan_result = '/benefit_lab_test_scan_result';
+  static const String benefit_service_request_success = '/benefit_service_request_success';
+  static const String benefit_medication_order_detail = '/benefit_medication_order_detail';
+  static const String benefit_partner_intro = '/benefit_partner_intro';
+  static const String benefit_my_voucher = '/benefit_my_voucher';
 }
+

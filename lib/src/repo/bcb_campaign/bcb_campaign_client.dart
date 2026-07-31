@@ -163,11 +163,15 @@ class BcbCampaignClient extends FetchClient {
 
   /// GET App/BcbCustomerAppointment/my-registered?campaignId={campaignId}
   Future<BcbCustomerAppointmentModel?> fetchMyRegisteredAppointment(
-      String campaignId) async {
+      String? campaignId) async {
     try {
+      final Map<String, String> params = {};
+      if (campaignId != null && campaignId.isNotEmpty) {
+        params['campaignId'] = campaignId;
+      }
       final Response response = await super.fetchData(
         url: '/App/BcbCustomerAppointment/my-registered',
-        params: {'campaignId': campaignId},
+        params: params,
       );
       if (response.statusCode == 200) {
         final body = response.data;

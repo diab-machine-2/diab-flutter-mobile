@@ -237,7 +237,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                         // - at clinic: go back to provider page (normal pop)
                         if (_cubit.isExamination) {
                           BotToast.closeAllLoading();
-                          if (_cubit.examinationLocation == Const.EXAMINATION_LOCATION_HOME) {
+                          if (_cubit.examinationLocation ==
+                              Const.EXAMINATION_LOCATION_HOME) {
                             Navigator.of(context, rootNavigator: true).pop();
                           } else {
                             // At clinic: pop normally to go back to provider page
@@ -966,6 +967,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
               if (datetime != null) {
                 setState(() {
                   selectedDate = datetime;
+                  selectedBookingSchedule = null;
                   availableBookingSchedule =
                       _filterAvailableSchedules(fullSchedule, datetime);
                   isMorningSelected = availableBookingSchedule.isNotEmpty

@@ -83,10 +83,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final model =
             (AppSettings.popPrecachedHome() ?? await AppSettings.getHome());
         if (model != null) {
+          AppSettings.hasBundle = model.hasBundle;
           // if have cache
           _cached = HomeLoaded(
             model: model,
-            utilities: this.getAllUtilities(full: false, bcbStatus: model.bcbStatus),
+            utilities: this.getAllUtilities(
+                full: false,
+                bcbStatus: model.bcbStatus,
+                hasBundle: model.hasBundle),
             activities: model.activities,
             reminders: model.reminders,
             activityLoading: false,
@@ -114,6 +118,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       try {
         // Load measurements
         final home = await client.fetchHomes();
+        AppSettings.hasBundle = home.hasBundle;
         _hasWeightRecord =
             home.weightCard?.weight != null && home.weightCard?.weight != 0.0;
         home.inlineMeasurements = _castInlineMeasurements(home);
@@ -122,7 +127,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         HomeLoaded currentState =
             (_cached?.copyWith(model: home) ?? HomeLoaded(model: home))
                 .copyWith(
-          utilities: this.getAllUtilities(full: false, bcbStatus: home.bcbStatus),
+          utilities: this.getAllUtilities(
+              full: false,
+              bcbStatus: home.bcbStatus,
+              hasBundle: home.hasBundle),
           measurementLoading: false,
           activityLoading: _firstLoad,
           reminderLoading: _firstLoad,
@@ -405,7 +413,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   // Stream<HomeState> _syncHealthApp() async* {}
 
-  List<HomeUtilityData> getAllUtilities({bool full = false, bool bcbStatus = false}) {
+  List<HomeUtilityData> getAllUtilities(
+      {bool full = false, bool bcbStatus = false, bool hasBundle = false}) {
     String? preOrder = FirebaseRemoteSetting.instance.utilitiesOrder;
     final moreItem = HomeUtilityData(
       icon: R.drawable.ic_home_more,
@@ -480,7 +489,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         slug: "kham-tu-xa",
         navigatorName: NavigatorName.booking_doctor,
       ),
-      if (bcbStatus)
+      if (bcbStatus && hasBundle == true)
         HomeUtilityData(
           icon: R.drawable.ic_lab_result,
           title: R.string.bcb_medical_examination_result.tr(),

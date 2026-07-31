@@ -67,11 +67,7 @@ class BookingClinicProvider {
       id: json['id'] is String ? int.tryParse(json['id']) ?? 0 : json['id'],
       name: json['name'],
       address: json['address'],
-      svAvailable: json['sv_available'] != null
-          ? (json['sv_available'] as List)
-              .map((e) => ServiceAvailable.fromJson(e))
-              .toList()
-          : [],
+      svAvailable: _parseSvAvailable(json['sv_available']),
       status: json['status'] ?? '',
       avatar: json['avatar'] ?? '',
       language: json['language'] ?? '',
@@ -152,6 +148,27 @@ Map<String, String>? _parseGraduateName(dynamic graduateName) {
   return null;
 }
 
+/// Parses [sv_available] from the API response, which may be:
+/// - `[{"key":"telemedicine","name":"..."}, ...]` (list of objects)
+/// - `"telemedicine"` (single string)
+/// - `["telemedicine"]` (list of strings)
+List<ServiceAvailable> _parseSvAvailable(dynamic value) {
+  if (value == null) return [];
+
+  if (value is List) {
+    return value.map((e) {
+      if (e is Map<String, dynamic>) {
+        return ServiceAvailable.fromJson(e);
+      }
+      // e is a plain string like "telemedicine"
+      return ServiceAvailable(key: e.toString(), name: '');
+    }).toList();
+  }
+
+  // value is a plain string like "telemedicine"
+  return [ServiceAvailable(key: value.toString(), name: '')];
+}
+
 class ServiceAvailable {
   final String key;
   final String name;
@@ -175,7 +192,7 @@ class Specialty {
   factory Specialty.fromJson(Map<String, dynamic> json) {
     return Specialty(
       specialtyId: json['specialty_id'],
-      name: json['name'],
+      name: json['name'] ?? json['name_vi'],
     );
   }
 }
