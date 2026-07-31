@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/benefit/benefit_calendar_section.dart';
+import 'package:medical/src/widget/benefit/benefit_confirm_page.dart';
+import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+
+/// A self-contained reschedule sub-flow: Calendar → Confirm → success navigates
+/// back to a refreshed [BenefitBookingDetailPage].
+///
+/// Uses [BenefitNavigatorScope] to scope navigation to this flow without
+/// touching any shared static navigator state.
+/// [previousRoute] is passed through to [BenefitConfirmPage] so the success
+/// navigation can restore the correct stack (history vs. tabbar).
+/// [branchAddress] is the specific branch address (not origin clinic) for the
+/// appointment, forwarded from the booking detail page through to the confirm page.
+class BenefitRescheduleFlow extends StatefulWidget {
+  final DsmesAppointmentCubit cubit;
+  final String serviceType;
+  final int appointmentId;
+  final String bookingType;
+  final String? previousRoute;
+  final String? branchName;
+  final String? branchAddress;
+
+  const BenefitRescheduleFlow({
+    Key? key,
+    required this.cubit,
+    required this.serviceType,
+    required this.appointmentId,
+    required this.bookingType,
+    this.previousRoute,
+    this.branchName,
+    this.branchAddress,
+  }) : super(key: key);
+
+  @override
+  State<BenefitRescheduleFlow> createState() => _BenefitRescheduleFlowState();
+}
+
+class _BenefitRescheduleFlowState extends State<BenefitRescheduleFlow> {
+  final _navKey = GlobalKey<NavigatorState>();
+
+  Route<dynamic>? _buildRoute(RouteSettings settings, Widget child) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (_) => BlocProvider.value(value: widget.cubit, child: child),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BenefitNavigatorScope(
+      navigatorKey: _navKey,
+      child: WillPopScope(
+        onWillPop: () async {
+          if (_navKey.currentState?.canPop() ?? false) {
+            _navKey.currentState?.pop();
+            return false;
+          }
+          return true;
+        },
+        child: Navigator(
+          key: _navKey,
+          onGenerateRoute: (settings) {
+            switch (settings.name) {
+              case '/':
+                return _buildRoute(
+                  settings,
+                  BenefitCalendarSection(
+                    serviceType: widget.serviceType,
+                    action: 'reschedule',
+                    appointmentId: widget.appointmentId,
+                    bookingType: widget.bookingType,
+                    branchName: widget.branchName,
+                    branchAddress: widget.branchAddress,
+                  ),
+                );
+
+              case NavigatorName.benefit_confirm_information:
+                final args = settings.arguments as Map<String, dynamic>?;
+                return _buildRoute(
+                  settings,
+                  BenefitConfirmPage(
+                    serviceType:
+                        args?['serviceType'] as String? ?? widget.serviceType,
+                    action: 'reschedule',
+                    appointmentId: widget.appointmentId,
+                    bookingType:
+                        args?['bookingType'] as String? ?? widget.bookingType,
+                    previousRoute: widget.previousRoute,
+                    branchName: args?['branchName'] as String?,
+                    branchAddress: args?['branchAddress'] as String?,
+                    branchId: args?['branchId'] as int?,
+                    specialtyName: args?['specialtyName'] as String?,
+                  ),
+                );
+
+              default:
+                return null;
+            }
+          },
+        ),
+      ),
+    );
+  }
+}

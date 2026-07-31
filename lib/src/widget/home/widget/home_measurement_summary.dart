@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
@@ -24,9 +25,13 @@ class MeasurementSummary extends StatelessWidget {
     required this.onMeasurement,
     this.onHbA1cTap,
     this.loading = false,
+    this.hasBundle = false,
+    this.examResultCount = 0,
   });
 
   final bool loading;
+  final bool hasBundle;
+  final int examResultCount;
 
   final List<HomeMeasurementInlineData> inlineMeasurements;
   final List<HomeMeasurementData> measurements;
@@ -41,68 +46,50 @@ class MeasurementSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
-    return Stack(
-      fit: StackFit.loose,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(16.0),
-                bottomRight: Radius.circular(16.0),
-              ),
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Inline measurements
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.max,
-                  children: inlineMeasurements
-                      .map((e) => _buildInlineMeasurementWidget(e))
-                      .toList(),
-                ),
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(16.0),
+          bottomRight: Radius.circular(16.0),
+        ),
+        color: Colors.white,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Inline measurements
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: inlineMeasurements
+                .map((e) => _buildInlineMeasurementWidget(e))
+                .toList(),
+          ),
 
-                const SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
 
-                // Measurements
-                SizedBox(
-                  height: 88.0 * textScaleFactor,
-                  child: ListView.separated(
-                    itemBuilder: (_, index) => _buildMeasurementWidget(
-                        measurements[index], textScaleFactor),
-                    separatorBuilder: (_, index) => const SizedBox(width: 8.0),
-                    itemCount: measurements.length,
-                    scrollDirection: Axis.horizontal,
-                  ),
-                ),
-
-                const SizedBox(height: 20.0),
-              ],
+          // Measurements
+          SizedBox(
+            height: 88.0 * textScaleFactor,
+            child: ListView.separated(
+              itemBuilder: (_, index) =>
+                  _buildMeasurementWidget(measurements[index], textScaleFactor),
+              separatorBuilder: (_, index) => const SizedBox(width: 8.0),
+              itemCount: measurements.length,
+              scrollDirection: Axis.horizontal,
             ),
           ),
-        ),
-        Positioned(
-          bottom: 0.0,
-          left: 0.0,
-          right: 0.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Health Profile Button
-              // _buildHealthProfileButton(),
 
-              // Add measurement
-              _buildAddMeasurementButton(),
-            ],
-          ),
-        ),
-      ],
+          const SizedBox(height: 20.0),
+
+          // Health profile button — only when hasBundle
+          if (hasBundle == true) ...[
+            _buildHealthProfileButton(),
+            const SizedBox(height: 4.0),
+          ],
+        ],
+      ),
     );
   }
 
@@ -332,31 +319,81 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
-  // Widget _buildHealthProfileButton() {
-  //   return InkWell(
-  //     onTap: onHealthProfile,
-  //     child: Row(
-  //       mainAxisSize: MainAxisSize.min,
-  //       crossAxisAlignment: CrossAxisAlignment.end,
-  //       children: [
-  //         Image.asset(
-  //           R.drawable.ic_home_health_profile,
-  //           width: 20.0,
-  //           height: 20.0,
-  //         ),
-  //         const SizedBox(width: 6.0),
-  //         Text(
-  //           "Hồ sơ sức khoẻ",
-  //           style: TextStyle(
-  //             color: R.color.greenGradientBottom,
-  //             fontWeight: FontWeight.bold,
-  //             fontSize: 14.0,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget _buildHealthProfileButton() {
+    return GestureDetector(
+      onTap: onHealthProfile,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Main pill button
+          Container(
+            width: double.infinity,
+            height: 40,
+            decoration: ShapeDecoration(
+              color: const Color(0xFF088078),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  R.icons.ic_ho_so_suc_khoe,
+                  width: 18,
+                  height: 18,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  R.string.health_profile.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    height: 1.43,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Right: white rounded badge with count
+          if (examResultCount > 0)
+            Positioned(
+              right: 5,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 29),
+                  height: 29,
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(width: 2, color: Colors.white),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$examResultCount',
+                      style: const TextStyle(
+                        color: Color(0xFF01645A),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildAddMeasurementButton() {
     return InkWell(
