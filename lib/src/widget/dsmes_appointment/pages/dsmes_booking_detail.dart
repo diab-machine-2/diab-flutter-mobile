@@ -19,7 +19,6 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DsmesBookingDetail extends StatefulWidget {
   final String serviceType;
@@ -84,6 +83,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     return WillPopScope(
       onWillPop: () async {
         FocusScope.of(context).unfocus();
+
         // Reset page tracking when returning to root
         BranchioLinkConfig.instance.resetPageTracking();
         DsmesNavigationMixin.getNavigationKey()
@@ -118,107 +118,121 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       children: [
         Column(
           children: [
-            CustomAppBar(
-              backgroundColor: Colors.transparent,
-              title: Text(
-                R.string.consult_information.tr(),
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    // fontFamily: 'sfpro',
-                    color: R.color.textDark),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    R.color.greenGradientTop02,
+                    R.color.greenGradientBottom
+                  ],
+                  stops: const [0.01, 0.99],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
               ),
-              actions: [
-                InkWell(
-                  onTap: () async {
-                    // final launchUri =
-                    //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                    // if (await canLaunchUrl(launchUri)) {
-                    //   await launchUrl(launchUri);
-                    // } else {
-                    //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                    // }
-
-                    HomeSupportFunctions.showModalAddData(context);
-                  },
-                  child: Container(
-                    width: 85,
-                    height: 33,
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                    margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: R.color.color0xffFCF8DA,
-                      border: Border.all(
-                        color: R.color.color0xffFEDC89,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(
-                          R.icons.ic_telephone,
-                          width: 16,
-                          height: 16,
-                          color: R.color.ho_so_color,
-                          fit: BoxFit.scaleDown,
+              child: CustomAppBar(
+                backgroundColor: Colors.transparent,
+                title: Text(
+                  R.string.schedule_information.tr(),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      // fontFamily: 'sfpro',
+                      color: R.color.white),
+                ),
+                actions: [
+                  InkWell(
+                    onTap: () async {
+                      HomeSupportFunctions.showModalAddData(context);
+                    },
+                    child: Container(
+                      height: 36,
+                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: R.color.color0xffCAFAF5,
+                        border: Border.all(
+                          color: R.color.color0xff8FEBE0,
                         ),
-                        GapW(4),
-                        Expanded(
-                          child: Text(
-                            R.string.contact.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'sfpro',
-                              fontWeight: FontWeight.w700,
-                              color: R.color.ho_so_color,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            R.icons.ic_telephone,
+                            width: 16,
+                            height: 16,
+                            color: R.color.greenGradientBottom,
+                            fit: BoxFit.scaleDown,
+                          ),
+                          GapW(8),
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                              textScaler: MediaQuery.of(context)
+                                  .textScaler
+                                  .clamp(
+                                      minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                            ),
+                            child: Text(
+                              R.string.contact.tr(),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'sfpro',
+                                fontWeight: FontWeight.w700,
+                                color: R.color.greenGradientBottom,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-              leadingIcon: IconButton(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: R.color.textDark,
-                ),
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
+                ],
+                leadingIcon: IconButton(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: R.color.white,
+                  ),
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
 
-                  final route = ModalRoute.of(context)?.settings;
-                  final args = route?.arguments as Map<String, dynamic>?;
-                  final previousRoute = args?['previousRoute'] as String?;
+                    final route = ModalRoute.of(context)?.settings;
+                    final args = route?.arguments as Map<String, dynamic>?;
+                    final previousRoute = args?['previousRoute'] as String?;
 
-                  if (previousRoute == NavigatorName.dsmes_booking_history ||
-                      previousRoute == NavigatorName.dsmes_clinic_detail) {
-                    DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+                    if (previousRoute == NavigatorName.dsmes_booking_history ||
+                        previousRoute == NavigatorName.dsmes_clinic_detail) {
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.pop();
+                      return;
+                    }
+
+                    // Reset page tracking when returning to root
+                    BranchioLinkConfig.instance.resetPageTracking();
+                    DsmesNavigationMixin.getNavigationKey()
+                        .currentState
+                        ?.popUntil((route) => route.isFirst);
+
+                    if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+                      Observable.instance.notifyObservers([],
+                          notifyName: "refresh_dsmes_appointment");
+                    } else if (widget.bookingType ==
+                        Const.BOOKING_TYPE_CLINIC) {
+                      Observable.instance.notifyObservers([],
+                          notifyName: "refresh_booking_clinic");
+                    } else if (widget.bookingType ==
+                        Const.BOOKING_TYPE_DOCTOR) {
+                      Observable.instance.notifyObservers([],
+                          notifyName: "refresh_booking_doctor");
+                    }
                     return;
-                  }
-
-                  // Reset page tracking when returning to root
-                  BranchioLinkConfig.instance.resetPageTracking();
-                  DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.popUntil((route) => route.isFirst);
-
-                  if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
-                    Observable.instance.notifyObservers([],
-                        notifyName: "refresh_dsmes_appointment");
-                  } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
-                    Observable.instance.notifyObservers([],
-                        notifyName: "refresh_booking_clinic");
-                  } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
-                    Observable.instance.notifyObservers([],
-                        notifyName: "refresh_booking_doctor");
-                  }
-                  return;
-                },
+                  },
+                ),
               ),
             ),
             Expanded(
@@ -398,7 +412,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       if (isExaminationAtHome) {
         return R.string.xet_nghiem_tai_nha.tr();
       }
-      
+
       return widget.bookingType == Const.BOOKING_TYPE_CENTER
           ? widget.serviceType == DsmesAppointmentMode.atClinic.toString()
               ? R.string.consult_at_clinic.tr()
@@ -1036,9 +1050,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       await _cubit.getClinicDetail(
                           id: widget.appointment.clinicId);
 
-                      final navigator =
-                          DsmesNavigationMixin.getNavigationKey().currentState;
-
+                      final navigator = DsmesNavigationMixin
+                          .getNavigationKey()
+                          .currentState;
                       navigator?.pushNamed(
                           NavigatorName.dsmes_booking_select_date,
                           arguments: {
@@ -1119,102 +1133,102 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
             Flexible(
               flex: 1,
               child: GestureDetector(
-              onTap: () async {
-                final locale = context.locale.languageCode;
-                _cubit.initCreateDsmesBookingRequest(locale: locale);
-                final rebookingRequest = CreateDsmesBookingRequest(
-                    startTime: "",
-                    endTime: "",
-                    clinicId: widget.appointment.clinic.id,
-                    doctorId: widget.appointment.doctorId,
-                    patientPhoneNumber: widget.appointment.patientInfo.phone,
-                    patientName: widget.appointment.patientInfo.displayName,
-                    birthday: widget.appointment.patientInfo.birthday,
-                    patientGender:
-                        int.tryParse(widget.appointment.patientInfo.gender) ??
-                            (AppSettings.userInfo?.gender == 'Male' ? 1 : 0),
-                    patientEmail: widget.appointment.patientInfo.email,
-                    bookingForClinic:
-                        1, // 1: Booking phòng khám, 2: Booking bác sĩ
-                    language: locale,
-                    symptom: widget.appointment.symptom,
-                    symptomAttachment: widget.appointment.symptomAttachment
-                        .map((e) => e.filePath)
-                        .toList(),
-                    paymentInfo: PaymentInfo(
-                      paymentType: null,
-                      services: widget.appointment.services,
-                    ));
-                _cubit.updateCreateDsmesBookingRequest(
-                    request: rebookingRequest);
+                onTap: () async {
+                  final locale = context.locale.languageCode;
+                  _cubit.initCreateDsmesBookingRequest(locale: locale);
+                  final rebookingRequest = CreateDsmesBookingRequest(
+                      startTime: "",
+                      endTime: "",
+                      clinicId: widget.appointment.clinic.id,
+                      doctorId: widget.appointment.doctorId,
+                      patientPhoneNumber: widget.appointment.patientInfo.phone,
+                      patientName: widget.appointment.patientInfo.displayName,
+                      birthday: widget.appointment.patientInfo.birthday,
+                      patientGender:
+                          int.tryParse(widget.appointment.patientInfo.gender) ??
+                              (AppSettings.userInfo?.gender == 'Male' ? 1 : 0),
+                      patientEmail: widget.appointment.patientInfo.email,
+                      bookingForClinic:
+                          1, // 1: Booking phòng khám, 2: Booking bác sĩ
+                      language: locale,
+                      symptom: widget.appointment.symptom,
+                      symptomAttachment: widget.appointment.symptomAttachment
+                          .map((e) => e.filePath)
+                          .toList(),
+                      paymentInfo: PaymentInfo(
+                        paymentType: null,
+                        services: widget.appointment.services,
+                      ));
+                  _cubit.updateCreateDsmesBookingRequest(
+                      request: rebookingRequest);
 
-                // Pop until dsmes_booking
-                DsmesNavigationMixin.getNavigationKey()
-                    .currentState
-                    ?.popUntil((route) => route.isFirst);
+                  // Pop until dsmes_booking
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.popUntil((route) => route.isFirst);
 
-                // Handle rebooking for booking dsmes center
-                if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
-                  // Then push to select date
-                  if (widget.appointment.mode ==
-                      DsmesAppointmentMode.atClinic.toString()) {
-                    await DsmesNavigationMixin.getNavigationKey()
+                  // Handle rebooking for booking dsmes center
+                  if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+                    // Then push to select date
+                    if (widget.appointment.mode ==
+                        DsmesAppointmentMode.atClinic.toString()) {
+                      await DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                              arguments: {
+                            'serviceType': widget.appointment.mode,
+                            'action': 'create',
+                          });
+                    } else {
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.pushNamed(NavigatorName.dsmes_select_service,
+                              arguments: {
+                            'action': 'create',
+                            'clinic': _cubit.selectedClinic,
+                            'serviceType': widget.appointment.mode,
+                            'bookingType': widget.bookingType,
+                          });
+                    }
+                  } else {
+                    // Handle rebooking for booking clinic
+                    DsmesNavigationMixin.getNavigationKey()
                         .currentState
                         ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                             arguments: {
                           'serviceType': widget.appointment.mode,
                           'action': 'create',
-                        });
-                  } else {
-                    DsmesNavigationMixin.getNavigationKey()
-                        .currentState
-                        ?.pushNamed(NavigatorName.dsmes_select_service,
-                            arguments: {
-                          'action': 'create',
-                          'clinic': _cubit.selectedClinic,
-                          'serviceType': widget.appointment.mode,
                           'bookingType': widget.bookingType,
                         });
                   }
-                } else {
-                  // Handle rebooking for booking clinic
-                  DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                          arguments: {
-                        'serviceType': widget.appointment.mode,
-                        'action': 'create',
-                        'bookingType': widget.bookingType,
-                      });
-                }
-              },
-              child: Container(
-                height: 42,
-                // width: 170,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      R.color.greenGradientTop02,
-                      R.color.greenGradientBottom
-                    ],
+                },
+                child: Container(
+                  height: 42,
+                  // width: 170,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        R.color.greenGradientTop02,
+                        R.color.greenGradientBottom
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(200),
                   ),
-                  borderRadius: BorderRadius.circular(200),
-                ),
-                child: Center(
-                  child: Text(
-                    R.string.rebooking.tr(),
-                    style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                  child: Center(
+                    child: Text(
+                      R.string.rebooking.tr(),
+                      style: TextStyle(
+                        color: R.color.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

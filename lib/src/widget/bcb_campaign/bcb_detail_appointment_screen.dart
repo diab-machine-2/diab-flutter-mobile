@@ -16,11 +16,22 @@ import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class BcbDetailAppointmentScreen extends StatefulWidget {
-  final String campaignId;
+  /// Optional — `App/BcbCustomerAppointment/my-registered` resolves the
+  /// current user's booking without needing one, and the fetched appointment
+  /// itself carries `campaignId` (used as a fallback — see [_effectiveCampaignId]).
+  /// Only required to reschedule (fetching the campaign's partner/slot list
+  /// needs to know which campaign), so "Đổi lịch" is disabled when neither
+  /// source has one.
+  final String? campaignId;
+  /// True when this flow was entered from `BenefitAppointmentHistoryPage` —
+  /// "Về trang chủ" and a successful reschedule should return there instead
+  /// of wiping the stack back to `tabbar`.
+  final bool fromBenefitHistory;
 
   const BcbDetailAppointmentScreen({
     Key? key,
-    required this.campaignId,
+    this.campaignId,
+    this.fromBenefitHistory = false,
   }) : super(key: key);
 
   @override
@@ -58,6 +69,14 @@ class _BcbDetailAppointmentScreenState
       });
     }
   }
+
+  /// Prefers the explicit [BcbDetailAppointmentScreen.campaignId] (real
+  /// entry points always have one), falling back to the fetched
+  /// appointment's own `campaignId` (present since the backend started
+  /// returning it — covers entry points, like the Benefit history page,
+  /// that don't know it upfront).
+  String? get _effectiveCampaignId =>
+      widget.campaignId ?? _appointment?.campaignId;
 
   String? get _partnerHotline {
     final hotline = _appointment?.partnerHotline?.trim();
@@ -262,7 +281,11 @@ class _BcbDetailAppointmentScreenState
           Expanded(
             child: _buildOutlineButton(
               R.string.bcb_doi_lich.tr(),
-              _appointment == null ? null : _onRescheduleTap,
+              (_appointment == null ||
+                      _effectiveCampaignId == null ||
+                      _effectiveCampaignId!.isEmpty)
+                  ? null
+                  : _onRescheduleTap,
             ),
           ),
           const SizedBox(width: 8),
@@ -270,10 +293,19 @@ class _BcbDetailAppointmentScreenState
             child: _buildGradientButton(
               R.string.back_home_page.tr(),
               () {
-                navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                  NavigatorName.tabbar,
-                  (route) => false,
-                );
+                if (widget.fromBenefitHistory) {
+                  Navigator.of(context, rootNavigator: true).popUntil(
+                    (route) =>
+                        route.settings.name ==
+                            NavigatorName.benefit_appointment_history ||
+                        route.isFirst,
+                  );
+                } else {
+                  navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                    NavigatorName.tabbar,
+                    (route) => false,
+                  );
+                }
               },
             ),
           ),
@@ -284,14 +316,16 @@ class _BcbDetailAppointmentScreenState
 
   void _onRescheduleTap() {
     final appt = _appointment;
-    if (appt == null) return;
+    final campaignId = _effectiveCampaignId;
+    if (appt == null || campaignId == null || campaignId.isEmpty) return;
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => BcbSelectPartnerScreen(
-          bcbCampaignId: widget.campaignId,
+          bcbCampaignId: campaignId,
           isReschedule: true,
           appointmentId: appt.appointmentId,
           currentSlotId: appt.slotId,
+          fromBenefitHistory: widget.fromBenefitHistory,
         ),
       ),
     );

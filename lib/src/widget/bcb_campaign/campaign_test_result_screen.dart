@@ -135,9 +135,12 @@ class _CampaignTestResultScreenState extends State<CampaignTestResultScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
-              children: [
+          : RefreshIndicator(
+              onRefresh: _fetchResults,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                children: [
                 MediaQuery(
                   data: MediaQuery.of(context).copyWith(
                     textScaler: MediaQuery.of(context)
@@ -261,7 +264,8 @@ class _CampaignTestResultScreenState extends State<CampaignTestResultScreen> {
                     ),
                   );
                 }),
-              ],
+                ],
+              ),
             ),
     );
   }
