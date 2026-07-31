@@ -5,11 +5,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_customer_appointment_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/medication_order_response.dart';
+import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -18,6 +22,13 @@ import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+
+/// Campaign booking statuses this page treats as "there's a real booking" —
+/// see [BcbCustomerAppointmentModel.customerStatus]. 6/7 = booked (upcoming),
+/// 9/10 = result delivered (past). Other values (pre-booking, etc.) are
+/// skipped.
+const _kCampaignBookedStatuses = {6, 7};
+const _kCampaignResultStatuses = {9, 10};
 
 /// A unified appointment + medication-order history screen for the Benefit flow.
 class BenefitAppointmentHistoryPage extends StatefulWidget {
@@ -29,7 +40,7 @@ class BenefitAppointmentHistoryPage extends StatefulWidget {
 }
 
 class _BenefitAppointmentHistoryPageState
-    extends State<BenefitAppointmentHistoryPage> {
+    extends BaseState<BenefitAppointmentHistoryPage> {
   final RefreshController _refreshController = RefreshController();
   late DsmesAppointmentCubit _cubit;
   final AppRepository _repository = AppRepository();
@@ -39,6 +50,7 @@ class _BenefitAppointmentHistoryPageState
 
   List<DsmesAppointment> sortedMyAppointments = [];
   List<MedicationOrderItem> medicationOrders = [];
+  BcbCustomerAppointmentModel? campaignAppointment;
 
   @override
   void initState() {
@@ -53,16 +65,21 @@ class _BenefitAppointmentHistoryPageState
     super.dispose();
   }
 
+  @override
+  void didPopNext() {
+    // A pushed route (e.g. reschedule's "Về trang chủ" landing on a fresh
+    // BcbDetailAppointmentScreen, or the DSMES/medication-order detail
+    // pages) popped back to this page — refresh so it reflects any change.
+    _initData(showLoadingIndicator: false);
+    super.didPopNext();
+  }
+
   Future<void> _initData({bool showLoadingIndicator = true}) async {
     if (showLoadingIndicator) setState(() => isLoading = true);
 
     final docosanToken = await AppSettings.getDocosanToken();
+    if (!mounted) return;
     if (docosanToken == null || docosanToken.isEmpty) {
-      final isExist = await _cubit.isExistDocosanUser();
-      if (!isExist) {
-        setState(() => isLoading = false);
-        return;
-      }
       final phoneNumber = AppSettings.userInfo?.phoneNumber;
       if (phoneNumber == null) {
         setState(() => isLoading = false);
@@ -70,13 +87,16 @@ class _BenefitAppointmentHistoryPageState
       }
       await _cubit.registerDocosanUser(
           phoneNumber: Utils.formatPhoneNumber(phoneNumber));
+      if (!mounted) return;
     }
 
     await Future.wait([
       _cubit.getDsmesAppointmentList(
           page: 1, isRefresh: true, showLoading: false),
       _loadMedicationOrders(),
+      _loadCampaignAppointments(),
     ]);
+    if (!mounted) return;
 
     sortedMyAppointments = _cubit.getSortedAppointments();
     setState(() => isLoading = false);
@@ -92,6 +112,23 @@ class _BenefitAppointmentHistoryPageState
         medicationOrders = [];
       },
     );
+  }
+
+  /// Fetches the user's registered BCB campaign appointment, if any.
+  /// `App/BcbCustomerAppointment/my-registered` resolves the current user's
+  /// booking without needing a campaignId. Only kept if it's an actual
+  /// booking (`customerStatus` 6/7/9/10; see [_kCampaignBookedStatuses]).
+  Future<void> _loadCampaignAppointments() async {
+    try {
+      final appt = await BcbCampaignClient().fetchMyRegisteredAppointment(null);
+      final status = appt?.customerStatus;
+      campaignAppointment = (_kCampaignBookedStatuses.contains(status) ||
+              _kCampaignResultStatuses.contains(status))
+          ? appt
+          : null;
+    } catch (_) {
+      campaignAppointment = null;
+    }
   }
 
   List<_MergedItem> _buildUpcomingItems(List<DsmesAppointment> appointments) {
@@ -111,6 +148,12 @@ class _BenefitAppointmentHistoryPageState
       items.add(_MergedItem.medicationOrder(order));
     }
 
+    final campaignAppt = campaignAppointment;
+    if (campaignAppt != null &&
+        _kCampaignBookedStatuses.contains(campaignAppt.customerStatus)) {
+      items.add(_MergedItem.campaign(campaignAppt));
+    }
+
     items.sort((a, b) => b.sortTimestamp.compareTo(a.sortTimestamp));
     return items;
   }
@@ -125,6 +168,13 @@ class _BenefitAppointmentHistoryPageState
         items.add(_MergedItem.appointment(a));
       }
     }
+
+    final campaignAppt = campaignAppointment;
+    if (campaignAppt != null &&
+        _kCampaignResultStatuses.contains(campaignAppt.customerStatus)) {
+      items.add(_MergedItem.campaign(campaignAppt));
+    }
+
     items.sort((a, b) => b.sortTimestamp.compareTo(a.sortTimestamp));
     return items;
   }
@@ -209,7 +259,9 @@ class _BenefitAppointmentHistoryPageState
           _cubit.getDsmesAppointmentList(
               isRefresh: true, page: 1, showLoading: false),
           _loadMedicationOrders(),
+          _loadCampaignAppointments(),
         ]);
+        if (!mounted) return;
         sortedMyAppointments = _cubit.getSortedAppointments();
         _refreshController.refreshCompleted();
         setState(() {});
@@ -217,6 +269,7 @@ class _BenefitAppointmentHistoryPageState
       onLoading: () async {
         await _cubit.getDsmesAppointmentList(
             page: _cubit.currentPage + 1, showLoading: false);
+        if (!mounted) return;
         sortedMyAppointments = _cubit.getSortedAppointments();
         _refreshController.loadComplete();
         setState(() {});
@@ -321,7 +374,145 @@ class _BenefitAppointmentHistoryPageState
       );
     }
 
+    if (item.campaignAppointment != null) {
+      return _buildCampaignAppointmentItem(context, item.campaignAppointment!);
+    }
+
     return _buildMedicationOrderItem(context, item.order!);
+  }
+
+  Widget _buildCampaignAppointmentItem(
+    BuildContext context,
+    BcbCustomerAppointmentModel appointment,
+  ) {
+    final isBooked =
+        _kCampaignBookedStatuses.contains(appointment.customerStatus);
+    final statusLabel = isBooked
+        ? R.string.benefit_campaign_booked.tr()
+        : R.string.benefit_campaign_result_delivered.tr();
+
+    final examLocal = appointment.examDateLocal;
+    final dateStr = examLocal != null
+        ? '${DateUtil.weekDayToString(examLocal, isDisplayfull: true)}, ${DateFormat('dd/MM/yyyy').format(examLocal)}'
+        : '';
+
+    return GestureDetector(
+      onTap: () async {
+        await Navigator.of(context, rootNavigator: true).pushNamed(
+          NavigatorName.bcb_detail_appointment,
+          arguments: {
+            'campaignId': appointment.campaignId,
+            'fromBenefitHistory': true,
+          },
+        );
+        await _initData(showLoadingIndicator: false);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [Utils.getBoxShadowDropCard()],
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(R.drawable.ic_at_clinic, width: 20, height: 20),
+                    const SizedBox(width: 10),
+                    Text(
+                      R.string.benefit_calendar.tr(),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF111515),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5F7F5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: Text(
+                    statusLabel,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF008479),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const GapH(12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.asset(
+                    R.drawable.diab_logo,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const GapW(8),
+                Flexible(
+                  child: Text(
+                    appointment.partnerName ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF111515),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (dateStr.isNotEmpty) ...[
+              const GapH(4),
+              Row(
+                children: [
+                  const SizedBox(width: 48),
+                  Text(
+                    dateStr,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF111515),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child:
+                        Image.asset(R.drawable.ic_ellipse, width: 6, height: 6),
+                  ),
+                  Text(
+                    appointment.timeRange,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF111515),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildMedicationOrderItem(
@@ -471,15 +662,18 @@ class _BenefitAppointmentHistoryPageState
   }
 }
 
-/// Discriminated union: either a DsmesAppointment or a MedicationOrderItem.
+/// Discriminated union: a DsmesAppointment, a MedicationOrderItem, or a BCB
+/// campaign booking.
 class _MergedItem {
   final DsmesAppointment? appointment;
   final MedicationOrderItem? order;
+  final BcbCustomerAppointmentModel? campaignAppointment;
   final int sortTimestamp;
 
   _MergedItem.appointment(DsmesAppointment a)
       : appointment = a,
         order = null,
+        campaignAppointment = null,
         sortTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss')
             .parse(a.startTime)
             .millisecondsSinceEpoch;
@@ -487,5 +681,22 @@ class _MergedItem {
   _MergedItem.medicationOrder(MedicationOrderItem o)
       : appointment = null,
         order = o,
+        campaignAppointment = null,
         sortTimestamp = (o.createDatetime ?? 0) * 1000;
+
+  _MergedItem.campaign(BcbCustomerAppointmentModel a)
+      : appointment = null,
+        order = null,
+        campaignAppointment = a,
+        sortTimestamp = _campaignSortTimestamp(a);
+
+  static int _campaignSortTimestamp(BcbCustomerAppointmentModel a) {
+    final examDate = a.examDateLocal;
+    if (examDate == null) return 0;
+    final parts = (a.startTime ?? '').split(':');
+    final hour = parts.isNotEmpty ? int.tryParse(parts[0]) ?? 0 : 0;
+    final minute = parts.length > 1 ? int.tryParse(parts[1]) ?? 0 : 0;
+    return DateTime(examDate.year, examDate.month, examDate.day, hour, minute)
+        .millisecondsSinceEpoch;
+  }
 }

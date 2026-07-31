@@ -299,6 +299,8 @@ class _BenefitMedicineScanResultPageState
   }
 
   void _onSubmit() {
+    if (_selectedMedicines.isEmpty) return;
+
     final note = _noteKey.currentState?.getNote().note ?? '';
     final gptParsedResult = jsonEncode({
       'metadata': {

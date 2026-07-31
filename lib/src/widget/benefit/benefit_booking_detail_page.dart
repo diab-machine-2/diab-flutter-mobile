@@ -556,7 +556,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                     flex: 7,
                     child: Text(
                       widget.appointment.clinic.name,
-                      maxLines: 3,
+                      maxLines: 5,
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

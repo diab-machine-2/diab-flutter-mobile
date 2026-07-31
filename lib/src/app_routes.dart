@@ -461,8 +461,12 @@ class AppRoutes {
         {
           final data = settings.arguments as Map<String, dynamic>?;
           final campaignId = data?['campaignId'] as String?;
-          if (campaignId == null || campaignId.isEmpty) break;
-          page = BcbDetailAppointmentScreen(campaignId: campaignId);
+          final fromBenefitHistory =
+              data?['fromBenefitHistory'] as bool? ?? false;
+          page = BcbDetailAppointmentScreen(
+            campaignId: campaignId,
+            fromBenefitHistory: fromBenefitHistory,
+          );
           break;
         }
       case NavigatorName.benefit_page:

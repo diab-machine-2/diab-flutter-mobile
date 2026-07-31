@@ -353,10 +353,10 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     String validUntilStr,
     String voucherValueStr,
   ) {
-    final code = benefitType?.voucherCode ?? 'CFY-CORP-2024';
-    final voucherName = benefitType?.voucherName ?? 'MIỄN PHÍ 21 ngày';
+    final code = benefitType?.voucherCode ?? '';
+    final voucherName = benefitType?.voucherName ?? '';
     final voucherSubName =
-        benefitType?.voucherSubName ?? 'Gói tập tại California Fitness & Yoga';
+        benefitType?.voucherSubName ?? '';
     final applicableTo = benefitType?.applicableTo ?? '';
     final applicableLocation =
         benefitType?.applicableLocation ?? R.string.benefit_all_branches.tr();

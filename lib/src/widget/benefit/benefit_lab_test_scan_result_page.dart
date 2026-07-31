@@ -352,6 +352,8 @@ class _BenefitLabTestScanResultPageState
   }
 
   void _onSubmit() {
+    if (_selectedIndexes.isEmpty) return;
+
     final note = _noteKey.currentState?.getNote().note ?? '';
     final selected = _selectedIndexes.map((i) => _services[i]).toList();
     final gptParsedResult = jsonEncode({

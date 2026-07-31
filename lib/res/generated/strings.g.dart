@@ -1853,6 +1853,9 @@ class Strings {
   String get benefit_dsp_current_week => 'benefit_dsp_current_week';
   String get benefit_report_ready => 'benefit_report_ready';
   String get benefit_report_not_ready => 'benefit_report_not_ready';
+  String get benefit_out_of_quota => 'benefit_out_of_quota';
+  String get benefit_campaign_booked => 'benefit_campaign_booked';
+  String get benefit_campaign_result_delivered => 'benefit_campaign_result_delivered';
   String get benefit_inactive => 'benefit_inactive';
   String get benefit_discount => 'benefit_discount';
   String get benefit_my_benefits => 'benefit_my_benefits';

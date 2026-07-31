@@ -157,7 +157,7 @@ class DsmesAppointmentItem extends StatelessWidget {
         Flexible(
           child: Text(
             _getName(data, bookingType),
-            maxLines: 2,
+            maxLines: 5,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 15,
@@ -334,13 +334,16 @@ class DsmesAppointmentItem extends StatelessWidget {
   /// will render actual button content vs. an empty [SizedBox.shrink] —
   /// so the divider above it can be hidden when there's nothing to divide.
   bool get _hasActionButtons {
-    if (joinButtonOnly) {
-      return DsmesAppointmentMode.fromString(data.mode) ==
-          DsmesAppointmentMode.telemedicine;
-    }
-
     final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
+
+    if (joinButtonOnly) {
+      // Completed appointments have nothing left to join.
+      return !isPast &&
+          DsmesAppointmentMode.fromString(data.mode) ==
+              DsmesAppointmentMode.telemedicine;
+    }
+
     if (data.status == DSMES_STATUS_APPROVE && isPast) return true;
 
     final mode = DsmesAppointmentMode.fromString(data.mode);
@@ -351,15 +354,16 @@ class DsmesAppointmentItem extends StatelessWidget {
 
   Widget _buildActionButtons(
       {String locale = 'vi', required BuildContext context}) {
+    final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
+    final isPast = endDateTime.isBefore(DateTime.now());
+
     if (joinButtonOnly) {
       final mode = DsmesAppointmentMode.fromString(data.mode);
-      return mode == DsmesAppointmentMode.telemedicine
+      return (!isPast && mode == DsmesAppointmentMode.telemedicine)
           ? _buildButtonOnline()
           : const SizedBox.shrink();
     }
 
-    final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
-    final isPast = endDateTime.isBefore(DateTime.now());
     if (data.status == DSMES_STATUS_APPROVE && isPast) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,

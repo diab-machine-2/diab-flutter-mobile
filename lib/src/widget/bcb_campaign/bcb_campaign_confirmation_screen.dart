@@ -26,6 +26,7 @@ class BcbCampaignConfirmationScreen extends StatefulWidget {
   final String? initialDoctorNote;
   final bool isReschedule;
   final String? appointmentId;
+  final bool fromBenefitHistory;
 
   const BcbCampaignConfirmationScreen({
     Key? key,
@@ -36,6 +37,7 @@ class BcbCampaignConfirmationScreen extends StatefulWidget {
     this.initialDoctorNote,
     this.isReschedule = false,
     this.appointmentId,
+    this.fromBenefitHistory = false,
   }) : super(key: key);
 
   @override
@@ -108,6 +110,9 @@ class _BcbCampaignConfirmationScreenState
           scheduleDays: widget.scheduleDays,
           selectedWishSlot: widget.selectedWishSlot,
           initialDoctorNote: note,
+          isReschedule: widget.isReschedule,
+          appointmentId: widget.appointmentId,
+          fromBenefitHistory: widget.fromBenefitHistory,
         ),
       ),
     );
@@ -318,6 +323,27 @@ class _BcbCampaignConfirmationScreenState
     );
   }
 
+  /// Pushes a fresh `bcb_detail_appointment` after a successful reschedule,
+  /// removing the whole reschedule sub-flow. Stops at
+  /// `benefit_appointment_history` (instead of `tabbar`) when this flow
+  /// originated from there, so the Benefit history page isn't stripped off
+  /// the stack.
+  void _goToDetailAfterReschedule() {
+    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      NavigatorName.bcb_detail_appointment,
+      (route) =>
+          route.settings.name ==
+              (widget.fromBenefitHistory
+                  ? NavigatorName.benefit_appointment_history
+                  : NavigatorName.tabbar) ||
+          !Navigator.of(context).canPop(),
+      arguments: {
+        'campaignId': widget.bcbCampaignId,
+        if (widget.fromBenefitHistory) 'fromBenefitHistory': true,
+      },
+    );
+  }
+
   void _showRescheduleSuccessAndGoDetail() {
     showDialog<void>(
       context: context,
@@ -340,13 +366,7 @@ class _BcbCampaignConfirmationScreenState
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(dialogContext);
-                        navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                          NavigatorName.bcb_detail_appointment,
-                          (route) =>
-                              route.settings.name == NavigatorName.tabbar ||
-                              !Navigator.of(context).canPop(),
-                          arguments: {'campaignId': widget.bcbCampaignId},
-                        );
+                        _goToDetailAfterReschedule();
                       },
                       child: Icon(Icons.close,
                           color: R.color.textDark, size: 24),
@@ -372,13 +392,7 @@ class _BcbCampaignConfirmationScreenState
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(dialogContext);
-                    navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                      NavigatorName.bcb_detail_appointment,
-                      (route) =>
-                          route.settings.name == NavigatorName.tabbar ||
-                          !Navigator.of(context).canPop(),
-                      arguments: {'campaignId': widget.bcbCampaignId},
-                    );
+                    _goToDetailAfterReschedule();
                   },
                   child: Container(
                     height: 44,

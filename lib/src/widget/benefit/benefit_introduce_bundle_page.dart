@@ -661,6 +661,18 @@ class _BenefitIntroduceBundlePageState
     MyBenefitItem item,
     BenefitBundleItemType type,
   ) {
+    // `report`/`dsp` don't track a consumable quota — `quantityUsed` means
+    // "ready"/"joined" for them, not remaining count (see `showProgress`).
+    final bool tracksQuota = type != BenefitBundleItemType.report &&
+        type != BenefitBundleItemType.dsp;
+    if (tracksQuota &&
+        !item.isUnlimitedBenefit &&
+        (item.quantity ?? 0) > 0 &&
+        item.remainingQuantity <= 0) {
+      _showOutOfQuotaDialog(context);
+      return;
+    }
+
     switch (type) {
       case BenefitBundleItemType.booking:
         String mappedBookingType = Const.BENEFIT_BOOKING_AT_CLINIC;
@@ -728,6 +740,82 @@ class _BenefitIntroduceBundlePageState
         );
         break;
     }
+  }
+
+  void _showOutOfQuotaDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+          decoration: ShapeDecoration(
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.info_outline,
+                size: 48,
+                color: R.color.accentColor,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                R.string.benefit_out_of_quota.tr(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF172823),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  height: 1.38,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: InkWell(
+                  onTap: () => Navigator.of(ctx).pop(),
+                  child: Container(
+                    height: 43,
+                    decoration: ShapeDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(-0.07, -0.37),
+                        end: Alignment(0.88, 1.00),
+                        colors: [
+                          R.color.greenGradientTop,
+                          R.color.greenGradientMid,
+                          R.color.greenGradientBottom,
+                        ],
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(200),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        R.string.close.tr(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          height: 1.38,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _showUpgradePackageDialog(BuildContext context) {
