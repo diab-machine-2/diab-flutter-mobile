@@ -38,6 +38,7 @@ import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/request/add_exercise_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
+import 'package:medical/src/model/response/medication_order_response.dart';
 import 'package:medical/src/model/response/booking_doctor_detail_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
@@ -106,6 +107,8 @@ import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/model/response/exercise_lesson_response.dart';
 import 'package:medical/src/model/response/bcb_campaign_customer_response.dart';
+import 'package:medical/src/model/response/my_benefit_response.dart';
+import 'package:medical/src/widget/benefit/my_benefit_mock.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
@@ -1181,6 +1184,18 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>>
+      createDsmesPartnerDiabBooking(
+          {required CreateDsmesBookingRequest request}) async {
+    try {
+      final response =
+          await docosanClient.createDsmesPartnerDiabBooking(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<CreateDsmesOfflineBookingResponse>> createDsmesOnlineBooking(
       {required CreateDsmesBookingRequest request}) async {
     try {
@@ -1242,6 +1257,16 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyListDiab() async {
+    try {
+      final response =
+          await docosanClient.getCLinicSpecialtyListDiab(language: "vi");
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<GetCustomerReceivesUserResponse>> getCustomerReceivesUser(
       String phoneNumber) async {
     try {
@@ -1267,6 +1292,16 @@ class AppRepository {
       {required SearchBookingClinicListRequest request}) async {
     try {
       final response = await docosanClient.searchBookingClinicList(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SearchListClinicResponse>> searchListBookingClinicDiab(
+      {required SearchBookingClinicListRequest request}) async {
+    try {
+      final response = await docosanClient.searchBookingClinicListDiab(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -1460,6 +1495,59 @@ class AppRepository {
       final response = await appClient.getBcbCampaignCustomer(
         campaignId,
       );
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  // Benefit Service Request (medicine + lab test)
+  Future<ApiResult<MedicationOrderResponse>> getMedicationOrders({
+    int page = 1,
+    int size = 100,
+  }) async {
+    try {
+      final response = await appClient.getMedicationOrders(page, size);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> submitMedicationRequest(
+      Map<String, dynamic> body) async {
+    try {
+      final CommonResponse response =
+          await appClient.submitMedicationRequest(body);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /// TODO: Remove mock when API is ready.
+  static const bool _useMyBenefitMock = false;
+
+  Future<ApiResult<MyBenefitResponse>> getMyBenefit() async {
+    if (_useMyBenefitMock) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      return ApiResult.success(data: MyBenefitMock.response);
+    }
+    try {
+      final response = await appClient.getMyBenefit();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> useBenefitService({
+    required String itemId,
+    required int itemType,
+  }) async {
+    try {
+      final response = await appClient.useBenefitService(
+          itemId: itemId, itemType: itemType);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

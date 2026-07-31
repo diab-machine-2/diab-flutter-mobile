@@ -97,6 +97,8 @@ import 'response/user_info_response.dart';
 import 'response/week_states_response.dart';
 import 'response/zoom_token_response.dart';
 import 'response/bcb_campaign_customer_response.dart';
+import 'response/my_benefit_response.dart';
+import 'response/medication_order_response.dart';
 
 part 'app_api.g.dart';
 
@@ -696,4 +698,26 @@ abstract class AppApi {
     @Path("appointmentId") String appointmentId,
     @Body() Map<String, dynamic> body,
   );
+
+  // Benefit Service Request (medicine + lab test)
+  @GET("/App/MedicationRequest")
+  Future<MedicationOrderResponse> getMedicationOrders(
+    @Query("page") int page,
+    @Query("size") int size,
+  );
+
+  @POST("/App/MedicationRequest")
+  Future<CommonResponse> submitMedicationRequest(
+    @Body() Map<String, dynamic> body,
+  );
+
+  // Benefit Bundle
+  @GET("App/UserBundleOrders/my-benefit")
+  Future<MyBenefitResponse> getMyBenefit();
+
+  @POST("App/UserBundleOrders/my-benefit/use-service")
+  Future<CommonResponse> useBenefitService({
+    @Query("itemId") required String itemId,
+    @Query("itemType") required int itemType,
+  });
 }

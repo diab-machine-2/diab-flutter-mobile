@@ -1,5 +1,6 @@
 class BcbCustomerAppointmentModel {
   final String? appointmentId;
+  final String? campaignId;
   final String? campaignCustomerId;
   final String? slotId;
   final int? customerStatus;
@@ -19,6 +20,7 @@ class BcbCustomerAppointmentModel {
 
   BcbCustomerAppointmentModel({
     this.appointmentId,
+    this.campaignId,
     this.campaignCustomerId,
     this.slotId,
     this.customerStatus,
@@ -40,6 +42,7 @@ class BcbCustomerAppointmentModel {
   factory BcbCustomerAppointmentModel.fromJson(Map<String, dynamic> json) {
     return BcbCustomerAppointmentModel(
       appointmentId: json['appointmentId']?.toString(),
+      campaignId: json['campaignId']?.toString(),
       campaignCustomerId: json['campaignCustomerId']?.toString(),
       slotId: json['slotId']?.toString(),
       customerStatus: json['customerStatus'] as int?,

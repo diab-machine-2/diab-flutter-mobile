@@ -1409,14 +1409,17 @@ class Strings {
   String get add_prescription => 'add_prescription';
   String get edit_prescription => 'edit_prescription';
   String get prescription_warning => 'prescription_warning';
-  String get medicine_prescription_data_incomplete => 'medicine_prescription_data_incomplete';
-  String get prescription_name=> 'prescription_name';
+  String get medicine_prescription_data_incomplete =>
+      'medicine_prescription_data_incomplete';
+  String get prescription_name => 'prescription_name';
   String get start_date => 'start_date';
   String get set_time => 'set_time';
   String get reminder_get_more_medicine => 'reminder_get_more_medicine';
-  String get reminder_get_more_medicine_description => 'reminder_get_more_medicine_description';
+  String get reminder_get_more_medicine_description =>
+      'reminder_get_more_medicine_description';
   String get enable_medicine_notification => 'enable_medicine_notification';
-  String get enable_medicine_notification_description => 'enable_medicine_notification_description';
+  String get enable_medicine_notification_description =>
+      'enable_medicine_notification_description';
   String get prescription => 'prescription';
   String get prescription_using => 'prescription_using';
   String get prescription_out => 'prescription_out';
@@ -1514,8 +1517,10 @@ class Strings {
   String get please_input_dosage => 'please_input_dosage';
   String get not_used => 'not_used';
   String get used => 'used';
-  String get today_you_have_no_schedule_today => 'today_you_have_no_schedule_today';
-  String get add_medicine_so_diab_remind_you_on_time => 'add_medicine_so_diab_remind_you_on_time';
+  String get today_you_have_no_schedule_today =>
+      'today_you_have_no_schedule_today';
+  String get add_medicine_so_diab_remind_you_on_time =>
+      'add_medicine_so_diab_remind_you_on_time';
   String get reuse_prescription => 'reuse_prescription';
   String get input_medicine => 'input_medicine';
   String get should_capture_advice => 'should_capture_advice';
@@ -1545,7 +1550,8 @@ class Strings {
   String get examination => 'examination';
   String get choose_input_method => 'choose_input_method';
   String get centre_name => 'centre_name';
-  String get given_access_gallery_description => 'given_access_gallery_description';
+  String get given_access_gallery_description =>
+      'given_access_gallery_description';
   String get manage => 'manage';
   String get participation => 'participation';
   String get login_apple_id => 'login_apple_id';
@@ -1553,7 +1559,8 @@ class Strings {
   String get conversation_ai_citation => 'conversation_ai_citation';
   String get reference_source => 'reference_source';
   String get change_medicine_quantity_title => 'change_medicine_quantity_title';
-  String get change_medicine_quantity_message => 'change_medicine_quantity_message';
+  String get change_medicine_quantity_message =>
+      'change_medicine_quantity_message';
   String get delete_medicine_dialog_title => 'delete_medicine_dialog_title';
   String get exceed_medicine_warning => 'exceed_medicine_warning';
   String get food_guide_meal_score_question => 'food_guide_meal_score_question';
@@ -1611,7 +1618,8 @@ class Strings {
   String get lesson_back_to_library => 'lesson_back_to_library';
   String get lesson_reason_hard_to_understand =>
       'lesson_reason_hard_to_understand';
-  String get lesson_reason_low_quality_video => 'lesson_reason_low_quality_video';
+  String get lesson_reason_low_quality_video =>
+      'lesson_reason_low_quality_video';
   String get lesson_reason_insufficient_references =>
       'lesson_reason_insufficient_references';
   String get lesson_reason_unclear_images => 'lesson_reason_unclear_images';
@@ -1626,7 +1634,8 @@ class Strings {
   String get lesson_reason_need_more_illustrations =>
       'lesson_reason_need_more_illustrations';
   String get lesson_reason_useful_content => 'lesson_reason_useful_content';
-  String get lesson_reason_high_quality_video => 'lesson_reason_high_quality_video';
+  String get lesson_reason_high_quality_video =>
+      'lesson_reason_high_quality_video';
   String get lesson_reason_sufficient_references =>
       'lesson_reason_sufficient_references';
   String get lesson_reason_beautiful_images => 'lesson_reason_beautiful_images';
@@ -1709,16 +1718,176 @@ class Strings {
   String get bcb_doi_lich_thanh_cong => 'bcb_doi_lich_thanh_cong';
   String get recommendation_track_index => 'recommendation_track_index';
   String get recommendation_spirit => 'recommendation_spirit';
-  String get recommendation_behavioral_psychology => 'recommendation_behavioral_psychology';
+  String get recommendation_behavioral_psychology =>
+      'recommendation_behavioral_psychology';
   String get recommendation_pathology => 'recommendation_pathology';
   String get gallery_permission_denied_title =>
       'gallery_permission_denied_title';
-  String get gallery_permission_denied_body =>
-      'gallery_permission_denied_body';
+  String get gallery_permission_denied_body => 'gallery_permission_denied_body';
   String get gallery_permission_denied_body_android =>
       'gallery_permission_denied_body_android';
   String get gallery_permission_denied_body_ios =>
       'gallery_permission_denied_body_ios';
   String get go_to_settings => 'go_to_settings';
+  String get benefit_title => 'benefit_title';
+  String get benefit_at_clinic => 'benefit_at_clinic';
+  String get benefit_telemedicine => 'benefit_telemedicine';
+  String get booking_note_text_hint => 'booking_note_text_hint';
+  String get specialty_tien_dai_thao_duong => 'specialty_tien_dai_thao_duong';
+  String get specialty_dai_thao_duong => 'specialty_dai_thao_duong';
+  String get specialty_dinh_duong => 'specialty_dinh_duong';
+  String get specialty_tang_huyet_ap => 'specialty_tang_huyet_ap';
+  String get specialty_thua_can_beo_phi => 'specialty_thua_can_beo_phi';
+  String get specialty_dai_thao_duong_thai_ky =>
+      'specialty_dai_thao_duong_thai_ky';
+  String get specialty_tim_mach => 'specialty_tim_mach';
+  String get specialty_roi_loan_chuyen_hoa => 'specialty_roi_loan_chuyen_hoa';
+  String get specialty_than_man_tinh => 'specialty_than_man_tinh';
+  String get specialty_tinh_than => 'specialty_tinh_than';
+  String get benefit_select_branch => 'benefit_select_branch';
+  String get benefit_no_branch_data => 'benefit_no_branch_data';
+  String get thoi_gian_kham => 'thoi_gian_kham';
   String get favorite => 'favorite';
+  String get chuyen_khoa => 'chuyen_khoa';
+  String get benefit_calendar => 'benefit_calendar';
+  String get benefit_medicine => 'benefit_medicine';
+  String get benefit_lab_testing => 'benefit_lab_testing';
+  String get benefit_other => 'benefit_other';
+  String get benefit_at_home => 'benefit_at_home';
+  String get health_profile => 'health_profile';
+  String get promotion => 'promotion';
+  String get promotion_percent => 'promotion_percent';
+  String get payment_detail => 'payment_detail';
+  String get total_payment => 'total_payment';
+  String get benefit_upcoming => 'benefit_upcoming';
+  String get benefit_past_schedule => 'benefit_past_schedule';
+  String get benefit_medicine_service_title => 'benefit_medicine_service_title';
+  String get benefit_medicine_service_desc => 'benefit_medicine_service_desc';
+  String get benefit_lab_service_title => 'benefit_lab_service_title';
+  String get benefit_lab_service_desc => 'benefit_lab_service_desc';
+  String get benefit_have_prescription => 'benefit_have_prescription';
+  String get benefit_yes_have_prescription => 'benefit_yes_have_prescription';
+  String get benefit_yes_take_photo => 'benefit_yes_take_photo';
+  String get benefit_no_need_consult => 'benefit_no_need_consult';
+  String get benefit_no_contact_diab => 'benefit_no_contact_diab';
+  String get benefit_have_lab_order => 'benefit_have_lab_order';
+  String get benefit_yes_have_lab_order => 'benefit_yes_have_lab_order';
+  String get benefit_yes_lab_take_photo => 'benefit_yes_lab_take_photo';
+  String get benefit_no_contact_lab => 'benefit_no_contact_lab';
+  String get benefit_fast_delivery => 'benefit_fast_delivery';
+  String get benefit_fast_delivery_desc => 'benefit_fast_delivery_desc';
+  String get benefit_genuine_medicine => 'benefit_genuine_medicine';
+  String get benefit_genuine_medicine_desc => 'benefit_genuine_medicine_desc';
+  String get benefit_affordable_price => 'benefit_affordable_price';
+  String get benefit_affordable_price_desc => 'benefit_affordable_price_desc';
+  String get benefit_info_security => 'benefit_info_security';
+  String get benefit_info_security_desc => 'benefit_info_security_desc';
+  String get benefit_lab_examination => 'benefit_lab_examination';
+  String get benefit_lab_examination_desc => 'benefit_lab_examination_desc';
+  String get benefit_lab_imaging_diagnosis => 'benefit_lab_imaging_diagnosis';
+  String get benefit_lab_imaging_diagnosis_desc =>
+      'benefit_lab_imaging_diagnosis_desc';
+  String get benefit_lab_functional_exploration =>
+      'benefit_lab_functional_exploration';
+  String get benefit_lab_functional_exploration_desc =>
+      'benefit_lab_functional_exploration_desc';
+  String get benefit_lab_endoscopy => 'benefit_lab_endoscopy';
+  String get benefit_lab_endoscopy_desc => 'benefit_lab_endoscopy_desc';
+  String get benefit_lab_biopsy => 'benefit_lab_biopsy';
+  String get benefit_lab_biopsy_desc => 'benefit_lab_biopsy_desc';
+  String get benefit_capture_title_medicine => 'benefit_capture_title_medicine';
+  String get benefit_capture_title_lab => 'benefit_capture_title_lab';
+  String get benefit_capture_hint => 'benefit_capture_hint';
+  String get benefit_capture_btn_camera => 'benefit_capture_btn_camera';
+  String get benefit_capture_btn_gallery => 'benefit_capture_btn_gallery';
+  String get benefit_scan_medicine_found => 'benefit_scan_medicine_found';
+  String get benefit_scan_lab_found => 'benefit_scan_lab_found';
+  String get benefit_scan_check_hint => 'benefit_scan_check_hint';
+  String get benefit_scan_lab_check_hint => 'benefit_scan_lab_check_hint';
+  String get benefit_send_medicine_request => 'benefit_send_medicine_request';
+  String get benefit_send_lab_request => 'benefit_send_lab_request';
+  String get benefit_request_desc_prefix_medicine =>
+      'benefit_request_desc_prefix_medicine';
+  String get benefit_request_desc_prefix_lab =>
+      'benefit_request_desc_prefix_lab';
+  String get benefit_request_desc_hour => 'benefit_request_desc_hour';
+  String get benefit_request_desc_suffix => 'benefit_request_desc_suffix';
+  String get benefit_request_confirm_medicine =>
+      'benefit_request_confirm_medicine';
+  String get benefit_request_deliver => 'benefit_request_deliver';
+  String get benefit_request_deliver_lab => 'benefit_request_deliver_lab';
+  String get benefit_request_contact_support =>
+      'benefit_request_contact_support';
+  String get benefit_request_success_title => 'benefit_request_success_title';
+  String get benefit_request_success_medicine_desc =>
+      'benefit_request_success_medicine_desc';
+  String get benefit_request_success_lab_desc =>
+      'benefit_request_success_lab_desc';
+  String get benefit_request_received_medicine =>
+      'benefit_request_received_medicine';
+  String get benefit_request_received_lab => 'benefit_request_received_lab';
+  String get benefit_request_confirm_sample => 'benefit_request_confirm_sample';
+  String get benefit_back_to_home => 'benefit_back_to_home';
+  String get benefit_scan_diagnose => 'benefit_scan_diagnose';
+  String get benefit_scan_diagnose_lab_title =>
+      'benefit_scan_diagnose_lab_title';
+  String get benefit_scan_prescription_name => 'benefit_scan_prescription_name';
+  String get quantity => 'quantity';
+  String get analyzing_lab_result => 'analyzing_lab_result';
+  String get medicine_quantity => 'medicine_quantity';
+  String get paraclinical => 'paraclinical';
+  String get benefit_detail_title => 'benefit_detail_title';
+  String get benefit_active => 'benefit_active';
+  String get benefit_progress_title => 'benefit_progress_title';
+  String get benefit_service_count => 'benefit_service_count';
+  String get benefit_remaining_count => 'benefit_remaining_count';
+  String get benefit_booking_button => 'benefit_booking_button';
+  String get benefit_discount_badge => 'benefit_discount_badge';
+  String get benefit_remaining_days => 'benefit_remaining_days';
+  String get benefit_unlimited => 'benefit_unlimited';
+  String get benefit_used => 'benefit_used';
+  String get benefit_not_used => 'benefit_not_used';
+  String get benefit_dsp_joined => 'benefit_dsp_joined';
+  String get benefit_dsp_not_joined => 'benefit_dsp_not_joined';
+  String get benefit_dsp_total_weeks => 'benefit_dsp_total_weeks';
+  String get benefit_dsp_current_week => 'benefit_dsp_current_week';
+  String get benefit_report_ready => 'benefit_report_ready';
+  String get benefit_report_not_ready => 'benefit_report_not_ready';
+  String get benefit_out_of_quota => 'benefit_out_of_quota';
+  String get benefit_campaign_booked => 'benefit_campaign_booked';
+  String get benefit_campaign_result_delivered => 'benefit_campaign_result_delivered';
+  String get benefit_inactive => 'benefit_inactive';
+  String get benefit_discount => 'benefit_discount';
+  String get benefit_my_benefits => 'benefit_my_benefits';
+  String get benefit_already_requested => 'benefit_already_requested';
+  String get benefit_order_type_medicine => 'benefit_order_type_medicine';
+  String get benefit_order_type_lab => 'benefit_order_type_lab';
+  String get benefit_order_detail_title => 'benefit_order_detail_title';
+  String get benefit_order_prescription_name => 'benefit_order_prescription_name';
+  String get benefit_order_diagnose => 'benefit_order_diagnose';
+  String get benefit_order_medicine_list => 'benefit_order_medicine_list';
+  String get benefit_order_services_list => 'benefit_order_services_list';
+  String get benefit_order_note => 'benefit_order_note';
+  String get benefit_order_code => 'benefit_order_code';
+  String get benefit_program_locked => 'benefit_program_locked';
+  String get benefit_program_locked_desc => 'benefit_program_locked_desc';
+  String get loading => 'loading';
+  String get benefit_fallback_diagnose => 'benefit_fallback_diagnose';
+  String get quantity_label => 'quantity_label';
+  String get benefit_partner => 'benefit_partner';
+  String get benefit_more_photos => 'benefit_more_photos';
+  String get benefit_your_voucher => 'benefit_your_voucher';
+  String get benefit_voucher_code => 'benefit_voucher_code';
+  String get benefit_copied_voucher_code => 'benefit_copied_voucher_code';
+  String get benefit_copy => 'benefit_copy';
+  String get benefit_value => 'benefit_value';
+  String get benefit_apply_for => 'benefit_apply_for';
+  String get benefit_valid_until => 'benefit_valid_until';
+  String get benefit_applicable_location => 'benefit_applicable_location';
+  String get benefit_voucher_terms_note => 'benefit_voucher_terms_note';
+  String get benefit_voucher_expiry => 'benefit_voucher_expiry';
+  String get benefit_all_branches => 'benefit_all_branches';
+  String get benefit_my_voucher_title => 'benefit_my_voucher_title';
+  String get benefit_voucher_subtext => 'benefit_voucher_subtext';
+  String get benefit_voucher_expired => 'benefit_voucher_expired';
 }

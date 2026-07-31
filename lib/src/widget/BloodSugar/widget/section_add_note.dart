@@ -58,17 +58,24 @@ class SectionAddNoteState extends State<SectionAddNote> {
   List<String?> _removeIDs = [];
 
   int _currentLength = 0;
+  late final TextEditingController _localController;
+  TextEditingController get _effectiveController => widget.controllerNote ?? _localController;
 
   @override
   void initState() {
     super.initState();
+    _localController = TextEditingController();
     // Convert initial files to ImageWithSource.
     // Mark as from camera if caller indicates so, otherwise mark as not from camera.
     _files.addAll((widget.initialFiles ?? [])
         .map((file) => ImageWithSource(file, widget.initialFilesFromCamera)));
-    if (widget.controllerNote != null) {
-      _currentLength = widget.controllerNote?.text.length ?? 0;
-    }
+    _currentLength = _effectiveController.text.length;
+  }
+
+  @override
+  void dispose() {
+    _localController.dispose();
+    super.dispose();
   }
 
   void updateFilesAndNote(List<dynamic> files, String note) {
@@ -76,7 +83,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
     // Convert files to ImageWithSource, keep the same initial source setting flag
     _files.addAll(files
         .map((file) => ImageWithSource(file, widget.initialFilesFromCamera)));
-    widget.controllerNote?.text = note;
+    _effectiveController.text = note;
     _currentLength = note.length;
     setState(() {});
   }
@@ -112,7 +119,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
             ),
           TextField(
             focusNode: widget.focusNode,
-            controller: widget.controllerNote,
+            controller: _effectiveController,
             style: TextStyle(
                 color: R.color.black,
                 fontSize: 16,
@@ -547,7 +554,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
   SectionAddNoteData getNote() {
     return SectionAddNoteData(
-      note: widget.controllerNote?.text ?? '',
+      note: _effectiveController.text,
       files: _files.map((imageWithSource) => imageWithSource.file).toList(),
       removeIDs: _removeIDs,
     );

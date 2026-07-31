@@ -11,6 +11,7 @@ class DsmesAppointment {
   final int patientId;
   final String? patientAddress;
   final int clinicId;
+  final int? branchId;
   final String? diagnoses;
   final String symptom;
   final String startTime;
@@ -72,6 +73,7 @@ class DsmesAppointment {
     required this.patientId,
     this.patientAddress,
     required this.clinicId,
+    this.branchId,
     this.diagnoses,
     required this.symptom,
     required this.startTime,
@@ -142,6 +144,7 @@ class DsmesAppointment {
       patientId: json['patient_id'] ?? 0,
       patientAddress: json['patient_address'],
       clinicId: json['clinic_id'] ?? 0,
+      branchId: json['branch_id'],
       diagnoses: json['diagnoses'],
       symptom: json['symptom'] ?? '',
       startTime: json['start_time'] ?? '',
