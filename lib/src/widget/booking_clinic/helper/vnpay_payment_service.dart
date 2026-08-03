@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -27,6 +28,13 @@ class VNPayService with WidgetsBindingObserver {
   final String bookingType;
   final String serviceType;
   final DsmesAppointmentCubit cubit;
+  /// Originating [MyBenefitItem.itemId] when this payment started from a tap
+  /// on a benefit bundle item — `null` for non-benefit bookings. When set,
+  /// alongside [itemType], a successful payment marks the item used via
+  /// `useBenefitService`, and "Về trang chủ" returns to the bundle page
+  /// instead of the tabbar.
+  final String? itemId;
+  final int? itemType;
 
   String tmnCode = '';
   String paymentUrl = '';
@@ -54,6 +62,8 @@ class VNPayService with WidgetsBindingObserver {
     required this.bookingType,
     required this.serviceType,
     required this.cubit,
+    this.itemId,
+    this.itemType,
   });
 
   void _ensureLifecycleObserverAttached() {
@@ -512,6 +522,15 @@ class VNPayService with WidgetsBindingObserver {
       return;
     }
 
+    if (itemId != null && itemType != null) {
+      // Best-effort — never blocks the success dialog, and the repo method
+      // itself never throws (failures come back as ApiResult.failure).
+      AppRepository().useBenefitService(
+        itemId: itemId!,
+        itemType: itemType!,
+      );
+    }
+
     // Mark as processed immediately after successful booking creation
     _markTransactionProcessed(txnRef, appointmentId: resp.id);
 
@@ -937,10 +956,19 @@ class VNPayService with WidgetsBindingObserver {
   }
 
   void _navigateToHome() {
-    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-      NavigatorName.tabbar,
-      (route) => false, // This removes all routes from stack
-    );
+    if (itemId != null) {
+      // Booked from a specific bundle item — return to the bundle list
+      // instead of wiping to the tabbar, mirroring the free-path behavior
+      // in `BenefitConfirmPage._handleCreateBooking()`.
+      Navigator.of(context, rootNavigator: true).popUntil((route) =>
+          route.settings.name == NavigatorName.benefit_introduce_bundle ||
+          route.isFirst);
+    } else {
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+        NavigatorName.tabbar,
+        (route) => false, // This removes all routes from stack
+      );
+    }
   }
 
   Future<void> _navigateToBookingDetail(int appointmentId) async {

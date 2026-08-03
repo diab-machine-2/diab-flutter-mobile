@@ -313,25 +313,13 @@ class BranchioLinkConfig {
                 }
               },
               failure: (_) {
-                navigatorKey.currentState?.pushNamed(
-                  NavigatorName.bcb_select_partner,
-                  arguments: <String, dynamic>{
-                    'bcbCampaignId': campaignId,
-                    if (campaignName != null) 'bcbCampaignName': campaignName,
-                  },
-                );
+                _navigateForBcbCampaignFallback(campaignId, campaignName);
               },
             );
           });
         } else {
           Future.microtask(() {
-            navigatorKey.currentState?.pushNamed(
-              NavigatorName.bcb_select_partner,
-              arguments: <String, dynamic>{
-                'bcbCampaignId': campaignId,
-                if (campaignName != null) 'bcbCampaignName': campaignName,
-              },
-            );
+            _navigateForBcbCampaignFallback(campaignId, campaignName);
           });
         }
       } else {
@@ -1240,6 +1228,48 @@ class BranchioLinkConfig {
     }
   }
 
+  /// Fallback used when `getBcbCampaignCustomer` fails or the user's phone
+  /// isn't available yet, so we can't read the registration-lifecycle
+  /// `status`. Rather than blindly assuming "not registered" (which risks
+  /// pushing an already-registered/booked user back into registration),
+  /// double-check via `my-registered` — it resolves the current user's
+  /// booking independent of that other lookup, and route to the matching
+  /// screen if one exists. Falls back to `bcb_select_partner` only when
+  /// there's truly no existing booking (or this check itself fails).
+  Future<void> _navigateForBcbCampaignFallback(
+    String campaignId,
+    String? campaignName,
+  ) async {
+    try {
+      final appt =
+          await BcbCampaignClient().fetchMyRegisteredAppointment(campaignId);
+      final status = appt?.customerStatus;
+      if (status != null && status >= 5 && status <= 7) {
+        navigatorKey.currentState?.pushNamed(
+          NavigatorName.bcb_detail_appointment,
+          arguments: {'campaignId': campaignId},
+        );
+        return;
+      } else if (status != null && status >= 9 && status <= 10) {
+        navigatorKey.currentState?.pushNamed(
+          NavigatorName.view_test_result,
+          arguments: {'campaignId': campaignId},
+        );
+        return;
+      }
+    } catch (_) {
+      // Fall through to registration below.
+    }
+    navigatorKey.currentState?.pushNamed(
+      NavigatorName.bcb_select_partner,
+      arguments: <String, dynamic>{
+        'bcbCampaignId': campaignId,
+        if (campaignName != null && campaignName.isNotEmpty)
+          'bcbCampaignName': campaignName,
+      },
+    );
+  }
+
   Future<void> _handleTargetTypeDeeplink(
       int targetType, SmartGoalList smartGoal) async {
     try {
@@ -1315,25 +1345,13 @@ class BranchioLinkConfig {
               }
             },
             failure: (_) {
-              navigatorKey.currentState?.pushNamed(
-                NavigatorName.bcb_select_partner,
-                arguments: {
-                  'bcbCampaignId': bid,
-                  if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
-                },
-              );
+              _navigateForBcbCampaignFallback(bid, bName);
             },
           );
         });
       } else {
         Future.microtask(() {
-          navigatorKey.currentState?.pushNamed(
-            NavigatorName.bcb_select_partner,
-            arguments: {
-              'bcbCampaignId': bid,
-              if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
-            },
-          );
+          _navigateForBcbCampaignFallback(bid, bName);
         });
       }
     }

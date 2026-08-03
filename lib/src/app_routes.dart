@@ -410,6 +410,10 @@ class AppRoutes {
           page = BcbSelectPartnerScreen(
             bcbCampaignId: id,
             bcbCampaignName: name,
+            isReschedule: data?['isReschedule'] as bool? ?? false,
+            appointmentId: data?['appointmentId'] as String?,
+            currentSlotId: data?['currentSlotId'] as String?,
+            fromBenefitHistory: data?['fromBenefitHistory'] as bool? ?? false,
           );
           break;
         }
