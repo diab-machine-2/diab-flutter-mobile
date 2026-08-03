@@ -1659,6 +1659,7 @@ class Strings {
   String get bcb_medical_condition_hint => 'bcb_medical_condition_hint';
   String get bcb_no_schedule_available => 'bcb_no_schedule_available';
   String get bcb_slot_id_missing => 'bcb_slot_id_missing';
+  String get bcb_appointment_id_missing => 'bcb_appointment_id_missing';
   String get bcb_no_slots_morning => 'bcb_no_slots_morning';
   String get bcb_no_slots_afternoon => 'bcb_no_slots_afternoon';
   String get bcb_register_health_check => 'bcb_register_health_check';

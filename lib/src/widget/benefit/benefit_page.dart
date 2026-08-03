@@ -210,7 +210,6 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                             appointmentId: args['appointmentId'],
                             bookingType: args['bookingType'] ??
                                 Const.BENEFIT_BOOKING_AT_CLINIC,
-                            isBypassPayment: false,
                             specialtyName:
                                 args['specialtyName'] as String?,
                             itemId: args['itemId'] as String?,
@@ -228,8 +227,6 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           appointmentId: args['appointmentId'],
                           bookingType: args['bookingType'] ??
                               Const.BENEFIT_BOOKING_AT_CLINIC,
-                          isBypassPayment: widget.bookingType ==
-                              Const.BENEFIT_BOOKING_TELEMEDICINE,
                           branchName: args['branchName'] as String?,
                           branchAddress: args['branchAddress'] as String?,
                           branchId: args['branchId'] as int?,
@@ -245,6 +242,13 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                     {
                       final args =
                           settings.arguments as Map<String, dynamic>?;
+                      // Deliberately doesn't forward itemId/itemType: this
+                      // page is reached after `useBenefitService` has already
+                      // fired for the original booking, and its "Đổi lịch"
+                      // action (BenefitRescheduleFlow → _handleRescheduleBooking)
+                      // only changes the appointment time — it must NOT
+                      // re-call useBenefitService, which would double-count
+                      // quota usage for the same booking.
                       return _buildRoute(
                         settings,
                         BenefitBookingDetailPage(
@@ -281,7 +285,6 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           appointmentId: args['appointmentId'],
                           bookingType: args['bookingType'] ??
                               Const.BENEFIT_BOOKING_AT_CLINIC,
-                          isBypassPayment: false,
                           specialtyName:
                               args['specialtyName'] as String?,
                           itemId: args['itemId'] as String?,

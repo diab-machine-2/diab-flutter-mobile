@@ -370,7 +370,7 @@ class _BenefitIntroduceBundlePageState
     final type = item.bundleItemType!;
     final bool hasDiscount = (item.discountValue ?? 0) > 0 &&
         type != BenefitBundleItemType.booking &&
-        // type != BenefitBundleItemType.partnerIntro &&
+        type != BenefitBundleItemType.partnerIntro &&
         type != BenefitBundleItemType.report;
     final bool isUnlimited = item.isUnlimitedBenefit;
     final int quantity = item.quantity ?? 0;
