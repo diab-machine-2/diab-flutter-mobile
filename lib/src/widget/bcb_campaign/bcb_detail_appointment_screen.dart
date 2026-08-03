@@ -44,6 +44,7 @@ class _BcbDetailAppointmentScreenState
   BcbCustomerAppointmentModel? _appointment;
   bool _loading = true;
   String? _errorMessage;
+  bool _navigatingToReschedule = false;
 
   @override
   void initState() {
@@ -283,7 +284,8 @@ class _BcbDetailAppointmentScreenState
               R.string.bcb_doi_lich.tr(),
               (_appointment == null ||
                       _effectiveCampaignId == null ||
-                      _effectiveCampaignId!.isEmpty)
+                      _effectiveCampaignId!.isEmpty ||
+                      (_appointment?.appointmentId ?? '').isEmpty)
                   ? null
                   : _onRescheduleTap,
             ),
@@ -315,20 +317,31 @@ class _BcbDetailAppointmentScreenState
   }
 
   void _onRescheduleTap() {
+    if (_navigatingToReschedule) return;
     final appt = _appointment;
     final campaignId = _effectiveCampaignId;
-    if (appt == null || campaignId == null || campaignId.isEmpty) return;
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => BcbSelectPartnerScreen(
-          bcbCampaignId: campaignId,
-          isReschedule: true,
-          appointmentId: appt.appointmentId,
-          currentSlotId: appt.slotId,
-          fromBenefitHistory: widget.fromBenefitHistory,
-        ),
-      ),
-    );
+    if (appt == null ||
+        campaignId == null ||
+        campaignId.isEmpty ||
+        (appt.appointmentId ?? '').isEmpty) {
+      return;
+    }
+    _navigatingToReschedule = true;
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute<void>(
+            builder: (_) => BcbSelectPartnerScreen(
+              bcbCampaignId: campaignId,
+              isReschedule: true,
+              appointmentId: appt.appointmentId,
+              currentSlotId: appt.slotId,
+              fromBenefitHistory: widget.fromBenefitHistory,
+            ),
+          ),
+        )
+        .then((_) {
+          if (mounted) _navigatingToReschedule = false;
+        });
   }
 
   // ─── Shared Widgets ─────────────────────────────────────────────────

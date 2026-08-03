@@ -28,8 +28,9 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 /// Confirm booking page for the Benefit flow.
 ///
-/// When [isBypassPayment] is true (telemedicine benefit), the VNPay flow is
-/// skipped and the booking is created directly via `createDsmesBookingOnline`.
+/// Telemedicine bookings skip the VNPay flow whenever the selected service
+/// has no price (`hasPrice == false` in `_handleCreateBooking()`), going
+/// straight to `createDsmesBookingOnline`.
 /// [branchName] and [branchAddress] are appended to the booking note at confirm time.
 /// For at-clinic benefit flow, [branchId] is sent to
 /// `api/doctors/patient-appointments-partner-diab`.
@@ -38,7 +39,6 @@ class BenefitConfirmPage extends StatefulWidget {
   final String action;
   final int? appointmentId;
   final String bookingType;
-  final bool isBypassPayment;
   final String? branchName;
   final String? branchAddress;
   final int? branchId;
@@ -65,7 +65,6 @@ class BenefitConfirmPage extends StatefulWidget {
     this.action = 'create',
     this.appointmentId,
     this.bookingType = Const.BENEFIT_BOOKING_AT_CLINIC,
-    this.isBypassPayment = false,
     this.branchName,
     this.branchAddress,
     this.branchId,
@@ -333,6 +332,8 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
           bookingType: widget.bookingType,
           serviceType: widget.serviceType,
           cubit: _cubit,
+          itemId: widget.itemId,
+          itemType: widget.itemType,
         );
         final initialized = await paymentService.initializePayment();
         if (initialized) {

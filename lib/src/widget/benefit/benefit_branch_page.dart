@@ -20,7 +20,6 @@ class BenefitBranchPage extends StatefulWidget {
   final String action;
   final int? appointmentId;
   final String bookingType;
-  final bool isBypassPayment;
   final String? specialtyName;
   final String? itemId;
   final int? itemType;
@@ -31,7 +30,6 @@ class BenefitBranchPage extends StatefulWidget {
     this.action = 'create',
     this.appointmentId,
     this.bookingType = Const.BOOKING_TYPE_CLINIC,
-    this.isBypassPayment = false,
     this.specialtyName,
     this.itemId,
     this.itemType,
@@ -268,7 +266,6 @@ class _BenefitBranchPageState extends State<BenefitBranchPage> {
         'action': widget.action,
         'appointmentId': widget.appointmentId,
         'bookingType': widget.bookingType,
-        'isBypassPayment': widget.isBypassPayment,
         'branchName': _selectedBranch!.name,
         'branchAddress': _selectedBranch!.address,
         'branchId': _selectedBranch!.clinicId,
