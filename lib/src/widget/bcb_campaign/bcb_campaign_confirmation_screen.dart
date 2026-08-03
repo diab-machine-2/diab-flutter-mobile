@@ -118,7 +118,11 @@ class _BcbCampaignConfirmationScreenState
     );
   }
 
+  bool _isSubmitting = false;
+
   void _submit() {
+    if (_isSubmitting) return;
+
     final slotId = widget.selectedWishSlot.slot.id ?? '';
     if (slotId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +132,13 @@ class _BcbCampaignConfirmationScreenState
     }
     if (widget.isReschedule) {
       final apptId = widget.appointmentId ?? '';
-      if (apptId.isEmpty) return;
+      if (apptId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(R.string.bcb_appointment_id_missing.tr())),
+        );
+        return;
+      }
+      _isSubmitting = true;
       _bloc.add(
         RescheduleBcbAppointmentEvent(
           appointmentId: apptId,
@@ -138,12 +148,30 @@ class _BcbCampaignConfirmationScreenState
     } else {
       final note =
           (_sectionAddNoteKey.currentState?.getNote().note ?? '').trim();
+      _isSubmitting = true;
       _bloc.add(
         SubmitBcbRegistrationEvent(
           bcbCampaignId: widget.bcbCampaignId,
           doctorNote: note.isEmpty ? null : note,
           slotId: slotId,
         ),
+      );
+    }
+  }
+
+  /// Returns to `BenefitAppointmentHistoryPage` when this flow originated
+  /// there, else wipes to `tabbar` — same rule as [_goToDetailAfterReschedule].
+  void _goHome() {
+    if (widget.fromBenefitHistory) {
+      Navigator.of(context, rootNavigator: true).popUntil(
+        (route) =>
+            route.settings.name == NavigatorName.benefit_appointment_history ||
+            route.isFirst,
+      );
+    } else {
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        NavigatorName.tabbar,
+        (route) => false,
       );
     }
   }
@@ -180,10 +208,7 @@ class _BcbCampaignConfirmationScreenState
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(dialogContext);
-                        navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                          NavigatorName.tabbar,
-                          (route) => false,
-                        );
+                        _goHome();
                       },
                       child: Icon(
                         Icons.close,
@@ -244,13 +269,7 @@ class _BcbCampaignConfirmationScreenState
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pop(dialogContext);
-                          navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                            NavigatorName.bcb_detail_appointment,
-                            (route) =>
-                                route.settings.name == NavigatorName.tabbar ||
-                                !Navigator.of(context).canPop(),
-                            arguments: {'campaignId': widget.bcbCampaignId},
-                          );
+                          _goToDetailAfterReschedule();
                         },
                         child: Container(
                           height: 43,
@@ -279,10 +298,7 @@ class _BcbCampaignConfirmationScreenState
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pop(dialogContext);
-                          navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                            NavigatorName.tabbar,
-                            (route) => false,
-                          );
+                          _goHome();
                         },
                         child: Container(
                           height: 44,
@@ -453,6 +469,7 @@ class _BcbCampaignConfirmationScreenState
                 if (mounted) _showRescheduleSuccessAndGoDetail();
               });
             } else if (state is BcbCampaignError) {
+              _isSubmitting = false;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),

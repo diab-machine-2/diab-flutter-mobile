@@ -30,6 +30,7 @@ class BcbSelectPartnerScreen extends StatefulWidget {
 class _BcbSelectPartnerScreenState extends State<BcbSelectPartnerScreen> {
   List<BcbPartnerInfo> _partners = [];
   bool _loading = false;
+  bool _navigatingToSlots = false;
 
   @override
   void initState() {
@@ -55,20 +56,26 @@ class _BcbSelectPartnerScreenState extends State<BcbSelectPartnerScreen> {
   }
 
   void _onPartnerTap(BcbPartnerInfo partner) {
+    if (_navigatingToSlots) return;
+    _navigatingToSlots = true;
     final scheduleDays = partner.toScheduleDays();
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => BcbSelectWishSlotsScreen(
-          bcbCampaignId: widget.bcbCampaignId,
-          bcbCampaignName: widget.bcbCampaignName,
-          scheduleDays: scheduleDays,
-          isReschedule: widget.isReschedule,
-          appointmentId: widget.appointmentId,
-          currentSlotId: widget.currentSlotId,
-          fromBenefitHistory: widget.fromBenefitHistory,
-        ),
-      ),
-    );
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute<void>(
+            builder: (_) => BcbSelectWishSlotsScreen(
+              bcbCampaignId: widget.bcbCampaignId,
+              bcbCampaignName: widget.bcbCampaignName,
+              scheduleDays: scheduleDays,
+              isReschedule: widget.isReschedule,
+              appointmentId: widget.appointmentId,
+              currentSlotId: widget.currentSlotId,
+              fromBenefitHistory: widget.fromBenefitHistory,
+            ),
+          ),
+        )
+        .then((_) {
+          if (mounted) _navigatingToSlots = false;
+        });
   }
 
   @override

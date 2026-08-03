@@ -138,7 +138,11 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
         }
       }
     }
-    return current;
+    // Not found in the refreshed list (e.g. it filled up or the day list
+    // changed) — don't keep pointing at a stale day/slot object; let the
+    // caller fall back to the reschedule currentSlotId lookup or the first
+    // available day.
+    return null;
   }
 
   bool _defaultMorningForDay(BcbPartnerScheduleDay? day) {
@@ -225,7 +229,10 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     return null;
   }
 
+  bool _confirming = false;
+
   void _confirmRegistration() {
+    if (_confirming) return;
     final selected = _selectedWishSlot;
     if (selected == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -246,6 +253,7 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
       return;
     }
 
+    _confirming = true;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => BcbCampaignConfirmationScreen(
@@ -472,7 +480,13 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                                             _selectedDay!, _morning)[i];
                                         final isOn = _isSelectedSlot(
                                             _selectedDay!, slot);
-                                        final disabled = slot.isFull;
+                                        // A full slot that's still the
+                                        // pre-selected one (reschedule's own
+                                        // current slot) must not render as
+                                        // disabled/greyed — that combined
+                                        // with the checkmark badge below
+                                        // looked inconsistent.
+                                        final disabled = slot.isFull && !isOn;
                                         return GestureDetector(
                                           onTap: disabled
                                               ? null
