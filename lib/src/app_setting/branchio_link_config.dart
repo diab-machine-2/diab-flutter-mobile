@@ -206,16 +206,18 @@ class BranchioLinkConfig {
   }
 
   /// Extracts a stable identifier for a single Branch click event, preferring
-  /// the URL (`+url`/`~referring_link`) over `+click_timestamp`. The URL is
-  /// what Branch is guaranteed to return byte-identical across repeated
-  /// `getFirstReferringParams()`/`getLatestReferringParams()` calls for the
-  /// same cached click, whereas `+click_timestamp` has been observed to not
-  /// reliably stay constant across those repeated calls — using it as the
-  /// primary key let stale clicks slip past this guard.
+  /// `+click_timestamp` (expected to be unique per real click) over the URL.
+  /// A true replay of a cached click (app reopened, no new tap) returns the
+  /// exact same cached payload — including the same timestamp — so keying on
+  /// it still blocks replays (given the click is marked processed with an
+  /// awaited, persisted write). Keying on the URL instead was tried and
+  /// reverted: campaign links are static and reused, so two distinct real
+  /// taps on the same link share the same URL — URL-first incorrectly
+  /// treated the second real tap as a replay of the first and swallowed it.
   String _extractClickId(Map<dynamic, dynamic> data) {
-    return data['+url']?.toString() ??
+    return data['+click_timestamp']?.toString() ??
+        data['+url']?.toString() ??
         data['~referring_link']?.toString() ??
-        data['+click_timestamp']?.toString() ??
         '';
   }
 
@@ -569,36 +571,46 @@ class BranchioLinkConfig {
     // ── Check install-time params (getFirstReferringParams) ────────────────
     // This is the ONLY reliable source for deep link data when the app is
     // opened for the first time after an install that originated from a
-    // Branch link click. Only needs to run once per app session.
+    // Branch link click. Branch returns the exact same payload for this call
+    // for the entire lifetime of the install, so it must only ever be acted
+    // on once, ever — gated by a persisted flag, not just the in-memory
+    // `_hasCheckedInstallParams` (which only prevents re-checking within the
+    // same process run, not across app kills).
     if (!_hasCheckedInstallParams) {
       _hasCheckedInstallParams = true;
-      try {
-        final firstParams = await FlutterBranchSdk.getFirstReferringParams();
-        if (firstParams.isNotEmpty) {
-          print('[BRANCH_DEBUG] getFirstReferringParams data: $firstParams');
-          final isClicked = firstParams['+clicked_branch_link'] == true;
-          final isFirstSession = firstParams['+is_first_session'] == true;
-          if (isClicked || isFirstSession) {
-            // Deduplicate: if the link URL matches the last processed one,
-            // skip to avoid double-processing.
-            final linkUrl = firstParams['+url']?.toString() ??
-                firstParams['~referring_link']?.toString();
-            if (linkUrl != null && linkUrl.isNotEmpty) {
-              final now = DateTime.now();
-              if (linkUrl == _lastProcessedLinkUrl &&
-                  _lastProcessedTime != null &&
-                  now.difference(_lastProcessedTime!).inSeconds < 10) {
-                print('[ROUTE] Install params duplicate, skipping');
-                return;
+      if (AppSettings.getHasCheckedFirstReferringParams()) {
+        print(
+            '[BRANCH_DEBUG] getFirstReferringParams already consumed once for this install, skipping');
+      } else {
+        await AppSettings.saveHasCheckedFirstReferringParams(true);
+        try {
+          final firstParams = await FlutterBranchSdk.getFirstReferringParams();
+          if (firstParams.isNotEmpty) {
+            print('[BRANCH_DEBUG] getFirstReferringParams data: $firstParams');
+            final isClicked = firstParams['+clicked_branch_link'] == true;
+            final isFirstSession = firstParams['+is_first_session'] == true;
+            if (isClicked || isFirstSession) {
+              // Deduplicate: if the link URL matches the last processed one,
+              // skip to avoid double-processing.
+              final linkUrl = firstParams['+url']?.toString() ??
+                  firstParams['~referring_link']?.toString();
+              if (linkUrl != null && linkUrl.isNotEmpty) {
+                final now = DateTime.now();
+                if (linkUrl == _lastProcessedLinkUrl &&
+                    _lastProcessedTime != null &&
+                    now.difference(_lastProcessedTime!).inSeconds < 10) {
+                  print('[ROUTE] Install params duplicate, skipping');
+                  return;
+                }
+                _lastProcessedLinkUrl = linkUrl;
+                _lastProcessedTime = now;
               }
-              _lastProcessedLinkUrl = linkUrl;
-              _lastProcessedTime = now;
+              await _processDeepLinkData(firstParams);
             }
-            await _processDeepLinkData(firstParams);
           }
+        } catch (e) {
+          print('[BRANCH_DEBUG] getFirstReferringParams error: $e');
         }
-      } catch (e) {
-        print('[BRANCH_DEBUG] getFirstReferringParams error: $e');
       }
     }
 
