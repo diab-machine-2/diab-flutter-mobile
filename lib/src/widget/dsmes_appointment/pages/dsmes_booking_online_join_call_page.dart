@@ -25,6 +25,20 @@ class _WebViewScreenState extends State<WebViewScreen> {
   String baseUrl = '';
   String accessToken = '';
 
+  // Pages outside the DSMES/booking nested-navigator flows (e.g. reached
+  // from the Benefit appointment history page) never call
+  // DsmesNavigationMixin.setActiveNavigator, so fall back to this widget's
+  // own navigator instead of throwing.
+  void _popJoinRoom(BuildContext context) {
+    NavigatorState? navigatorState;
+    try {
+      navigatorState = DsmesNavigationMixin.getNavigationKey().currentState;
+    } catch (_) {
+      navigatorState = null;
+    }
+    (navigatorState ?? Navigator.of(context)).pop(context);
+  }
+
   Future<void> _requestPermissions() async {
     // Request multiple permissions at once
     Map<Permission, PermissionStatus> statuses = await [
@@ -92,16 +106,16 @@ class _WebViewScreenState extends State<WebViewScreen> {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
-            color: R.color.color0xff111515,
+            color: R.color.white,
             fontFamily: 'sfpro',
           ),
         ),
         leadingIcon: IconButton(
           splashColor: R.color.transparent,
           highlightColor: R.color.transparent,
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
           onPressed: () {
-            DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
+            _popJoinRoom(context);
           },
         ),
       ),
@@ -219,7 +233,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
               if (uri.toString() == "${Utils.getDocosanDomainUrl()}/") {
                 if (mounted) {
-                  DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
+                  _popJoinRoom(context);
                 }
                 return NavigationActionPolicy.CANCEL;
               }
