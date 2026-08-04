@@ -2,14 +2,13 @@ import 'dart:core';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../modal/notification/notification_list_model.dart';
 
@@ -73,9 +72,8 @@ class _NotificationDetailControllerState
                                         data: notification?.body ?? '',
                                         onLinkTap: (url, attributes, element) {
                                           if (url == null) return;
-                                          launchUrl(Uri.parse(url),
-                                              mode: LaunchMode
-                                                  .externalApplication);
+                                          BranchioLinkConfig.instance
+                                              .openLink(url);
                                         },
                                       )
                                     ]),
@@ -142,20 +140,12 @@ class _NotificationDetailControllerState
   }
 
   Future<void> _launchInBrowser(String url) async {
-    if (await canLaunch(url)) {
-      // Show immediate feedback while Branch resolves/parses deeplink.
-      final cancelLoading = BotToast.showLoading();
-      Future.delayed(const Duration(milliseconds: 500), cancelLoading);
+    // Show immediate feedback while Branch resolves/parses the deeplink.
+    final cancelLoading = BotToast.showLoading();
+    Future.delayed(const Duration(milliseconds: 500), cancelLoading);
 
-      FlutterBranchSdk.handleDeepLink(url);
-
-      // await launch(
-      //   url,
-      //   forceSafariVC: false,
-      //   forceWebView: false,
-      //   headers: <String, String>{'my_header_key': 'my_header_value'},
-      // );
-    } else {
+    final opened = await BranchioLinkConfig.instance.openLink(url);
+    if (!opened) {
       throw 'Could not launch $url';
     }
   }
