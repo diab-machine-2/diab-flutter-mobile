@@ -260,6 +260,22 @@ class AppSettings {
     return clickedBranchLink == 'true';
   }
 
+  /// Persists the identifier of the last Branch deep link click that was
+  /// fully processed, on disk (survives app restarts and logout/login).
+  ///
+  /// Branch's `getFirstReferringParams()`/`getLatestReferringParams()` keep
+  /// returning the same click data for the lifetime of the install (or until
+  /// a new link is clicked) — without this persisted guard, every cold app
+  /// start would re-run the deep link's navigation, since the in-memory
+  /// dedup in `BranchioLinkConfig` resets with the process.
+  static Future<void> saveLastProcessedBranchClick(String key) async {
+    appPreference.setData(Const.LAST_PROCESSED_BRANCH_CLICK, key);
+  }
+
+  static String getLastProcessedBranchClick() {
+    return appPreference.getData(Const.LAST_PROCESSED_BRANCH_CLICK) ?? '';
+  }
+
   static HomeModel? _precachedHome;
   static Future<void> loadPrecachedHome() async {
     _precachedHome = await getHome();
