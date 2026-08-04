@@ -219,6 +219,7 @@ class Const {
   static const DOCOSAN_TOKEN = 'docosan_token';
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
   static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
+  static const String LAST_PROCESSED_BRANCH_CLICK = 'last_processed_branch_click';
   static const String ORGANIZATION_API_KEY = 'organization_api_key';
   static const String ORGANIZATION_API_KEY_VALUE_PRODUCT = 'diab-yb-5c3bae30-712c4ffc';
   static const String ORGANIZATION_API_KEY_VALUE_DEV = 'diab-heath-center-9a3cefac-136caaef';

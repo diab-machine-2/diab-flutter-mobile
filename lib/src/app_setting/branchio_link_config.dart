@@ -154,11 +154,37 @@ class BranchioLinkConfig {
     });
   }
 
+  /// Extracts a stable identifier for a single Branch click event, preferring
+  /// `+click_timestamp` (unique per real click) over the URL. Branch's
+  /// `getFirstReferringParams()`/`getLatestReferringParams()` keep replaying
+  /// the same cached click (same timestamp) for the lifetime of the install,
+  /// so comparing this against the persisted last-processed value lets us
+  /// suppress replays while still allowing a genuinely new click through.
+  String _extractClickId(Map<dynamic, dynamic> data) {
+    return data['+click_timestamp']?.toString() ??
+        data['+url']?.toString() ??
+        data['~referring_link']?.toString() ??
+        '';
+  }
+
   /// Processes deep link data from any source (stream, install params, session
   /// params). Contains all the routing logic so it can be reused by both the
   /// main [listSession] listener and the install/session-param fallback.
   Future<void> _processDeepLinkData(Map<dynamic, dynamic> data) async {
     AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
+
+    if (data['+clicked_branch_link'] == true) {
+      final clickId = _extractClickId(data);
+      if (clickId.isNotEmpty &&
+          clickId == AppSettings.getLastProcessedBranchClick()) {
+        print(
+            '[ROUTE] Branch click already processed (persisted), skipping: $clickId');
+        return;
+      }
+      if (clickId.isNotEmpty) {
+        AppSettings.saveLastProcessedBranchClick(clickId);
+      }
+    }
 
     final zoomStatus = await ZoomService().getMeetingStatus();
     print('[Meeting Status] Zoom Status: ${zoomStatus[0]}');
