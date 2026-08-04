@@ -28,6 +28,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/mod
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import '../model/response/lesson_section_list_response.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BranchioLinkConfig {
   BranchioLinkConfig._privateConstructor();
@@ -100,6 +101,56 @@ class BranchioLinkConfig {
   };
 
   bool isActivatedSubscription = false;
+
+  /// Branch's own short-link/universal-link domains plus this app's custom
+  /// URI scheme — mirrors `branch_universal_link_domains`/`CFBundleURLSchemes`
+  /// in ios/Runner/Info.plist (and the matching Android intent-filter hosts).
+  static const _kBranchHosts = {
+    'diabvn.app.link',
+    'diabvn.test-app.link',
+    'diabvn-alternate.app.link',
+    'app.diab.com.vn',
+  };
+  static const _kBranchScheme = 'branchdiab';
+
+  /// Whether [url] is a link Branch itself can resolve (its short-link
+  /// domains, this app's universal-link domain, or its custom URI scheme) —
+  /// as opposed to an arbitrary external URL (Zoom, a partner's own site).
+  bool isBranchLink(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    if (uri.scheme == _kBranchScheme) return true;
+    return _kBranchHosts.contains(uri.host);
+  }
+
+  /// Opens [url], preferring Branch's own deep-link handling — so links to
+  /// this app's content (BCB campaign, webinar, lesson share links, etc.)
+  /// navigate in-app instead of bouncing out to a browser — and falling
+  /// back to `url_launcher` for anything Branch doesn't own (external Zoom
+  /// links, partner websites, plain http(s) URLs).
+  ///
+  /// `FlutterBranchSdk.handleDeepLink` is fire-and-forget and silently
+  /// no-ops for URLs it doesn't recognize (it never opens them externally),
+  /// so the Branch/non-Branch decision has to happen up front from the
+  /// URL's host/scheme — there's no "try Branch, see if it failed" signal
+  /// to fall back on afterwards.
+  ///
+  /// Returns `true` if the link was dispatched to Branch or successfully
+  /// launched, `false` if neither was possible (caller should show its own
+  /// "can't open link" message in that case).
+  Future<bool> openLink(String url) async {
+    if (url.isEmpty) return false;
+    if (isBranchLink(url)) {
+      FlutterBranchSdk.handleDeepLink(url);
+      return true;
+    }
+    final uri = Uri.tryParse(url);
+    if (uri != null && await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return true;
+    }
+    return false;
+  }
 
   void setUpHandleDeepLink() {
     print('[BRANCH_DEBUG] Inside setUpHandleDeepLink()');

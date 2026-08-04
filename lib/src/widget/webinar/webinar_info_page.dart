@@ -2,7 +2,6 @@ import 'dart:ui' as ui;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
@@ -21,7 +20,6 @@ import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/less
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -186,10 +184,8 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
 
   Future<void> _onJoinNow() async {
     if (_webinar?.link == null || _webinar!.link!.isEmpty) return;
-    final launchUri = Uri.parse(_webinar!.link!);
-    if (await canLaunchUrl(launchUri)) {
-      await launchUrl(launchUri);
-    } else {
+    final opened = await BranchioLinkConfig.instance.openLink(_webinar!.link!);
+    if (!opened && mounted) {
       Message.showToastMessage(context, R.string.webinar_cannot_open_link.tr());
     }
   }
@@ -785,16 +781,10 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                                       webinar.link!
                                                           .trim()
                                                           .isNotEmpty) {
-                                                    final uri = Uri.tryParse(
-                                                        webinar.link!.trim());
-                                                    if (uri != null &&
-                                                        await canLaunchUrl(
-                                                            uri)) {
-                                                      // await launchUrl(uri);
-                                                      FlutterBranchSdk
-                                                          .handleDeepLink(
-                                                              uri.toString());
-                                                    }
+                                                    await BranchioLinkConfig
+                                                        .instance
+                                                        .openLink(webinar.link!
+                                                            .trim());
                                                   }
                                                 },
                                                 child: Text(

@@ -242,7 +242,7 @@ class _BenefitAppointmentHistoryPageState
     if (isEmpty) {
       return DsmesEmptyWidget(
         imagePath: R.drawable.dsmes_empty,
-        title: R.string.empty_history_appointment.tr(),
+      title: R.string.empty_history_appointment.tr(),
         titleColor: R.color.color0xff636A6B,
         subtitle: '',
       );
