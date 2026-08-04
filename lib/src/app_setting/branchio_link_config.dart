@@ -206,15 +206,16 @@ class BranchioLinkConfig {
   }
 
   /// Extracts a stable identifier for a single Branch click event, preferring
-  /// `+click_timestamp` (unique per real click) over the URL. Branch's
-  /// `getFirstReferringParams()`/`getLatestReferringParams()` keep replaying
-  /// the same cached click (same timestamp) for the lifetime of the install,
-  /// so comparing this against the persisted last-processed value lets us
-  /// suppress replays while still allowing a genuinely new click through.
+  /// the URL (`+url`/`~referring_link`) over `+click_timestamp`. The URL is
+  /// what Branch is guaranteed to return byte-identical across repeated
+  /// `getFirstReferringParams()`/`getLatestReferringParams()` calls for the
+  /// same cached click, whereas `+click_timestamp` has been observed to not
+  /// reliably stay constant across those repeated calls — using it as the
+  /// primary key let stale clicks slip past this guard.
   String _extractClickId(Map<dynamic, dynamic> data) {
-    return data['+click_timestamp']?.toString() ??
-        data['+url']?.toString() ??
+    return data['+url']?.toString() ??
         data['~referring_link']?.toString() ??
+        data['+click_timestamp']?.toString() ??
         '';
   }
 
@@ -226,14 +227,17 @@ class BranchioLinkConfig {
 
     if (data['+clicked_branch_link'] == true) {
       final clickId = _extractClickId(data);
-      if (clickId.isNotEmpty &&
-          clickId == AppSettings.getLastProcessedBranchClick()) {
+      final lastProcessed = AppSettings.getLastProcessedBranchClick();
+      print('[BRANCH_DEBUG] clickId=$clickId lastProcessedBranchClick=$lastProcessed');
+      if (clickId.isNotEmpty && clickId == lastProcessed) {
         print(
             '[ROUTE] Branch click already processed (persisted), skipping: $clickId');
         return;
       }
       if (clickId.isNotEmpty) {
-        AppSettings.saveLastProcessedBranchClick(clickId);
+        // Await so the write is guaranteed to hit disk before this function
+        // returns, instead of racing an app kill that happens moments later.
+        await AppSettings.saveLastProcessedBranchClick(clickId);
       }
     }
 
