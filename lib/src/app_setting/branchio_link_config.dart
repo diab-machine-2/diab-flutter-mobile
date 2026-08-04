@@ -28,6 +28,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/mod
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import '../model/response/lesson_section_list_response.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BranchioLinkConfig {
   BranchioLinkConfig._privateConstructor();
@@ -101,6 +102,56 @@ class BranchioLinkConfig {
 
   bool isActivatedSubscription = false;
 
+  /// Branch's own short-link/universal-link domains plus this app's custom
+  /// URI scheme — mirrors `branch_universal_link_domains`/`CFBundleURLSchemes`
+  /// in ios/Runner/Info.plist (and the matching Android intent-filter hosts).
+  static const _kBranchHosts = {
+    'diabvn.app.link',
+    'diabvn.test-app.link',
+    'diabvn-alternate.app.link',
+    'app.diab.com.vn',
+  };
+  static const _kBranchScheme = 'branchdiab';
+
+  /// Whether [url] is a link Branch itself can resolve (its short-link
+  /// domains, this app's universal-link domain, or its custom URI scheme) —
+  /// as opposed to an arbitrary external URL (Zoom, a partner's own site).
+  bool isBranchLink(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    if (uri.scheme == _kBranchScheme) return true;
+    return _kBranchHosts.contains(uri.host);
+  }
+
+  /// Opens [url], preferring Branch's own deep-link handling — so links to
+  /// this app's content (BCB campaign, webinar, lesson share links, etc.)
+  /// navigate in-app instead of bouncing out to a browser — and falling
+  /// back to `url_launcher` for anything Branch doesn't own (external Zoom
+  /// links, partner websites, plain http(s) URLs).
+  ///
+  /// `FlutterBranchSdk.handleDeepLink` is fire-and-forget and silently
+  /// no-ops for URLs it doesn't recognize (it never opens them externally),
+  /// so the Branch/non-Branch decision has to happen up front from the
+  /// URL's host/scheme — there's no "try Branch, see if it failed" signal
+  /// to fall back on afterwards.
+  ///
+  /// Returns `true` if the link was dispatched to Branch or successfully
+  /// launched, `false` if neither was possible (caller should show its own
+  /// "can't open link" message in that case).
+  Future<bool> openLink(String url) async {
+    if (url.isEmpty) return false;
+    if (isBranchLink(url)) {
+      FlutterBranchSdk.handleDeepLink(url);
+      return true;
+    }
+    final uri = Uri.tryParse(url);
+    if (uri != null && await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return true;
+    }
+    return false;
+  }
+
   void setUpHandleDeepLink() {
     print('[BRANCH_DEBUG] Inside setUpHandleDeepLink()');
     SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
@@ -155,15 +206,16 @@ class BranchioLinkConfig {
   }
 
   /// Extracts a stable identifier for a single Branch click event, preferring
-  /// `+click_timestamp` (unique per real click) over the URL. Branch's
-  /// `getFirstReferringParams()`/`getLatestReferringParams()` keep replaying
-  /// the same cached click (same timestamp) for the lifetime of the install,
-  /// so comparing this against the persisted last-processed value lets us
-  /// suppress replays while still allowing a genuinely new click through.
+  /// the URL (`+url`/`~referring_link`) over `+click_timestamp`. The URL is
+  /// what Branch is guaranteed to return byte-identical across repeated
+  /// `getFirstReferringParams()`/`getLatestReferringParams()` calls for the
+  /// same cached click, whereas `+click_timestamp` has been observed to not
+  /// reliably stay constant across those repeated calls — using it as the
+  /// primary key let stale clicks slip past this guard.
   String _extractClickId(Map<dynamic, dynamic> data) {
-    return data['+click_timestamp']?.toString() ??
-        data['+url']?.toString() ??
+    return data['+url']?.toString() ??
         data['~referring_link']?.toString() ??
+        data['+click_timestamp']?.toString() ??
         '';
   }
 
@@ -175,14 +227,17 @@ class BranchioLinkConfig {
 
     if (data['+clicked_branch_link'] == true) {
       final clickId = _extractClickId(data);
-      if (clickId.isNotEmpty &&
-          clickId == AppSettings.getLastProcessedBranchClick()) {
+      final lastProcessed = AppSettings.getLastProcessedBranchClick();
+      print('[BRANCH_DEBUG] clickId=$clickId lastProcessedBranchClick=$lastProcessed');
+      if (clickId.isNotEmpty && clickId == lastProcessed) {
         print(
             '[ROUTE] Branch click already processed (persisted), skipping: $clickId');
         return;
       }
       if (clickId.isNotEmpty) {
-        AppSettings.saveLastProcessedBranchClick(clickId);
+        // Await so the write is guaranteed to hit disk before this function
+        // returns, instead of racing an app kill that happens moments later.
+        await AppSettings.saveLastProcessedBranchClick(clickId);
       }
     }
 

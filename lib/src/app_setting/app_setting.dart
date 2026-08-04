@@ -269,7 +269,7 @@ class AppSettings {
   /// start would re-run the deep link's navigation, since the in-memory
   /// dedup in `BranchioLinkConfig` resets with the process.
   static Future<void> saveLastProcessedBranchClick(String key) async {
-    appPreference.setData(Const.LAST_PROCESSED_BRANCH_CLICK, key);
+    await appPreference.setData(Const.LAST_PROCESSED_BRANCH_CLICK, key);
   }
 
   static String getLastProcessedBranchClick() {
