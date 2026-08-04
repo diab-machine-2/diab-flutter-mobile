@@ -276,6 +276,21 @@ class AppSettings {
     return appPreference.getData(Const.LAST_PROCESSED_BRANCH_CLICK) ?? '';
   }
 
+  /// `getFirstReferringParams()` returns the exact same install-attribution
+  /// payload for the entire lifetime of the install, regardless of later
+  /// clicks — so it must only ever be acted on once, ever. This flag (unlike
+  /// [saveLastProcessedBranchClick]) doesn't compare payload content; it's a
+  /// permanent "already looked at this API" marker.
+  static Future<void> saveHasCheckedFirstReferringParams(bool value) async {
+    await appPreference.setData(
+        Const.HAS_CHECKED_FIRST_REFERRING_PARAMS, value.toString());
+  }
+
+  static bool getHasCheckedFirstReferringParams() {
+    return appPreference.getData(Const.HAS_CHECKED_FIRST_REFERRING_PARAMS) ==
+        'true';
+  }
+
   static HomeModel? _precachedHome;
   static Future<void> loadPrecachedHome() async {
     _precachedHome = await getHome();
