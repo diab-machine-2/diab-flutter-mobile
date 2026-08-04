@@ -58,19 +58,19 @@ class AppPreference {
     return _preference?.getBool(key) ?? defaultValue;
   }
 
-  void setData(String key, Object? data) {
+  Future<void> setData(String key, Object? data) async {
     if (data == null) return;
     if (data is int) {
-      _preference?.setInt(key, data);
+      await _preference?.setInt(key, data);
     }
     if (data is String) {
-      _preference?.setString(key, data);
+      await _preference?.setString(key, data);
     }
     if (data is bool) {
-      _preference?.setBool(key, data);
+      await _preference?.setBool(key, data);
     }
     if (data is List<String>) {
-      _preference?.setStringList(key, data);
+      await _preference?.setStringList(key, data);
     }
   }
 

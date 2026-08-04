@@ -1061,13 +1061,8 @@ class _HomeControllerState extends State<HomeController>
                                         if (bannerLinks[index].isEmpty) {
                                           return;
                                         }
-                                        final launchUri =
-                                            Uri.parse(bannerLinks[index]);
-                                        if (await canLaunchUrl(launchUri)) {
-                                          await launchUrl(launchUri);
-                                        } else {
-                                          throw 'Could not launch banner link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
-                                        }
+                                        await BranchioLinkConfig.instance
+                                            .openLink(bannerLinks[index]);
                                       }
                                     },
                                     child: NetWorkImageWidget(
