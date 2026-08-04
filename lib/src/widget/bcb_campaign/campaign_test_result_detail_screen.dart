@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -168,24 +170,26 @@ class _CampaignTestResultDetailScreenState
               color: Colors.white,
               child: Row(
                 children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 48,
-                      child: ElevatedButton.icon(
-                        onPressed: _downloadFile,
-                        icon: const Icon(Icons.download_outlined),
-                        label: Text(R.string.bcb_download.tr()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: R.color.greenGradientBottom,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                  if (!Platform.isIOS) ...[
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: _downloadFile,
+                          icon: const Icon(Icons.download_outlined),
+                          label: Text(R.string.bcb_download.tr()),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: R.color.greenGradientBottom,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
+                    const SizedBox(width: 12),
+                  ],
                   Expanded(
                     child: SizedBox(
                       height: 48,
