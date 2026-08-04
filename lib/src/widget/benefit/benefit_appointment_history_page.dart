@@ -25,9 +25,10 @@ import 'package:sticky_headers/sticky_headers.dart';
 
 /// Campaign booking statuses this page treats as "there's a real booking" —
 /// see [BcbCustomerAppointmentModel.customerStatus]. 6/7 = booked (upcoming),
-/// 9/10 = result delivered (past). Other values (pre-booking, etc.) are
-/// skipped.
+/// 8 = examined/đã khám (past), 9/10 = result delivered (past). Other values
+/// (pre-booking, etc.) are skipped.
 const _kCampaignBookedStatuses = {6, 7};
+const _kCampaignExaminedStatuses = {8};
 const _kCampaignResultStatuses = {9, 10};
 
 /// A unified appointment + medication-order history screen for the Benefit flow.
@@ -117,12 +118,13 @@ class _BenefitAppointmentHistoryPageState
   /// Fetches the user's registered BCB campaign appointment, if any.
   /// `App/BcbCustomerAppointment/my-registered` resolves the current user's
   /// booking without needing a campaignId. Only kept if it's an actual
-  /// booking (`customerStatus` 6/7/9/10; see [_kCampaignBookedStatuses]).
+  /// booking (`customerStatus` 6/7/8/9/10; see [_kCampaignBookedStatuses]).
   Future<void> _loadCampaignAppointments() async {
     try {
       final appt = await BcbCampaignClient().fetchMyRegisteredAppointment(null);
       final status = appt?.customerStatus;
       campaignAppointment = (_kCampaignBookedStatuses.contains(status) ||
+              _kCampaignExaminedStatuses.contains(status) ||
               _kCampaignResultStatuses.contains(status))
           ? appt
           : null;
@@ -171,7 +173,8 @@ class _BenefitAppointmentHistoryPageState
 
     final campaignAppt = campaignAppointment;
     if (campaignAppt != null &&
-        _kCampaignResultStatuses.contains(campaignAppt.customerStatus)) {
+        (_kCampaignExaminedStatuses.contains(campaignAppt.customerStatus) ||
+            _kCampaignResultStatuses.contains(campaignAppt.customerStatus))) {
       items.add(_MergedItem.campaign(campaignAppt));
     }
 
@@ -385,11 +388,14 @@ class _BenefitAppointmentHistoryPageState
     BuildContext context,
     BcbCustomerAppointmentModel appointment,
   ) {
-    final isBooked =
-        _kCampaignBookedStatuses.contains(appointment.customerStatus);
-    final statusLabel = isBooked
-        ? R.string.benefit_campaign_booked.tr()
-        : R.string.benefit_campaign_result_delivered.tr();
+    final String statusLabel;
+    if (_kCampaignBookedStatuses.contains(appointment.customerStatus)) {
+      statusLabel = R.string.benefit_campaign_booked.tr();
+    } else if (_kCampaignExaminedStatuses.contains(appointment.customerStatus)) {
+      statusLabel = R.string.da_kham.tr();
+    } else {
+      statusLabel = R.string.benefit_campaign_result_delivered.tr();
+    }
 
     final examLocal = appointment.examDateLocal;
     final dateStr = examLocal != null

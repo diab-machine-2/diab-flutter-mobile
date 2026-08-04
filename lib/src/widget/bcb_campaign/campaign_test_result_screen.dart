@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -413,26 +415,28 @@ class _ExamResultItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: R.color.color0xffF3F4F6,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton.filled(
-                        onPressed: _downloadFile,
-                        icon: const Icon(Icons.download_outlined, size: 26),
-                        style: IconButton.styleFrom(
-                          backgroundColor: R.color.color0xffF3F4F6,
-                          foregroundColor: R.color.color0xff27272A,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                    if (!Platform.isIOS) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: R.color.color0xffF3F4F6,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: IconButton.filled(
+                          onPressed: _downloadFile,
+                          icon: const Icon(Icons.download_outlined, size: 26),
+                          style: IconButton.styleFrom(
+                            backgroundColor: R.color.color0xffF3F4F6,
+                            foregroundColor: R.color.color0xff27272A,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                     const SizedBox(width: 8),
                     Container(
                       width: 40,
