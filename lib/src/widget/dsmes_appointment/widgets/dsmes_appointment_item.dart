@@ -9,6 +9,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_online_join_call_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -360,7 +361,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     if (joinButtonOnly) {
       final mode = DsmesAppointmentMode.fromString(data.mode);
       return (!isPast && mode == DsmesAppointmentMode.telemedicine)
-          ? _buildButtonOnline()
+          ? _buildButtonOnline(context)
           : const SizedBox.shrink();
     }
 
@@ -416,7 +417,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     if (data.isExaminationAtHome) {
       return const SizedBox.shrink();
     }
-    return _buildButtonOnline();
+    return _buildButtonOnline(context);
   }
 
   _buildButtonAtClinic(BuildContext context) {
@@ -524,7 +525,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     return now.isAfter(windowStart) && now.isBefore(windowEnd);
   }
 
-  _buildButtonOnline() {
+  _buildButtonOnline(BuildContext context) {
     return Row(
       children: [
         Flexible(
@@ -532,7 +533,7 @@ class DsmesAppointmentItem extends StatelessWidget {
           child: _shouldShowJoinButton()
               ? _buildPrimaryButton(
                   R.string.join_now.tr(),
-                  () => _handleJoinRoom(),
+                  () => _handleJoinRoom(context),
                 )
               : Container(
                   height: 44,
@@ -558,11 +559,33 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
-  _handleJoinRoom() async {
-    await DsmesNavigationMixin.getNavigationKey()
-        .currentState
-        ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
-      'telemedicineId': data.teleMedicine?.id,
-    });
+  _handleJoinRoom(BuildContext context) async {
+    // Pages outside the DSMES/booking nested-navigator flows (e.g. the
+    // Benefit appointment history page) never call
+    // DsmesNavigationMixin.setActiveNavigator, and dsmes_booking_online_join_room
+    // is only registered on those flows' nested onGenerateRoute (not on the
+    // app's root route table) — so pushNamed would fail there too. Push the
+    // join-room screen directly in that case instead.
+    NavigatorState? navigatorState;
+    try {
+      navigatorState = DsmesNavigationMixin.getNavigationKey().currentState;
+    } catch (_) {
+      navigatorState = null;
+    }
+
+    if (navigatorState != null) {
+      await navigatorState.pushNamed(
+          NavigatorName.dsmes_booking_online_join_room, arguments: {
+        'telemedicineId': data.teleMedicine?.id,
+      });
+    } else {
+      await Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+          settings:
+              const RouteSettings(name: NavigatorName.dsmes_booking_online_join_room),
+          builder: (_) => WebViewScreen(telemedicineId: data.teleMedicine!.id),
+        ),
+      );
+    }
   }
 }

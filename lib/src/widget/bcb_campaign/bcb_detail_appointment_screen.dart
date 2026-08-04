@@ -85,6 +85,14 @@ class _BcbDetailAppointmentScreenState
     return null;
   }
 
+  /// Once the campaign visit is done — `customerStatus` 8 (examined/đã khám)
+  /// or 9-10 (result delivered, same range `BranchioLinkConfig` routes to
+  /// `view_test_result`) — it can no longer be rescheduled.
+  bool get _isResultDelivered {
+    final status = _appointment?.customerStatus;
+    return status != null && status >= 8 && status <= 10;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -279,18 +287,20 @@ class _BcbDetailAppointmentScreenState
       ),
       child: Row(
         children: [
-          Expanded(
-            child: _buildOutlineButton(
-              R.string.bcb_doi_lich.tr(),
-              (_appointment == null ||
-                      _effectiveCampaignId == null ||
-                      _effectiveCampaignId!.isEmpty ||
-                      (_appointment?.appointmentId ?? '').isEmpty)
-                  ? null
-                  : _onRescheduleTap,
+          if (!_isResultDelivered) ...[
+            Expanded(
+              child: _buildOutlineButton(
+                R.string.bcb_doi_lich.tr(),
+                (_appointment == null ||
+                        _effectiveCampaignId == null ||
+                        _effectiveCampaignId!.isEmpty ||
+                        (_appointment?.appointmentId ?? '').isEmpty)
+                    ? null
+                    : _onRescheduleTap,
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
+            const SizedBox(width: 8),
+          ],
           Expanded(
             child: _buildGradientButton(
               R.string.back_home_page.tr(),
