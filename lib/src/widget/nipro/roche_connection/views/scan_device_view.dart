@@ -9,6 +9,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
+import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -72,6 +73,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   late GlucoseUnitsFlag glucoseUnits;
   String? modelName;
   String? modelNumber;
+  List<TimeFrameModel> _timeFrames = [];
+  bool _timeFramesLoaded = false;
 
   @override
   void initState() {
@@ -110,6 +113,28 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   Future<List<int>> _buildRACPRequest() async {
     log('📋 RACP REQUEST: Full sync (Report All Stored Records)');
     return [0x01, 0x01];
+  }
+
+  /// Loads the server's glucose TimeFrame list (id/code/name) once, so
+  /// device-synced records can resolve `timeFrameId` the same way manual
+  /// entry does. `id` is a per-tenant UUID and must never be hardcoded.
+  Future<void> _ensureTimeFramesLoaded() async {
+    if (_timeFramesLoaded) return;
+    try {
+      _timeFrames = await GlucoseClient().fetchFlucoseTimeFrameV2();
+      _timeFramesLoaded = true;
+    } catch (e) {
+      log('⚠️ Failed to load glucose timeframes: $e');
+    }
+  }
+
+  String? _resolveTimeFrameId(GlucoseMeasurementRecord record) {
+    final code = record.timeFrameCode();
+    if (code == null) return null;
+    for (final timeFrame in _timeFrames) {
+      if (timeFrame.code == code) return timeFrame.id;
+    }
+    return null;
   }
 
   int? _parseEpochSeconds(dynamic value) {
@@ -2044,6 +2069,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     log('🔍 DEBUG: fetchGlucoseInputNotExist called');
     log('🔍 DEBUG: glucoseMeasurementRecordList.length = ${glucoseMeasurementRecordList.length}');
 
+    await _ensureTimeFramesLoaded();
+
     if (glucoseMeasurementRecordList.isNotEmpty) {
       // Process all records from device (original behavior)
       List<GlucoseMeasurementRecord> recordsToProcess =
@@ -2114,6 +2141,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               'glucose': element['glucose'].toString(),
               'date': createDate.toString(),
               'mealContext': matchedRecord.mealContextInteger != null ? matchedRecord.mealContextName() : '',
+              'timeFrameId': _resolveTimeFrameId(matchedRecord) ?? '',
             });
             log('🔍 DEBUG: Added to display list from API - glucose: ${element['glucose']}, date: $createDate, mealContext: ${matchedRecord.mealContextInteger}');
           });
@@ -2140,6 +2168,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               'glucose': element.glucose.toString(),
               'date': element.date.toString(),
               'mealContext': matchedRecord.mealContextInteger != null ? matchedRecord.mealContextName() : '',
+              'timeFrameId': _resolveTimeFrameId(matchedRecord) ?? '',
             });
             log('🔍 DEBUG: Added to display list from device - glucose: ${element.glucose}, date: ${element.date}, mealContext: ${matchedRecord.mealContextInteger}');
           });

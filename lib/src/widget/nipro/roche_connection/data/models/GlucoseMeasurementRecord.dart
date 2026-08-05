@@ -89,6 +89,18 @@ extension GlucoseMeasurementRecordExtensions on GlucoseMeasurementRecord {
     }
   }
 
+  /// Maps the BLE meal-context value to the server's TimeFrame `code`
+  /// (see `/app/TimeFrame/Glucose`). `Casual` and `Bedtime` have no
+  /// corresponding server timeframe and resolve to null.
+  String? timeFrameCode() {
+    switch (mealContextInteger) {
+      case 1: return 'Prd17'; // Preprandial - Trước ăn
+      case 2: return 'Prd18'; // Postprandial - Sau ăn
+      case 3: return 'Prd16'; // Fasting - Đường huyết đói
+      default: return null;
+    }
+  }
+
   String _getSampleLocation() {
     switch (sampleLocationInteger) {
       case 0:

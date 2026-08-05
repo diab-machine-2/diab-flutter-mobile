@@ -319,13 +319,18 @@ class GlucoseClient extends FetchClient {
     try {
       List<Map<String, dynamic>> params = [];
       glucoses.forEach((element) {
-        params.add({
+        final item = {
           'glucose': double.tryParse(element['glucose']!) ?? 0,
           'createDate': _parseEpochSeconds(element['date']),
           'unitType': type ?? 1,
           'modelName': modelName,
           'modelNumber': modelNumber,
-        });
+        };
+        final timeFrameId = element['timeFrameId'];
+        if (timeFrameId != null && timeFrameId.isNotEmpty) {
+          item['timeFrameId'] = timeFrameId;
+        }
+        params.add(item);
       });
 
       final response = await super.postHttp2(
