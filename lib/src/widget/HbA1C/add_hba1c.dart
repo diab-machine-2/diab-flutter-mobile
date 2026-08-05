@@ -232,6 +232,10 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       },
       child: PopScope(
         canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          _showDialogSave();
+        },
         child: Scaffold(
           backgroundColor: R.color.glucose_bg_color,
           resizeToAvoidBottomInset: true,
@@ -772,6 +776,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       final parseTime =
           DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       if (note == des &&
+          numberInput.isNotEmpty &&
           double.parse(numberInput) == model!.hbA1C &&
           parseTime.millisecondsSinceEpoch == time.millisecondsSinceEpoch &&
           (data?.removeIDs.length ?? 0) == 0 &&

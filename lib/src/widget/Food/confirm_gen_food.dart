@@ -137,6 +137,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       },
       child: PopScope(
         canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          _showDialogSave();
+        },
         child: Scaffold(
           backgroundColor: R.color.glucose_bg_color,
           resizeToAvoidBottomInset: true,
