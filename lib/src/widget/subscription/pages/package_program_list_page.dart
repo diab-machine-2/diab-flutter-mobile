@@ -56,6 +56,13 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: !widget.lockBackAfterPurchase,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (widget.lockBackAfterPurchase) {
+          Message.showToastMessage(
+              context, R.string.please_select_package_before_leaving.tr());
+        }
+      },
       child: Scaffold(
         backgroundColor: R.color.glucose_bg_color,
         body: FutureBuilder<List<PackageProgram>>(
