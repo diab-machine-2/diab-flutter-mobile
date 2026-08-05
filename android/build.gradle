@@ -3,7 +3,7 @@ buildscript {
         buildToolsVersion = "34.0.0"
         minSdkVersion = 28
         compileSdkVersion = 36  // Updated to 36 for camera_android plugin compatibility
-        targetSdkVersion = 35
+        targetSdkVersion = 36  // Required by Google Play from Aug 31, 2026
         kotlin_version = '2.1.0'  // Updated to support Kotlin 2.1.0 metadata from play-services-measurement-api-23.0.0
         // NDK r28 is required for 16KB page size support
         ndkVersion = "28.0.13004108"

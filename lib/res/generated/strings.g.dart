@@ -1891,4 +1891,5 @@ class Strings {
   String get benefit_my_voucher_title => 'benefit_my_voucher_title';
   String get benefit_voucher_subtext => 'benefit_voucher_subtext';
   String get benefit_voucher_expired => 'benefit_voucher_expired';
+  String get please_select_package_before_leaving => 'please_select_package_before_leaving';
 }

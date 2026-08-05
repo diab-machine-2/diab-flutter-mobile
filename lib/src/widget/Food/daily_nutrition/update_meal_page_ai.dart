@@ -159,7 +159,11 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
         FocusScope.of(context).unfocus();
       },
       child: PopScope(
-        canPop: true,
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          _showDialogSave();
+        },
         child: Scaffold(
           backgroundColor: R.color.glucose_bg_color,
           resizeToAvoidBottomInset: true,
@@ -360,7 +364,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
         highlightColor: R.color.white,
         icon: Icon(Icons.arrow_back, color: R.color.white),
         onPressed: () {
-          Navigator.pop(context);
+          _showDialogSave();
         },
       ),
       // actions: [
