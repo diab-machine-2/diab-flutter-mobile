@@ -6,6 +6,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
@@ -404,7 +405,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
     isClickSkip = false;
     Navigator.pop(context, false);
     if (await canLaunch(url)) {
-      FlutterBranchSdk.handleDeepLink(url);
+      await BranchioLinkConfig.instance.openLink(url);
 
       // await launch(
       //   url,
