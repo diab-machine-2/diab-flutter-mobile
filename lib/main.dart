@@ -9,6 +9,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:health/health.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'src/utils/app_log.dart';
@@ -59,6 +60,12 @@ Future<void> main() async {
   //WidgetsFlutterBinding.ensureInitialized();
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Must resolve before Branch's setUpHandleDeepLink() below — deep link
+  // processing reads/writes through the AppPreference singleton (dedup
+  // flags, install-params-checked flag, etc.), and every one of those
+  // silently no-ops until SharedPreferences.getInstance() has resolved.
+  await AppPreference.ensureInitialized();
 
   // === INITIALIZE BRANCH SDK FIRST ===
   int branchRetries = 0;
