@@ -8,6 +8,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
@@ -695,7 +696,7 @@ class SmartGoalNavigationUtil {
 
           final meetingLink = smartGoal?.calendar?.meetingLink ?? '';
           if (await canLaunch(meetingLink)) {
-            FlutterBranchSdk.handleDeepLink(meetingLink);
+            await BranchioLinkConfig.instance.openLink(meetingLink);
             // await launch(
             //   meetingLink,
             //   forceSafariVC: false,
