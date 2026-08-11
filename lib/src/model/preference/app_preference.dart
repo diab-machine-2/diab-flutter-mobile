@@ -15,6 +15,16 @@ class AppPreference {
 
   SharedPreferences? _preference;
 
+  /// Must be awaited once at app startup (see main(), before Branch SDK's
+  /// setUpHandleDeepLink()) — every getter/setter below silently no-ops
+  /// while [_preference] is still null, since SharedPreferences.getInstance()
+  /// is otherwise only ever kicked off fire-and-forget by the factory
+  /// constructor below with no guarantee it resolves before early-boot code
+  /// (deep link handling in particular) reads/writes through this singleton.
+  static Future<void> ensureInitialized() async {
+    _instance._preference ??= await SharedPreferences.getInstance();
+  }
+
   String get appLanguage {
     return _preference?.getString(Const.key_app_language) ?? Const.VI;
   }
