@@ -586,6 +586,13 @@ public class MainActivity extends FlutterFragmentActivity {
 
    @Override
     protected void onNewIntent(Intent intent) {
+        // flutter_branch_sdk's own onNewIntent (invoked via super.onNewIntent below,
+        // since MainActivity is singleTask and hosts all the Branch intent-filters)
+        // only calls Branch.sessionBuilder(...).reInit() when this extra is present.
+        // Without it, a warm start (app already alive in memory) never re-triggers a
+        // Branch session — listSession() simply never fires again for that tap, even
+        // though a cold start (first open) always works via onActivityStarted's init().
+        intent.putExtra("branch_force_new_session", true);
         super.onNewIntent(intent);
         setIntent(intent); // Important: set the new intent so getIntent() returns the latest
         handleIntent(intent);
