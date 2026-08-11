@@ -183,6 +183,7 @@ class BranchioLinkConfig {
       // ---- END DEDUPLICATION ----
 
       await _processDeepLinkData(data);
+      checkPendingContentNavigation();
     }, onError: (error) {
       if (error is PlatformException) {
         print('InitSession error: ${error.code} - ${error.message}');
@@ -606,6 +607,14 @@ class BranchioLinkConfig {
                 _lastProcessedTime = now;
               }
               await _processDeepLinkData(firstParams);
+              // _processDeepLinkData may have only stashed a _pending* field
+              // (app wasn't ready yet when it ran). If the app has since
+              // become ready — e.g. TabBarController's one-shot
+              // checkPendingContentNavigation() already ran and missed it
+              // because this 3s-delayed fetch was still in flight — flush
+              // it now instead of leaving it stranded for the rest of the
+              // session.
+              checkPendingContentNavigation();
             }
           }
         } catch (e) {
@@ -636,6 +645,7 @@ class BranchioLinkConfig {
           _lastProcessedTime = now;
         }
         await _processDeepLinkData(latestParams);
+        checkPendingContentNavigation();
       }
     } catch (e) {
       print('[BRANCH_DEBUG] getLatestReferringParams error: $e');
