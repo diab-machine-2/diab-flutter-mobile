@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/youtube_video_extractor.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart'; // Add this import
 
 class VideoManager {
   BetterPlayerController? controller;
@@ -49,66 +49,12 @@ class VideoManager {
     return DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
   }
 
-  bool isYouTubeLink(String? url) {
-    if (url == null || url.isEmpty) return false;
-    final RegExp youtubeRegex = RegExp(
-      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/',
-      caseSensitive: false,
-    );
-    return youtubeRegex.hasMatch(url);
-  }
+  bool isYouTubeLink(String? url) => YoutubeVideoExtractor.isYoutubeLink(url);
 
-  Future<String?> getMp4UrlFromYouTube(String youtubeUrl) async {
-    var yt = YoutubeExplode();
-    try {
-      debugPrint(
-          '[EXERCISE][${_getTimestamp()}] Processing YouTube URL: $youtubeUrl');
-
-      var videoId = VideoId.parseVideoId(youtubeUrl);
-      if (videoId == null) {
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] Invalid YouTube URL: $youtubeUrl');
-        return null;
-      }
-
-      // YoutubeApiClient.ios is getting m3u8 streams -> cannot open with current player
-      var ytClients = [YoutubeApiClient.android];
-
-      var streamManifest = await yt.videos.streamsClient
-          .getManifest(videoId, ytClients: ytClients);
-
-      // Priority 1: Muxed MP4 streams (contain both video and audio)
-      var muxedStreams = streamManifest.muxed.toList();
-
-      if (muxedStreams.isNotEmpty) {
-        var selectedStream = muxedStreams.first;
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
-        return selectedStream.url.toString();
-      } else {
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] No suitable streams found with video and audio');
-        debugPrint('[EXERCISE][${_getTimestamp()}] Available stream types:');
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] - Video-only streams: ${streamManifest.videoOnly.length}');
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] - Audio-only streams: ${streamManifest.audioOnly.length}');
-        var videoStream = streamManifest.video.withHighestBitrate();
-        debugPrint(
-            '[EXERCISE][${_getTimestamp()}] Selected video stream: ${videoStream.qualityLabel}, Size: ${videoStream.size}');
-        return videoStream.url.toString();
-      }
-    } catch (e) {
-      debugPrint(
-          '[EXERCISE][${_getTimestamp()}] Error extracting stream URL: $e');
-      return null;
-    } finally {
-      yt.close();
-    }
+  Future<String?> getMp4UrlFromYouTube(String youtubeUrl) {
+    debugPrint(
+        '[EXERCISE][${_getTimestamp()}] Processing YouTube URL: $youtubeUrl');
+    return YoutubeVideoExtractor.getMp4Url(youtubeUrl, tag: 'EXERCISE');
   }
 
   Future<bool> waitForVideoReady({int maxAttempts = 30}) async {
