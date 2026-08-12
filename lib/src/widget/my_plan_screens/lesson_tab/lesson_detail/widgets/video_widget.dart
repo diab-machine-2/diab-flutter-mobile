@@ -2,10 +2,10 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/youtube_video_extractor.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class VideoWidget extends StatefulWidget {
   VideoWidget({
@@ -213,85 +213,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     }
   }
 
-  bool isYouTubeLink(String? url) {
-    if (url == null || url.isEmpty) return false;
-    final RegExp youtubeRegex = RegExp(
-      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/',
-      caseSensitive: false,
-    );
-    return youtubeRegex.hasMatch(url);
-  }
-
-  Future<String?> getMp4UrlFromYouTube(String youtubeUrl) async {
-    var yt = YoutubeExplode();
-    try {
-      debugPrint(
-          '[VIDEO][${_getTimestamp()}] Processing YouTube URL: $youtubeUrl');
-
-      var videoId = VideoId.parseVideoId(youtubeUrl);
-      if (videoId == null) {
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] Invalid YouTube URL: $youtubeUrl');
-        return null;
-      }
-
-      // YoutubeApiClient.ios is getting m3u8 streams -> cannot open with current player
-      var ytClients = [YoutubeApiClient.android];
-
-      var streamManifest = await yt.videos.streamsClient
-          .getManifest(videoId, ytClients: ytClients);
-
-      // Priority 1: Muxed MP4 streams (contain both video and audio)
-      var muxedStreams = streamManifest.muxed.toList();
-
-      if (muxedStreams.isNotEmpty) {
-        var selectedStream = muxedStreams.first;
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
-        return selectedStream.url.toString();
-      } else {
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] No suitable streams found with video and audio');
-        debugPrint('[VIDEO][${_getTimestamp()}] Available stream types:');
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] - Video-only streams: ${streamManifest.videoOnly.length}');
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] - Audio-only streams: ${streamManifest.audioOnly.length}');
-        var videoStream = streamManifest.video.withHighestBitrate();
-        debugPrint(
-            '[VIDEO][${_getTimestamp()}] Selected video stream: ${videoStream.qualityLabel}, Size: ${videoStream.size}');
-        return videoStream.url.toString();
-      }
-
-      // HLS stream handling is error-prone on iOS, so disabled for now
-      // // Priority 2: HLS streams (contain both video and audio, well supported by BetterPlayer)
-      // var hlsStreams = streamManifest.streams
-      //     .whereType<HlsVideoStreamInfo>()
-      //     .where((stream) =>
-      //         stream.videoQuality != VideoQuality.low144 &&
-      //         stream.videoQuality != VideoQuality.low240)
-      //     .toList();
-
-      // if (hlsStreams.isNotEmpty) {
-      //   // Sort by quality (lowest acceptable quality first for faster loading)
-      //   hlsStreams.sort(
-      //       (a, b) => a.videoQuality.index.compareTo(b.videoQuality.index));
-      //   var selectedStream = hlsStreams.first;
-      //   debugPrint(
-      //       '[VIDEO] Selected HLS stream: ${selectedStream.qualityLabel}');
-      //   return selectedStream.url.toString();
-      // }
-    } catch (e) {
-      debugPrint('[VIDEO][${_getTimestamp()}] Error extracting stream URL: $e');
-      return null;
-    } finally {
-      yt.close();
-    }
-  }
+  bool isYouTubeLink(String? url) => YoutubeVideoExtractor.isYoutubeLink(url);
 
   Future<void> _refreshVideo() async {
     debugPrint(
@@ -348,7 +270,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       try {
         debugPrint(
             '[VIDEO][${_getTimestamp()}] Detected YouTube URL, converting...');
-        final mp4YoutubeUrl = await getMp4UrlFromYouTube(widget.url);
+        final mp4YoutubeUrl =
+            await YoutubeVideoExtractor.getMp4Url(widget.url, tag: 'VIDEO');
         if (mp4YoutubeUrl != null) {
           finalUrl = mp4YoutubeUrl;
           debugPrint(
@@ -721,24 +644,23 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
                 textAlign: TextAlign.center,
               ),
             ),
-            if (retryCount >= maxRetries) GapH(16),
-            if (retryCount >= maxRetries)
-              ElevatedButton(
-                onPressed: retryCount < maxRetries
-                    ? () {
-                        if (mounted && !_isDisposed) {
-                          retryCount++;
-                          setState(() {
-                            hasError = false;
-                            isInitializing = true;
-                            errorMessage = null;
-                          });
-                          initializeVideo();
-                        }
+            GapH(16),
+            ElevatedButton(
+              onPressed: retryCount < maxRetries
+                  ? () {
+                      if (mounted && !_isDisposed) {
+                        retryCount++;
+                        setState(() {
+                          hasError = false;
+                          isInitializing = true;
+                          errorMessage = null;
+                        });
+                        initializeVideo();
                       }
-                    : null,
-                child: Text(R.string.retry.tr()),
-              ),
+                    }
+                  : null,
+              child: Text(R.string.retry.tr()),
+            ),
           ],
         ),
       ),
