@@ -12,6 +12,7 @@ import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
 import 'package:medical/src/bloc/nipro/model/nipro_device.dart';
+import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/list_data.dart';
@@ -36,7 +37,61 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
   final List<NiproDevice> _savedDevices = [];
   final List<NiproDevice> _devices = [];
 
+  List<TimeFrameModel> _timeFrames = [];
+  bool _timeFramesLoaded = false;
+
+  /// The server's glucose TimeFrame list (id/code/name), loaded once a
+  /// device sync has run. Used by ListData to display the trước ăn/sau ăn
+  /// label matching each record's `timeFrameId`.
+  List<TimeFrameModel> get timeFrames => _timeFrames;
+
   NiproBloc() : super(NiproStateInitial());
+
+  /// Loads the server's glucose TimeFrame list (id/code/name) once, so
+  /// Nipro device-synced records can resolve `timeFrameId` the same way
+  /// the Accu-Chek/Roche sync flow does.
+  Future<void> _ensureTimeFramesLoaded() async {
+    if (_timeFramesLoaded) return;
+    try {
+      _timeFrames = await GlucoseClient().fetchFlucoseTimeFrameV2();
+      _timeFramesLoaded = true;
+    } catch (e) {
+      print('NiproSync: failed to load glucose timeframes: $e');
+    }
+  }
+
+  /// Maps the iBLE SDK's raw meal-context flags (from BLE Glucose
+  /// Measurement Context characteristic 0x2A34) to the server's TimeFrame
+  /// `code` (see `/app/TimeFrame/Glucose`). Mirrors
+  /// `GlucoseMeasurementRecord.timeFrameCode()` used for Accu-Chek.
+  String? _mealTimeFrameCode(Map<String, String> raw) {
+    // Android path: iBLE.jar decodes 0x2A34 into these int flags directly.
+    final flagFasting = int.tryParse(raw['flag_fasting'] ?? '') ?? 0;
+    final flagMeal = int.tryParse(raw['flag_meal'] ?? '') ?? 0;
+    if (flagFasting == 1) return 'Prd16'; // Fasting - đường huyết đói
+    if (flagMeal == -1) return 'Prd17'; // Preprandial - trước ăn
+    if (flagMeal == 1) return 'Prd18'; // Postprandial - sau ăn
+
+    // iOS path: ibtFramework exposes meal-context as a free-form `Meal`
+    // string (via receivedContext(_:)) instead of int flags, and its
+    // actual runtime values haven't been observed yet (no real iOS device
+    // tested). Deliberately NOT mapped to a timeFrameId yet to avoid
+    // guessing wrong and mis-tagging real readings — log it so the first
+    // iOS sync test tells us the real values to map here.
+    final meal = raw['meal'];
+    if (meal != null && meal.isNotEmpty) {
+      debugPrint('NiproSync: unmapped iOS meal value "$meal" — needs calibration');
+    }
+    return null;
+  }
+
+  String? _resolveTimeFrameId(String? code) {
+    if (code == null) return null;
+    for (final timeFrame in _timeFrames) {
+      if (timeFrame.code == code) return timeFrame.id;
+    }
+    return null;
+  }
 
   @override
   Stream<NiproState> mapEventToState(
@@ -170,12 +225,42 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           }
           break;
         case 'get_data_success':
-          final List<GlucoseData> glucoseData = data.map((e) {
+          for (final e in data) {
+            debugPrint('NiproSync raw record: $e');
+          }
+          await _ensureTimeFramesLoaded();
+          debugPrint(
+              'NiproSync loaded ${_timeFrames.length} timeframes: '
+              '${_timeFrames.map((t) => '${t.code}=${t.id}').join(', ')}');
+
+          // Drop SDK-fabricated orphan records: when a meal-context (0x2A34)
+          // packet arrives for a sequence number with no matching glucose
+          // measurement, the SDK synthesizes an empty record with
+          // glucoseData=0 and time=0 instead of a real reading. These would
+          // otherwise sync as fake zero readings dated 1970-01-01.
+          final validData = data.where((e) {
+            final time = int.tryParse(e['date'] ?? '') ?? 0;
+            final isOrphan = time == 0;
+            if (isOrphan) {
+              debugPrint('NiproSync dropping orphan record: $e');
+            }
+            return !isOrphan;
+          }).toList();
+
+          final List<GlucoseData> glucoseData = validData.map((e) {
             final rawGlucose = double.parse(e['glucose']!);
             final calibratedGlucose = roundAsFixed(roundDouble(calibrateDeviceGlucose(rawGlucose)));
+            final mealCode = _mealTimeFrameCode(e);
+            final timeFrameId = _resolveTimeFrameId(mealCode);
+            debugPrint(
+                'NiproSync record seq=${e['sequenceNumber']} date=${e['date']} '
+                'glucose=${e['glucose']} flag_meal=${e['flag_meal']} '
+                'flag_fasting=${e['flag_fasting']} flag_context=${e['flag_context']} '
+                '=> mealCode=$mealCode timeFrameId=$timeFrameId');
             return GlucoseData(
               glucose: calibratedGlucose.toString(),
               date: e['date']!,
+              timeFrameId: timeFrameId,
             );
           }).toList();
           if (state is NiproStateDeviceData) {
