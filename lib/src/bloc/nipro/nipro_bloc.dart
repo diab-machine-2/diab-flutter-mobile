@@ -302,11 +302,26 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
     final apiResult = await GlucoseClient().fetchGlucoseInputNotExist(input);
     final List<GlucoseData> result = [];
     apiResult.forEach((element) {
+      // The GlucoseInputsNotExist API only echoes back glucose/createDate —
+      // it never carries timeFrameId (not sent in the request either), so
+      // rebuilding GlucoseData purely from the response would silently drop
+      // any timeFrameId the device sync already resolved. Recover it from
+      // the original input instead, matched by glucose+date.
+      final glucose = double.tryParse(element['glucose'].toString()) ?? 0;
+      final date = int.tryParse(element['createDate'].toString()) ?? 0;
+      GlucoseData? matched;
+      for (final e in input) {
+        if (e.glucose == glucose && e.date == date) {
+          matched = e;
+          break;
+        }
+      }
       result.add(
-        GlucoseData(
-          glucose: element['glucose'].toString(),
-          date: element['createDate'].toString(),
-        ),
+        matched ??
+            GlucoseData(
+              glucose: element['glucose'].toString(),
+              date: element['createDate'].toString(),
+            ),
       );
     });
     return result;
