@@ -218,6 +218,26 @@ public class MainActivity extends FlutterFragmentActivity {
                         Map<String, String> map = new HashMap();
                         map.put("glucose", String.valueOf(glucoseRecord.glucoseData));
                         map.put("date", String.valueOf(glucoseRecord.time));
+                        map.put("sequenceNumber", String.valueOf(glucoseRecord.sequenceNumber));
+                        map.put("timeoffset", String.valueOf(glucoseRecord.timeoffset));
+                        map.put("flag_cs", String.valueOf(glucoseRecord.flag_cs));
+                        map.put("flag_hilow", String.valueOf(glucoseRecord.flag_hilow));
+                        map.put("flag_context", String.valueOf(glucoseRecord.flag_context));
+                        map.put("flag_meal", String.valueOf(glucoseRecord.flag_meal));
+                        map.put("flag_fasting", String.valueOf(glucoseRecord.flag_fasting));
+                        map.put("flag_ketone", String.valueOf(glucoseRecord.flag_ketone));
+                        map.put("flag_nomark", String.valueOf(glucoseRecord.flag_nomark));
+                        Log.d("NiproSync", "record seq=" + glucoseRecord.sequenceNumber
+                                + " glucose=" + glucoseRecord.glucoseData
+                                + " time=" + glucoseRecord.time
+                                + " timeoffset=" + glucoseRecord.timeoffset
+                                + " flag_cs=" + glucoseRecord.flag_cs
+                                + " flag_hilow=" + glucoseRecord.flag_hilow
+                                + " flag_context=" + glucoseRecord.flag_context
+                                + " flag_meal=" + glucoseRecord.flag_meal
+                                + " flag_fasting=" + glucoseRecord.flag_fasting
+                                + " flag_ketone=" + glucoseRecord.flag_ketone
+                                + " flag_nomark=" + glucoseRecord.flag_nomark);
                         data.add(map);
                     }
 

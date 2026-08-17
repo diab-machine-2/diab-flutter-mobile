@@ -21,6 +21,10 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
     private var selectedDevice: btInfo?
     private var arrResult: [String]? = []
     private var glucoseData: [RecordInfo]? = []
+    // Meal-context (before/after meal, fasting, ketone) received via receivedContext(_:),
+    // keyed by sequence number so it can be attached to the matching glucose reading in
+    // glucoseData when building the payload sent to Flutter (see receivedNoRecords()).
+    private var mealContextBySequence: [Int: RecordInfo] = [:]
     private var isInit: Bool = false
     
     public static weak var flutterController: FlutterViewController?
@@ -208,6 +212,7 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
     
     private func startScan() {
         glucoseData?.removeAll()
+        mealContextBySequence.removeAll()
         arrDevices?.removeAll()
         iBTManager.shared.resetListInfo()
         iBTManager.shared.procType = .Searching
@@ -526,6 +531,12 @@ extension AppDelegate: iDeviceManagerDelegate {
     // When it receives the context data, (input data by user)
     // In this case, it shows only meal type or ketone info.
     func receivedContext(_ obj: RecordInfo?) {
+        guard let context = obj else {
+            AppDelegate.sink!(["event": "receivedContext", "data": []])
+            return
+        }
+        mealContextBySequence[context.sequence] = context
+        print("NiproSync context seq=\(context.sequence) Meal=\(context.Meal) HiLo=\(context.HiLo) ketone=\(context.ketone)")
         AppDelegate.sink!(["event": "receivedContext", "data": []])
     }
     
@@ -549,7 +560,14 @@ extension AppDelegate: iDeviceManagerDelegate {
             dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
             let date = dateFormatter.date(from: recordInfo.date)
             let interval: String = String(Int(date?.timeIntervalSince1970 ?? 0))
-            data.append(["glucose": String(recordInfo.glucose), "date": interval])
+            let context = mealContextBySequence[recordInfo.sequence]
+            print("NiproSync record seq=\(recordInfo.sequence) date=\(recordInfo.date) glucose=\(recordInfo.glucose) timeOffset=\(recordInfo.timeOffset) meal=\(context?.Meal ?? "") ketone=\(context?.ketone ?? 0)")
+            data.append([
+                "glucose": String(recordInfo.glucose),
+                "date": interval,
+                "sequenceNumber": String(recordInfo.sequence),
+                "meal": context?.Meal ?? "",
+            ])
         })
         AppDelegate.sink!(["event": "get_data_success", "data": data])
 //        DispatchQueue.main.async {
