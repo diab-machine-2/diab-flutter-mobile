@@ -167,7 +167,19 @@ class ListDataState extends State<ListData> {
                                                     color: R.color.grayCaption,
                                                     fontSize: 14,
                                                     fontWeight:
-                                                        FontWeight.w400))
+                                                        FontWeight.w400)),
+                                            if (_timeFrameName(data) != null)
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 4),
+                                                child: Text(_timeFrameName(data)!,
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.mainColor,
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                              ),
                                           ],
                                         ),
                                         Image.asset(
@@ -220,6 +232,15 @@ class ListDataState extends State<ListData> {
         ),
       ),
     ));
+  }
+
+  String? _timeFrameName(GlucoseData data) {
+    if (data.timeFrameId == null || data.timeFrameId!.isEmpty) return null;
+    final timeFrames = BlocProvider.of<NiproBloc>(context).timeFrames;
+    for (final timeFrame in timeFrames) {
+      if (timeFrame.id == data.timeFrameId) return timeFrame.name;
+    }
+    return null;
   }
 
   bool isSelected(GlucoseData that) {
