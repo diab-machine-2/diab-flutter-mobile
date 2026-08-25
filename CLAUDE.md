@@ -19,12 +19,14 @@ fvm dart run build_runner build --delete-conflicting-outputs
 
 ### Known issue: `build_runner` fails with "Could not find a command named ...frontend_server.dart.snapshot"
 
-Root cause: the pinned SDK's cache (`<fvm>\versions\3.27.4\bin\cache\dart-sdk\bin\snapshots\`) is missing `frontend_server.dart.snapshot` (the JIT snapshot `build_runner`'s build script needs) — only `frontend_server_aot.dart.snapshot` is present.
+Root cause: **not** a corrupt/incomplete local cache — `fvm flutter precache --force` and even a full delete + repopulate of `<fvm>\versions\3.27.4\bin\cache` do not bring the file back. Dart SDK 3.5+ dropped the JIT `frontend_server.dart.snapshot` entirely (only `frontend_server_aot.dart.snapshot` ships now). `frontend_server_client` 3.2.0 — pulled in transitively via `build_daemon` 4.0.4 from `build_runner` 2.4.8 — doesn't know about the AOT-only layout and still looks for the old filename. Confirmed upstream: [dart-lang/build#3945](https://github.com/dart-lang/build/issues/3945).
 
-Fix, in order:
-1. `fvm flutter precache --force` (redownloads/regenerates engine artifacts for the pinned SDK).
-2. Retry `fvm dart run build_runner build --delete-conflicting-outputs`.
-3. If still missing, delete `<fvm>\versions\3.27.4\bin\cache` entirely and run `fvm flutter --version` once to let it repopulate, then retry step 2.
+Fix: pin a newer `frontend_server_client` via `dependency_overrides` in `pubspec.yaml` (already applied in this repo):
+```yaml
+dependency_overrides:
+  frontend_server_client: ^4.0.0
+```
+Then `fvm flutter pub get` and retry `fvm dart run build_runner build --delete-conflicting-outputs`. This is a narrow override — it doesn't require bumping `build_runner`/`retrofit_generator`/`json_serializable`. If it ever needs re-fixing (e.g. after a `flutter upgrade` bumps the Dart SDK further), re-check that issue thread for the current minimum version.
 
 ### Codegen stack
 `build_runner` 2.4.8 + `retrofit_generator` 8.2.1 + `json_serializable` 6.8.0. Regenerate after touching anything under `lib/src/model/**`.

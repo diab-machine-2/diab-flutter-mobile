@@ -194,6 +194,12 @@ dependency_overrides:
   js: 0.7.1
   intl: 0.20.2
   wakelock_plus: 1.3.1
+  # Fixes "Could not find a command named ...frontend_server.dart.snapshot" on
+  # build_runner precompile: Dart SDK 3.5+ dropped the JIT frontend_server
+  # snapshot; frontend_server_client 3.2.0 (pulled in by build_daemon 4.0.4)
+  # still looks for it. >=4.0.0 knows to use frontend_server_aot instead.
+  # See https://github.com/dart-lang/build/issues/3945
+  frontend_server_client: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
