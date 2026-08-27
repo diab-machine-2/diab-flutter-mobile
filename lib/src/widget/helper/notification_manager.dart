@@ -19,7 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NotificationManager {
   static final NotificationManager instance = NotificationManager._internal();
-  bool _hasHandledInitialMessage = false;
+  String? _lastHandledMessageId;
 
   factory NotificationManager() {
     return instance;
@@ -55,7 +55,11 @@ class NotificationManager {
 
   static Future<dynamic> myBackgroundMessageHandler(
       RemoteMessage message) async {
-    NotificationManager.instance.navigateNotification(message);
+    // Runs in a separate headless isolate with no Navigator and no
+    // AppSettings state loaded, so it cannot navigate or mark the
+    // notification as read on the user's behalf. Actual handling (read
+    // tracking + navigation) happens once the user taps it and the app
+    // resumes, via onMessageOpenedApp/getInitialMessage below.
   }
 
   Future<void> firebaseConfigure() async {
@@ -94,16 +98,16 @@ class NotificationManager {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print("Firebase Messaging - onMessageOpenedApp ");
-      if (!_hasHandledInitialMessage) {
-        _hasHandledInitialMessage = true;
+      if (message.messageId != _lastHandledMessageId) {
+        _lastHandledMessageId = message.messageId;
         navigateNotification(message);
       }
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       print("Firebase Messaging - getInitialMessage ");
-      if (message != null && !_hasHandledInitialMessage) {
-        _hasHandledInitialMessage = true;
+      if (message != null && message.messageId != _lastHandledMessageId) {
+        _lastHandledMessageId = message.messageId;
         navigateNotification(message);
       }
     });
