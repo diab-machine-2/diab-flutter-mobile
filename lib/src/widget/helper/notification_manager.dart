@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/modal/notification/notification_type.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -210,6 +211,25 @@ class NotificationManager {
           Navigator.pushNamed(
               navigatorKey.currentState!.context, NavigatorName.question_detail,
               arguments: {'questionModel': questionModel, 'isAll': true});
+          break;
+        case NotificationActionType.redirect_to_webinar:
+          final webinarId = model.data?.webinarId;
+          if (webinarId != null && webinarId.isNotEmpty) {
+            Navigator.pushNamed(
+                navigatorKey.currentState!.context, NavigatorName.webinar_info,
+                arguments: {'id': webinarId});
+          }
+          break;
+        case NotificationActionType.join_webinar_now:
+          final webinarLink = model.data?.webinarLink;
+          if (webinarLink != null && webinarLink.isNotEmpty) {
+            BranchioLinkConfig.instance.openLink(webinarLink);
+          } else if (model.data?.webinarId != null &&
+              model.data!.webinarId!.isNotEmpty) {
+            Navigator.pushNamed(
+                navigatorKey.currentState!.context, NavigatorName.webinar_info,
+                arguments: {'id': model.data!.webinarId});
+          }
           break;
       }
     }
