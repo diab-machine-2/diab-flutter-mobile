@@ -157,12 +157,21 @@ class NotificationManager {
 
     if (model.actionType != NotificationActionType.register_referral_success) {
       if (model.actionType != NotificationActionType.none) {
-        NotificationClient().readNotification(
-            model.data?.communicationId,
-            model.id ?? model.data?.notificationId,
-            AppSettings.userInfo?.id,
-            model.data?.notificationType,
-            true);
+        final notificationId = model.id ?? model.data?.notificationId;
+        // Backend's MarkReadUnread endpoint binds notificationId to a
+        // non-nullable Guid and rejects the whole request with a 400 if
+        // it's missing — which webinar pushes (redirect_to_webinar /
+        // join_webinar_now) never send, since they identify the webinar
+        // via webinarId/webinarLink instead. Skip the call rather than
+        // firing a request that's guaranteed to fail.
+        if (notificationId != null && notificationId.isNotEmpty) {
+          NotificationClient().readNotification(
+              model.data?.communicationId,
+              notificationId,
+              AppSettings.userInfo?.id,
+              model.data?.notificationType,
+              true);
+        }
       }
     }
 
