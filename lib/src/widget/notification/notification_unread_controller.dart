@@ -337,6 +337,12 @@ class NotificationUnreadControllerState
           Navigator.pushNamed(context, NavigatorName.question_detail,
               arguments: {'questionModel': questionModel, 'isAll': true});
           break;
+        case NotificationActionType.redirect_to_webinar:
+        case NotificationActionType.join_webinar_now:
+          // Not yet supported from the in-app notification list (no
+          // webinarId/webinarLink on NotificationListModel) — only the
+          // FCM tap path (NotificationManager.navigateNotification) handles these.
+          break;
       }
     }
   }

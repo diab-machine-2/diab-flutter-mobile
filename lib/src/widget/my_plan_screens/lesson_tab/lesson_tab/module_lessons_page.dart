@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_tab/lesson_tab_cubit.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
@@ -123,13 +122,6 @@ class _ModuleLessonRow extends StatelessWidget {
     return InkWell(
       onTap: () async {
         PhoneValidationManager.setShouldShowPhoneValidation();
-        if (lesson?.learningStatus == Const.LESSON_CAN_NOT_LEARN) {
-          // simple toast; upgrade popup is shown in main page
-          return;
-        }
-        if (lesson?.learningStatus == Const.LESSON_LOCKED) {
-          return;
-        }
         if (lesson?.id?.isNotEmpty == true) {
           final nonNullLesson = lesson!;
           ActivityListTracking.clickLessonItem(
