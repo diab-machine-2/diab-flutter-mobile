@@ -443,13 +443,10 @@ class _DocosanApi implements DocosanApi {
   }
 
   @override
-  Future<ClinicSpecialtyListResponse> getCLinicSpecialtyListDiab({
-    String? language,
-  }) async {
+  Future<ClinicSpecialtyListResponse> getCLinicSpecialtyListDiab(
+      {String? language}) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'language': language,
-    };
+    final queryParameters = <String, dynamic>{r'language': language};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

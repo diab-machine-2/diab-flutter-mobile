@@ -29,7 +29,6 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
   bool _isCameraInitialized = false;
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
-  bool _isProcessing = false;
 
   bool get _isMedicine => widget.serviceType == BenefitServiceType.medicine;
 
@@ -79,25 +78,21 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
     }
   }
 
-  Future<void> _processImage(File image) async {
+  void _processImage(File image) {
     final cubit = context.read<BenefitServiceRequestCubit>();
-    setState(() => _isProcessing = true);
-
     if (_isMedicine) {
-      await cubit.scanPrescription(image: image);
+      cubit.scanPrescription(image: image);
     } else {
-      await cubit.scanClinicResult(image: image);
+      cubit.scanClinicResult(image: image);
     }
+  }
 
-    if (!mounted) return;
-    setState(() => _isProcessing = false);
-
-    final state = cubit.state;
+  void _onCubitState(BuildContext context, BenefitServiceRequestState state) {
     if (state is BenefitScanMedicineSuccess) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => BlocProvider.value(
-            value: cubit,
+            value: context.read<BenefitServiceRequestCubit>(),
             child: BenefitMedicineScanResultPage(
               medicines: state.medicines,
               capturedImage: state.capturedImage,
@@ -109,7 +104,7 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => BlocProvider.value(
-            value: cubit,
+            value: context.read<BenefitServiceRequestCubit>(),
             child: BenefitLabTestScanResultPage(
               scanData: state.scanData,
               capturedImage: state.capturedImage,
@@ -124,6 +119,14 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<BenefitServiceRequestCubit, BenefitServiceRequestState>(
+      listener: _onCubitState,
+      builder: (context, state) => _buildScaffold(context, state),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context, BenefitServiceRequestState state) {
+    final isProcessing = state is BenefitServiceRequestLoading;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -213,7 +216,7 @@ class _BenefitCaptureImagePageState extends State<BenefitCaptureImagePage> {
                   ))
             ],
           ),
-          if (_isProcessing)
+          if (isProcessing)
             Container(
               color: Colors.black.withOpacity(0.5),
               child: Center(

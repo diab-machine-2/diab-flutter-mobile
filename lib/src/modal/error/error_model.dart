@@ -25,6 +25,9 @@ class Error {
 
   Error({required this.code, required this.message, required this.error});
 
+  @override
+  String toString() => 'Error(code: $code, message: $message, error: $error)';
+
   // factory Error.fromJson(Map<String, dynamic> json) {
   //   return Error(
   //       code: json['code'], message: json['message'], error: json['error']);

@@ -1,10 +1,12 @@
 import 'dart:core';
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -26,6 +28,8 @@ class NotificationDetailController extends StatefulWidget {
 class _NotificationDetailControllerState
     extends State<NotificationDetailController> {
   NotificationListModel? notification;
+  bool _loading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -34,18 +38,54 @@ class _NotificationDetailControllerState
   }
 
   _loadData() async {
-    notification = await NotificationClient()
-        .fetchNotificationDetail(widget.id, widget.communicationId);
-    setState(() {});
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
+    try {
+      notification = await NotificationClient()
+          .fetchNotificationDetail(widget.id, widget.communicationId);
+    } catch (e) {
+      _errorMessage = e is Error
+          ? (e.message ?? R.string.error_can_not_connect_to_server.tr())
+          : e.toString();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Console.log('notification', notification);
     return Scaffold(
-        body: notification == null
+        body: _loading
             ? const Center(child: CircularProgressIndicator())
-            : Container(
+            : notification == null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _errorMessage ??
+                                R.string.error_can_not_connect_to_server.tr(),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          TextButton(
+                            onPressed: _loadData,
+                            child: Text(R.string.retry.tr()),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Container(
                 color: R.color.color0xfff5f5f5,
                 child: Stack(children: [
                   Column(

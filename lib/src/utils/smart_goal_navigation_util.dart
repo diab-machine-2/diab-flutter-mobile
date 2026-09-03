@@ -292,8 +292,7 @@ class SmartGoalNavigationUtil {
       BuildContext context, SmartGoalList? smartGoal) async {
     if (smartGoal?.exerciseData == null) return;
 
-    if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
-        smartGoal?.state == Const.LESSON_LOCKED) {
+    if (smartGoal?.exerciseData?.exerciseMovementStates == null) {
       _showLockedDialog(
         context,
         title: R.string.exercise_lesson_locked.tr(),
@@ -313,15 +312,6 @@ class SmartGoalNavigationUtil {
       BuildContext context, SmartGoalList? smartGoal) async {
     final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
     if (lessonDetail == null) return;
-
-    if (smartGoal?.state == Const.LESSON_LOCKED) {
-      _showLockedDialog(
-        context,
-        title: R.string.lesson_locked.tr(),
-        description: R.string.lesson_locked_warning.tr(),
-      );
-      return;
-    }
 
     await NavigationUtil.navigatePage(
         context,
