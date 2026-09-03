@@ -3159,7 +3159,9 @@ class _AppApi implements AppApi {
 
   @override
   Future<ExerciseAnalysisResponse> getExerciseAnalysis(
-      String exerciseId, {String includeReferences = 'true'}) async {
+    String exerciseId, {
+    String includeReferences = 'true',
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'id': exerciseId,
@@ -3390,8 +3392,10 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(String id,
-      {String includeReferences = 'true'}) async {
+  Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(
+    String id, {
+    String includeReferences = 'true',
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'id': id,
@@ -4037,13 +4041,9 @@ class _AppApi implements AppApi {
 
   @override
   Future<BcbCampaignCustomerResponse> getBcbCampaignCustomer(
-    String campaignId,
-  ) async {
+      String campaignId) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'campaignId': campaignId,
-    };
-    queryParameters.removeWhere((k, v) => v == null);
+    final queryParameters = <String, dynamic>{r'campaignId': campaignId};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<BcbCampaignCustomerResponse>(Options(
@@ -4071,36 +4071,6 @@ class _AppApi implements AppApi {
       rethrow;
     }
     return _value;
-  }
-
-  RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
-    if (T != dynamic &&
-        !(requestOptions.responseType == ResponseType.bytes ||
-            requestOptions.responseType == ResponseType.stream)) {
-      if (T == String) {
-        requestOptions.responseType = ResponseType.plain;
-      } else {
-        requestOptions.responseType = ResponseType.json;
-      }
-    }
-    return requestOptions;
-  }
-
-  String _combineBaseUrls(
-    String dioBaseUrl,
-    String? baseUrl,
-  ) {
-    if (baseUrl == null || baseUrl.trim().isEmpty) {
-      return dioBaseUrl;
-    }
-
-    final url = Uri.parse(baseUrl);
-
-    if (url.isAbsolute) {
-      return url.toString();
-    }
-
-    return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 
   @override
@@ -4181,8 +4151,7 @@ class _AppApi implements AppApi {
 
   @override
   Future<CommonResponse> submitMedicationRequest(
-    Map<String, dynamic> body,
-  ) async {
+      Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -4285,5 +4254,35 @@ class _AppApi implements AppApi {
       rethrow;
     }
     return _value;
+  }
+
+  RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
+    if (T != dynamic &&
+        !(requestOptions.responseType == ResponseType.bytes ||
+            requestOptions.responseType == ResponseType.stream)) {
+      if (T == String) {
+        requestOptions.responseType = ResponseType.plain;
+      } else {
+        requestOptions.responseType = ResponseType.json;
+      }
+    }
+    return requestOptions;
+  }
+
+  String _combineBaseUrls(
+    String dioBaseUrl,
+    String? baseUrl,
+  ) {
+    if (baseUrl == null || baseUrl.trim().isEmpty) {
+      return dioBaseUrl;
+    }
+
+    final url = Uri.parse(baseUrl);
+
+    if (url.isAbsolute) {
+      return url.toString();
+    }
+
+    return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }

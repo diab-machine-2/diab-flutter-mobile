@@ -6,7 +6,6 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/motion_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
@@ -18,7 +17,6 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -365,9 +363,6 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
 
     final bool isCompleted =
         exerciseItem?.exerciseMovementStates == Const.LESSON_LEARNT;
-    final bool isLocked =
-        exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED ||
-            exerciseItem?.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN;
 
     return SizedBox(
       height: _kExerciseDayCardHeight,
@@ -403,18 +398,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
               onTap: () async {
                 late String status = '';
                 switch (exerciseItem?.exerciseMovementStates) {
-                  case Const.LESSON_LOCKED:
-                    status = 'lock';
-                    break;
                   case Const.LESSON_NOT_LEARN:
                   case Const.LESSON_LEARNING:
                     status = 'open';
                     break;
                   case Const.LESSON_LEARNT:
                     status = 'complete';
-                    break;
-                  case Const.LESSON_CAN_NOT_LEARN:
-                    status = 'lock';
                     break;
                 }
                 await TrackingManager.logEvent(
@@ -432,25 +421,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   objectIndex: index,
                   objectStatus: exerciseItem?.exerciseMovementStates,
                 );
-                if (exerciseItem?.exerciseMovementStates ==
-                    Const.LESSON_CAN_NOT_LEARN) {
-                  showUpdateRequirePopup(context: context);
-                  return;
-                }
-                if (exerciseItem?.exerciseMovementStates ==
-                    Const.LESSON_LOCKED) {
-                  _showLockedDialog();
-                  return;
-                }
-                if (!isLocked) {
-                  await NavigationUtil.navigatePage(
-                    context,
-                    ExerciseDetail(
-                      exerciseData: exerciseItem,
-                    ),
-                  );
-                  _controller.requestRefresh();
-                }
+                await NavigationUtil.navigatePage(
+                  context,
+                  ExerciseDetail(
+                    exerciseData: exerciseItem,
+                  ),
+                );
+                _controller.requestRefresh();
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
@@ -490,10 +467,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             child: Text(
                               exerciseItem?.name ?? '',
                               style: TextStyle(
-                                color: exerciseItem?.exerciseMovementStates ==
-                                        Const.LESSON_LOCKED
-                                    ? R.color.grayCaption
-                                    : R.color.textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 height: 1.25,
@@ -513,7 +487,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                         ],
                       ),
                     ),
-                    // Status icon (checkmark or padlock), vertically centered to 70px thumb
+                    // Status icon (checkmark), vertically centered to 70px thumb
                     if (isCompleted)
                       Padding(
                         padding: const EdgeInsets.only(top: 23),
@@ -529,15 +503,6 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             size: 16,
                             color: R.color.white,
                           ),
-                        ),
-                      )
-                    else if (isLocked)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 25),
-                        child: Icon(
-                          Icons.lock_outline,
-                          size: 20,
-                          color: R.color.grayCaption,
                         ),
                       ),
                   ],
@@ -604,8 +569,6 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           if (isToday) {
             // Today uses the special learning icon via dayStatusIcon(isToday=true)
             statusToShow = CompletionStatus.studying;
-          } else if (item?.exerciseMovementStates == Const.LESSON_LOCKED) {
-            statusToShow = CompletionStatus.not_start_yet;
           } else {
             // Default mapping based on completionStatus
             statusToShow = completionStatus == CompletionStatus.completed
@@ -1010,153 +973,6 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         newRoadmapId != _cubit.roadmapId) {
       await _cubit.roadmapChanged(newRoadmapId);
     }
-  }
-
-  void _showLockedDialog() {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      barrierDismissible: true,
-      context: context,
-      builder: (_) => Scaffold(
-        backgroundColor: R.color.transparent,
-        body: Center(
-          child: GestureDetector(
-            child: Container(
-              width: 344,
-              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    R.color.white,
-                    R.color.main_6,
-                  ],
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(84.w, 0, 84.w, 20),
-                    child: Image.asset(
-                      R.drawable.img_lesson_locked,
-                    ),
-                  ),
-                  Text(
-                    R.string.exercise_lesson_locked.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    R.string.exercise_lesson_locked_warning.tr(),
-                    textAlign: TextAlign.center,
-                    style: R.style.normalTextStyle,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 24),
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: ButtonWidget(
-                      height: 43,
-                      title: R.string.agree.tr(),
-                      onPressed: () {
-                        NavigationUtil.pop(context);
-                      },
-                      textSize: 14,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void showUpdateRequirePopup({
-    required BuildContext context,
-  }) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          NavigationUtil.pop(context);
-        },
-        child: Scaffold(
-          backgroundColor: R.color.transparent,
-          body: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      R.color.white,
-                      R.color.main_6,
-                    ],
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50.0, vertical: 30),
-                        child: Image.asset(R.drawable.img_upgrade_package),
-                      ),
-                      Text(
-                        R.string.lesson_locked,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Vui lòng nâng cấp tài khoản để tiếp tục học!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.symmetric(horizontal: 50),
-                        child: ButtonWidget(
-                          height: 43,
-                          title: R.string.agree.tr(),
-                          onPressed: () {
-                            NavigationUtil.pop(context);
-                          },
-                          textSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildInlineRoadmapList(ExerciseTabState state) {

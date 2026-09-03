@@ -137,22 +137,43 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
         yield currentState;
 
-        // load reminders
-        yield* _fetchReminders();
+        // Reminders / activities / banners / news / lessons are all
+        // independent of each other and of the measurements load above —
+        // none of their handlers reads another's result. Firing all 5 here
+        // (instead of the previous yield*-per-domain chain, which made each
+        // one wait for every domain before it to fully finish) means the
+        // network calls run concurrently: total wait becomes roughly the
+        // slowest single domain instead of the sum of all 5. Each `_fetchX
+        // Patch()` call starts its network request immediately (before this
+        // line finishes), independent of when its Future is later awaited.
+        final remindersFuture = _fetchRemindersPatch();
+        final activitiesFuture = _fetchActivitiesPatch();
+        final bannersFuture = _fetchBannersPatch();
+        final newsFuture = _fetchNewsPatch();
+        final lessonsFuture = _fetchLessonsPatch();
+
+        // Apply results in the order we want the UI to update — banner and
+        // news first (previously loaded dead last, behind reminders and
+        // activities, despite appearing near the top of the screen).
+        currentState = (await bannersFuture)(currentState);
+        yield currentState;
+
+        currentState = (await newsFuture)(currentState);
+        yield currentState;
+
+        currentState = (await remindersFuture)(currentState);
         // set "reminders" data
-        if (state is HomeLoaded) {
-          home.reminders = (state as HomeLoaded).reminders;
-        }
+        home.reminders = currentState.reminders;
+        yield currentState;
 
-        // load today target
-        yield* _fetchActivities();
-
+        currentState = await (await activitiesFuture)(currentState);
         // set "activities" data
-        if (state is HomeLoaded) {
-          home.activities = (state as HomeLoaded).activities;
-        }
-        // +
-        // then do cache
+        home.activities = currentState.activities;
+        yield currentState;
+
+        // then do cache — only after reminders/activities are attached to
+        // `home`, same invariant as before, so a cold-start cache read has
+        // both populated.
         AppSettings.saveHome(home.toJson()).catchError((e) {
           print(e);
           return true;
@@ -161,17 +182,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // // load customer receives user
         // yield* _fetchCustomerReceivesUser();
 
-        // load banners
-        yield* _fetchBanners();
-
-        // load news (learning post)
-        yield* _fetchNews();
-
-        // load lessons
-        yield* _fetchLessons();
+        currentState = (await lessonsFuture)(currentState);
+        yield currentState;
 
         _firstLoad = false;
-        _cached = state is HomeLoaded ? state as HomeLoaded : null;
+        _cached = currentState;
 
         break; // Break the loop if successful
       } catch (e, _) {
@@ -191,186 +206,280 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+  // ---------------------------------------------------------------------
+  // Standalone event handlers below (`_fetchActivities`, `_fetchReminders`,
+  // `_fetchNews`, `_fetchBanners`, `_fetchLessons`) are thin wrappers: they
+  // read the live `state`, apply the corresponding `_fetchXPatch()`, and
+  // yield once — same observable contract as before. The actual fetch +
+  // business logic for each domain now lives ONLY in the matching
+  // `_fetchXPatch()` method below it, so `_fetchHomes()` can fire all 5
+  // concurrently without duplicating this logic in two places.
+  //
+  // Of the five, only `HomeFetchActivityEvent` is ever actually dispatched
+  // (from home_v2.dart, for "back_to_home"/"refresh_home_activity"). The
+  // other four events are wired into `mapEventToState` but never `.add()`-ed
+  // anywhere in the app today — kept working regardless, in case that
+  // changes.
+  // ---------------------------------------------------------------------
+
   Stream<HomeState> _fetchActivities() async* {
-    // load today target
+    final patch = await _fetchActivitiesPatch();
+    yield await patch(state as HomeLoaded);
+  }
+
+  Stream<HomeState> _fetchReminders() async* {
+    final patch = await _fetchRemindersPatch();
+    yield patch(state as HomeLoaded);
+  }
+
+  Stream<HomeState> _fetchNews() async* {
+    final patch = await _fetchNewsPatch();
+    yield patch(state as HomeLoaded);
+  }
+
+  Stream<HomeState> _fetchBanners() async* {
+    final patch = await _fetchBannersPatch();
+    yield patch(state as HomeLoaded);
+  }
+
+  Stream<HomeState> _fetchLessons() async* {
+    final patch = await _fetchLessonsPatch();
+    yield patch(state as HomeLoaded);
+  }
+
+  /// Fires the "today's activities" network call immediately and returns an
+  /// applier that computes the resulting state. Split in two like this
+  /// (fetch now, apply later) so `_fetchHomes()` can kick this off at the
+  /// same time as reminders/banners/news/lessons instead of waiting for
+  /// each in turn.
+  ///
+  /// The applier itself is `async` (unlike the other four patches) because
+  /// whether the fallback "target recommendation" call is needed depends on
+  /// `currentState.activities` *at apply time* — exactly the same
+  /// dependency the original sequential code had — so that decision (and
+  /// the fallback call itself) has to happen inside the applier, not in the
+  /// eager part.
+  Future<Future<HomeLoaded> Function(HomeLoaded)> _fetchActivitiesPatch() async {
     final repository = AppRepository();
     final dateTime0 = DateTime.utc(
         DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
     final currentDay = DateUtil.getDayInMillis(dateTime0);
-    final apiResult =
-        await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
-    HomeLoaded currentState = state as HomeLoaded;
-    apiResult.when(
-      success: (SmartGoalListReponse response) {
-        List<HomeActivityData> combinedActivities = [];
-        if (response.data?.daily?.isNotEmpty == true ||
-            response.data?.weekly?.isNotEmpty == true) {
-          final dailyActivities = (response.data?.daily ?? [])
-              .where((e) => e != null)
-              .map((e) => e!)
-              .map((e) {
-            final ScheduleType type =
-                ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
-                    lessonData: e.lessonData,
-                    lessonNested: e.lesson,
-                    activityName: e.name,
-                    activityDescription: e.description);
-            final activity = HomeActivityData(
-              id: e.id!,
-              icon: type.icon,
-              title: e.name ?? type.title,
-              type: type,
-              smartGoal: e,
-              description: e.description,
-            );
-            return activity;
-          }).toList();
-          combinedActivities.addAll(dailyActivities);
-          final weeklyActivities = (response.data?.weekly ?? [])
-              .where((e) => e != null)
-              .map((e) => e!)
-              .map((e) {
-            final ScheduleType type =
-                ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
-                    lessonData: e.lessonData,
-                    lessonNested: e.lesson,
-                    activityName: e.name,
-                    activityDescription: e.description);
-            final activity = HomeActivityData(
-              id: e.id!,
-              icon: type.icon,
-              title:
-                  e.description != null ? type.title : (e.name ?? type.title),
-              type: type,
-              smartGoal: e,
-              description: e.description,
-            );
-            return activity;
-          }).toList();
-          combinedActivities.addAll(weeklyActivities);
-          bool isCompletedAll = combinedActivities.isEmpty ||
-              combinedActivities
-                  .every((element) => element.smartGoal.state == 1);
-          bool stillLoading = isCompletedAll;
-          currentState = currentState.copyWith(
-            activities: combinedActivities,
-            activityLoading: _firstLoad && stillLoading,
-          );
-        } else {
-          currentState =
-              currentState.copyWith(activityLoading: false, activities: []);
-        }
-      },
-      failure: (error) {
-        TrackingManager.recordError(error, null);
-        currentState = currentState.copyWith(activityLoading: false);
-      },
-    );
 
-    // check fetch target recommendation
-    bool needFetchRecommend =
-        currentState.activities == null || currentState.activities!.isEmpty;
-    // or completed all
-    needFetchRecommend = needFetchRecommend ||
-        currentState.activities!
-            .every((element) => element.smartGoal.state == 1);
+    ApiResult<SmartGoalListReponse>? apiResult;
+    try {
+      apiResult = await repository.getListSmartGoal(
+          day: currentDay, week: _currentWeek);
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
 
-    // do fetch target recommendation
-    if (needFetchRecommend) {
-      final targetRecommend =
-          await HomeClient().fetchTargetRecommendation(week: _currentWeek);
-      if (targetRecommend != null) {
-        // If have target recommendation => override
-        final ScheduleType type =
-            ScheduleTypeExtend.getTypeFromIndex(targetRecommend.type);
-        final activity = HomeActivityData(
-          id: '####',
-          icon: type.icon,
-          title: targetRecommend.title,
-          type: type,
-          smartGoal: SmartGoalList(
-              state: targetRecommend.type == 29 ? 1 : 0,
-              type: targetRecommend.type),
+    return (HomeLoaded state) async {
+      HomeLoaded currentState = state;
+      if (apiResult != null) {
+        apiResult.when(
+          success: (SmartGoalListReponse response) {
+            List<HomeActivityData> combinedActivities = [];
+            if (response.data?.daily?.isNotEmpty == true ||
+                response.data?.weekly?.isNotEmpty == true) {
+              final dailyActivities = (response.data?.daily ?? [])
+                  .where((e) => e != null)
+                  .map((e) => e!)
+                  .map((e) {
+                final ScheduleType type =
+                    ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
+                        lessonData: e.lessonData,
+                        lessonNested: e.lesson,
+                        activityName: e.name,
+                        activityDescription: e.description);
+                final activity = HomeActivityData(
+                  id: e.id!,
+                  icon: type.icon,
+                  title: e.name ?? type.title,
+                  type: type,
+                  smartGoal: e,
+                  description: e.description,
+                );
+                return activity;
+              }).toList();
+              combinedActivities.addAll(dailyActivities);
+              final weeklyActivities = (response.data?.weekly ?? [])
+                  .where((e) => e != null)
+                  .map((e) => e!)
+                  .map((e) {
+                final ScheduleType type =
+                    ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
+                        lessonData: e.lessonData,
+                        lessonNested: e.lesson,
+                        activityName: e.name,
+                        activityDescription: e.description);
+                final activity = HomeActivityData(
+                  id: e.id!,
+                  icon: type.icon,
+                  title: e.description != null
+                      ? type.title
+                      : (e.name ?? type.title),
+                  type: type,
+                  smartGoal: e,
+                  description: e.description,
+                );
+                return activity;
+              }).toList();
+              combinedActivities.addAll(weeklyActivities);
+              bool isCompletedAll = combinedActivities.isEmpty ||
+                  combinedActivities
+                      .every((element) => element.smartGoal.state == 1);
+              bool stillLoading = isCompletedAll;
+              currentState = currentState.copyWith(
+                activities: combinedActivities,
+                activityLoading: _firstLoad && stillLoading,
+              );
+            } else {
+              currentState = currentState
+                  .copyWith(activityLoading: false, activities: []);
+            }
+          },
+          failure: (error) {
+            TrackingManager.recordError(error, null);
+            currentState = currentState.copyWith(activityLoading: false);
+          },
         );
-        currentState = currentState
-            .copyWith(activities: [activity], activityLoading: false);
       } else {
-        // else, just keep the current state, stop loading
+        // The primary call itself threw (already logged above) — leave
+        // whatever activities currentState already has untouched, same as
+        // the original `failure` branch did.
         currentState = currentState.copyWith(activityLoading: false);
       }
-    }
-    yield currentState;
+
+      // check fetch target recommendation
+      bool needFetchRecommend =
+          currentState.activities == null || currentState.activities!.isEmpty;
+      // or completed all
+      needFetchRecommend = needFetchRecommend ||
+          currentState.activities!
+              .every((element) => element.smartGoal.state == 1);
+
+      // do fetch target recommendation
+      if (needFetchRecommend) {
+        try {
+          final targetRecommend =
+              await HomeClient().fetchTargetRecommendation(week: _currentWeek);
+          if (targetRecommend != null) {
+            // If have target recommendation => override
+            final ScheduleType type =
+                ScheduleTypeExtend.getTypeFromIndex(targetRecommend.type);
+            final activity = HomeActivityData(
+              id: '####',
+              icon: type.icon,
+              title: targetRecommend.title,
+              type: type,
+              smartGoal: SmartGoalList(
+                  state: targetRecommend.type == 29 ? 1 : 0,
+                  type: targetRecommend.type),
+            );
+            currentState = currentState
+                .copyWith(activities: [activity], activityLoading: false);
+          } else {
+            // else, just keep the current state, stop loading
+            currentState = currentState.copyWith(activityLoading: false);
+          }
+        } catch (e, s) {
+          TrackingManager.recordError(e, s);
+          currentState = currentState.copyWith(activityLoading: false);
+        }
+      }
+      return currentState;
+    };
   }
 
-  Stream<HomeState> _fetchReminders() async* {
-    HomeLoaded currentState = state as HomeLoaded;
-    final remindersResponse =
-        await UserClient().fetchScheduleRemindersForHomePage();
-    if (remindersResponse.isNotEmpty) {
-      final reminders = remindersResponse
-          // .where((e) {
-          //   final time = DateUtil.parseTimespanToDateTime(e.time);
-          //   return time.isAfter(DateTime.now());
-          // })
-          .map((e) {
-        final time = DateUtil.parseTimespanToDateTime(e.time).toLocal();
-        final timeString = _reminderFormatter.format(time);
+  /// Fires the reminders network call immediately; returns a sync applier
+  /// (reminders never need a second, dependent call the way activities do).
+  Future<HomeLoaded Function(HomeLoaded)> _fetchRemindersPatch() async {
+    try {
+      final remindersResponse =
+          await UserClient().fetchScheduleRemindersForHomePage();
+      if (remindersResponse.isNotEmpty) {
+        final reminders = remindersResponse.map((e) {
+          final time = DateUtil.parseTimespanToDateTime(e.time).toLocal();
+          final timeString = _reminderFormatter.format(time);
 
-        return HomeReminderData(
-          id: e.id,
-          icon: R.drawable.ic_reminder,
-          title: e.name,
-          time:
-              timeString + " " + (e.timeFrameName?.toLowerCase() ?? "hôm nay"),
-          navigatorName: "TODO",
-        );
-      }).toList();
-      currentState =
-          currentState.copyWith(reminders: reminders, reminderLoading: false);
-    } else {
-      currentState =
-          currentState.copyWith(reminders: [], reminderLoading: false);
-    }
-    yield currentState;
-  }
-
-  Stream<HomeState> _fetchNews() async* {
-    final learningClient = LearningClient();
-    final newsResponse = await learningClient.fetchLearningPost(1);
-    if (newsResponse.isNotEmpty) {
-      final currentState = state as HomeLoaded;
-      yield currentState.copyWith(news: newsResponse);
+          return HomeReminderData(
+            id: e.id,
+            icon: R.drawable.ic_reminder,
+            title: e.name,
+            time: timeString +
+                " " +
+                (e.timeFrameName?.toLowerCase() ?? "hôm nay"),
+            navigatorName: "TODO",
+          );
+        }).toList();
+        return (HomeLoaded state) =>
+            state.copyWith(reminders: reminders, reminderLoading: false);
+      }
+      return (HomeLoaded state) =>
+          state.copyWith(reminders: [], reminderLoading: false);
+    } catch (e, s) {
+      // Reminders failing shouldn't take down the rest of the home screen —
+      // leave whatever reminders are already showing (e.g. from cache) and
+      // just stop the spinner. The original sequential version had no
+      // try/catch here at all, so this exception would have propagated up
+      // and shown a full-screen HomeError instead — this is a deliberate,
+      // narrow improvement, not just a refactor.
+      TrackingManager.recordError(e, s);
+      return (HomeLoaded state) => state.copyWith(reminderLoading: false);
     }
   }
 
-  Stream<HomeState> _fetchBanners() async* {
-    final ApiResult<LearningPostListResponse> apiResult =
-        await AppRepository().getBanners(position: 9);
-    List<LearningPostModel>? bannersResp;
-    apiResult.when(success: (LearningPostListResponse response) {
-      bannersResp = response.data?.map((e) => e).toList();
-    }, failure: (error) {
-      TrackingManager.recordError(error, null);
-    });
-    final banners = bannersResp ?? [];
-    if (banners.isNotEmpty) {
-      final currentState = state as HomeLoaded;
-      yield currentState.copyWith(banners: banners);
+  /// Fires the "featured news" network call immediately; returns a sync
+  /// applier.
+  Future<HomeLoaded Function(HomeLoaded)> _fetchNewsPatch() async {
+    try {
+      final learningClient = LearningClient();
+      final newsResponse = await learningClient.fetchLearningPost(1);
+      if (newsResponse.isNotEmpty) {
+        return (HomeLoaded state) => state.copyWith(news: newsResponse);
+      }
+      return (HomeLoaded state) => state;
+    } catch (e, s) {
+      // Same reasoning as reminders above — the original had no try/catch
+      // here either, so a news-fetch failure used to blank the whole home
+      // screen with HomeError.
+      TrackingManager.recordError(e, s);
+      return (HomeLoaded state) => state;
     }
   }
 
-  Stream<HomeState> _fetchLessons() async* {
+  /// Fires the banners network call immediately; returns a sync applier.
+  Future<HomeLoaded Function(HomeLoaded)> _fetchBannersPatch() async {
+    try {
+      final ApiResult<LearningPostListResponse> apiResult =
+          await AppRepository().getBanners(position: 9);
+      List<LearningPostModel>? bannersResp;
+      apiResult.when(success: (LearningPostListResponse response) {
+        bannersResp = response.data?.map((e) => e).toList();
+      }, failure: (error) {
+        TrackingManager.recordError(error, null);
+      });
+      final banners = bannersResp ?? [];
+      if (banners.isNotEmpty) {
+        return (HomeLoaded state) => state.copyWith(banners: banners);
+      }
+      return (HomeLoaded state) => state;
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+      return (HomeLoaded state) => state;
+    }
+  }
+
+  /// Fires the lessons network call immediately; returns a sync applier.
+  Future<HomeLoaded Function(HomeLoaded)> _fetchLessonsPatch() async {
     final learningClient = LearningClient();
     final lessonsResponse = await learningClient
-        .fetchLesson(
-      week: _currentWeek,
-    )
+        .fetchLesson(week: _currentWeek)
         .catchError((e, s) {
       TrackingManager.recordError(e, s);
       return <LessonModel>[];
     }, test: (error) => true);
-    final currentState = state as HomeLoaded;
-    yield currentState.copyWith(lessons: lessonsResponse);
+    return (HomeLoaded state) => state.copyWith(lessons: lessonsResponse);
   }
 
   Future<void> shareLesson(String lessonId, BuildContext context) async {

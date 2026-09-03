@@ -90,6 +90,8 @@ class NotificationData {
   final String? notificationId;
   final String? referalCode;
   final String? surveyId;
+  final String? webinarId;
+  final String? webinarLink;
 
   NotificationData(
       {this.surveyId,
@@ -98,7 +100,9 @@ class NotificationData {
       required this.communicationId,
       required this.remindId,
       required this.notificationType,
-      required this.referalCode});
+      required this.referalCode,
+      this.webinarId,
+      this.webinarLink});
 
   @override
   factory NotificationData.fromJson(dynamic json) {
@@ -119,6 +123,8 @@ class NotificationData {
         calendarId: json['calendarId'],
         referalCode: json['referalCode'],
         surveyId: json['surveyId'],
+        webinarId: json['webinarId'],
+        webinarLink: json['webinarLink'],
         notificationType: notificationTypeValue);
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/modal/notification/notification_type.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -19,7 +20,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NotificationManager {
   static final NotificationManager instance = NotificationManager._internal();
-  bool _hasHandledInitialMessage = false;
+  String? _lastHandledMessageId;
 
   factory NotificationManager() {
     return instance;
@@ -55,7 +56,11 @@ class NotificationManager {
 
   static Future<dynamic> myBackgroundMessageHandler(
       RemoteMessage message) async {
-    NotificationManager.instance.navigateNotification(message);
+    // Runs in a separate headless isolate with no Navigator and no
+    // AppSettings state loaded, so it cannot navigate or mark the
+    // notification as read on the user's behalf. Actual handling (read
+    // tracking + navigation) happens once the user taps it and the app
+    // resumes, via onMessageOpenedApp/getInitialMessage below.
   }
 
   Future<void> firebaseConfigure() async {
@@ -94,16 +99,16 @@ class NotificationManager {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print("Firebase Messaging - onMessageOpenedApp ");
-      if (!_hasHandledInitialMessage) {
-        _hasHandledInitialMessage = true;
+      if (message.messageId != _lastHandledMessageId) {
+        _lastHandledMessageId = message.messageId;
         navigateNotification(message);
       }
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       print("Firebase Messaging - getInitialMessage ");
-      if (message != null && !_hasHandledInitialMessage) {
-        _hasHandledInitialMessage = true;
+      if (message != null && message.messageId != _lastHandledMessageId) {
+        _lastHandledMessageId = message.messageId;
         navigateNotification(message);
       }
     });
@@ -152,12 +157,21 @@ class NotificationManager {
 
     if (model.actionType != NotificationActionType.register_referral_success) {
       if (model.actionType != NotificationActionType.none) {
-        NotificationClient().readNotification(
-            model.data?.communicationId,
-            model.id ?? model.data?.notificationId,
-            AppSettings.userInfo?.id,
-            model.data?.notificationType,
-            true);
+        final notificationId = model.id ?? model.data?.notificationId;
+        // Backend's MarkReadUnread endpoint binds notificationId to a
+        // non-nullable Guid and rejects the whole request with a 400 if
+        // it's missing — which webinar pushes (redirect_to_webinar /
+        // join_webinar_now) never send, since they identify the webinar
+        // via webinarId/webinarLink instead. Skip the call rather than
+        // firing a request that's guaranteed to fail.
+        if (notificationId != null && notificationId.isNotEmpty) {
+          NotificationClient().readNotification(
+              model.data?.communicationId,
+              notificationId,
+              AppSettings.userInfo?.id,
+              model.data?.notificationType,
+              true);
+        }
       }
     }
 
@@ -206,6 +220,25 @@ class NotificationManager {
           Navigator.pushNamed(
               navigatorKey.currentState!.context, NavigatorName.question_detail,
               arguments: {'questionModel': questionModel, 'isAll': true});
+          break;
+        case NotificationActionType.redirect_to_webinar:
+          final webinarId = model.data?.webinarId;
+          if (webinarId != null && webinarId.isNotEmpty) {
+            Navigator.pushNamed(
+                navigatorKey.currentState!.context, NavigatorName.webinar_info,
+                arguments: {'id': webinarId});
+          }
+          break;
+        case NotificationActionType.join_webinar_now:
+          final webinarLink = model.data?.webinarLink;
+          if (webinarLink != null && webinarLink.isNotEmpty) {
+            BranchioLinkConfig.instance.openLink(webinarLink);
+          } else if (model.data?.webinarId != null &&
+              model.data!.webinarId!.isNotEmpty) {
+            Navigator.pushNamed(
+                navigatorKey.currentState!.context, NavigatorName.webinar_info,
+                arguments: {'id': model.data!.webinarId});
+          }
           break;
       }
     }

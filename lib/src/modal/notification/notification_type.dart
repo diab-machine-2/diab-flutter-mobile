@@ -9,6 +9,8 @@ enum NotificationActionType {
   redirect_survey,
   register_referral_success,
   doctor_answer_question,
+  redirect_to_webinar,
+  join_webinar_now,
 }
 
 enum NotificationType {
@@ -51,6 +53,10 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.register_referral_success;
         case "9":
           return NotificationActionType.doctor_answer_question;
+        case "11":
+          return NotificationActionType.redirect_to_webinar;
+        case "12":
+          return NotificationActionType.join_webinar_now;
         default:
           return NotificationActionType.redirect_to_url;
       }
@@ -83,6 +89,10 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.register_referral_success;
         case 9:
           return NotificationActionType.doctor_answer_question;
+        case 11:
+          return NotificationActionType.redirect_to_webinar;
+        case 12:
+          return NotificationActionType.join_webinar_now;
         default:
           return NotificationActionType.redirect_to_url;
       }
