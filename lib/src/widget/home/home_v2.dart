@@ -701,7 +701,16 @@ class _HomeControllerState extends State<HomeController>
           HomeLoaded? stateLoaded;
           if (state is HomeLoaded) {
             model = state.model;
-            AppSettings.hasBundle = model?.hasBundle ?? false;
+            // Defer: AppSettings.hasBundle= synchronously fires
+            // Observable.notifyObservers, which TabbarController observes and
+            // reacts to with setState. Doing that while this BlocBuilder is
+            // still mid-build throws "setState called during build" on the
+            // ancestor TabbarController. Post-frame callback runs once this
+            // build pass is finished, when setState is safe again.
+            final newHasBundle = model?.hasBundle ?? false;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              AppSettings.hasBundle = newHasBundle;
+            });
             stateLoaded = state;
             if (false == model?.packageAccount?.isDisplayedWelcome &&
                 !_isDisplayedWelcome) {

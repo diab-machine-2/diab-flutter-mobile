@@ -403,17 +403,23 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
 
     if (notifyName == Const.UPDATE_HAS_BUNDLE) {
-      if (mounted) {
-        setState(() {
-          tabs = [
-            HomeController(sharedCode: widget.sharedCode),
-            _buildProgramTab(),
-            MyPlanPage(index: 0),
-            Conversations(),
-            _buildStoreTab(),
-          ];
-        });
-      }
+      // Deferred to a post-frame callback: this notification can arrive
+      // while a build is already in progress (e.g. AppSettings.hasBundle
+      // flips again inside _buildProgramTab -> checkHasBundle below), and
+      // calling setState on this ancestor mid-build throws.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            tabs = [
+              HomeController(sharedCode: widget.sharedCode),
+              _buildProgramTab(),
+              MyPlanPage(index: 0),
+              Conversations(),
+              _buildStoreTab(),
+            ];
+          });
+        }
+      });
     }
 
     if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
