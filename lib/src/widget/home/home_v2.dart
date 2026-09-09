@@ -25,7 +25,6 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
@@ -113,7 +112,11 @@ class _HomeControllerState extends State<HomeController>
   @override
   bool get wantKeepAlive => true;
 
-  final _debouncer = Debouncer(milliseconds: 500);
+  /// Guards [HomeUtilities.onTap] against double-tap firing navigation (or
+  /// the tracking event) twice — executes the tap immediately and just
+  /// ignores a repeat tap within the window, instead of delaying every tap
+  /// by 500ms the way a trailing-edge `Debouncer` would.
+  DateTime? _lastUtilityTapAt;
 
   @override
   void initState() {
@@ -159,7 +162,6 @@ class _HomeControllerState extends State<HomeController>
       log('[HOME_DEBUG] reset medicine sheet session guard (user logged out)');
     }
     Observable.instance.removeObserver(this);
-    _debouncer.dispose();
     super.dispose();
   }
 
@@ -804,44 +806,50 @@ class _HomeControllerState extends State<HomeController>
           Widget utilitiesW = HomeUtilities(
             utilities: stateLoaded?.utilities ?? [],
             onTap: (utility) {
-              _debouncer.run(() {
-                // track event
-                final String eventName = "home_select_utility";
-                TrackingManager.trackEvent(eventName, _screenName, params: {
-                  "object_title": utility.title,
-                });
+              final now = DateTime.now();
+              if (_lastUtilityTapAt != null &&
+                  now.difference(_lastUtilityTapAt!) <
+                      const Duration(milliseconds: 500)) {
+                return;
+              }
+              _lastUtilityTapAt = now;
 
-                final routeName = utility.navigatorName;
-                // case show all utilities
-                if (routeName == NavigatorName.utilities) {
-                  final utilities = BlocProvider.of<HomeBloc>(context)
-                      .getAllUtilities(
-                          full: true,
-                          bcbStatus: stateLoaded?.model.bcbStatus ?? false);
-                  Navigator.pushNamed(context, routeName, arguments: utilities);
-                  return;
-                }
-
-                // other navigate case
-                if (routeName.startsWith("/")) {
-                  Navigator.pushNamed(context, routeName);
-                  return;
-                }
-
-                // special case for utilities
-                switch (routeName) {
-                  case "share":
-                    String? shareLink = BranchioLinkConfig.instance.shareLink;
-                    if (shareLink != null) {
-                      AppShare.instance.userReferralCode(context, shareLink);
-                    }
-                    return;
-                  default:
-                    break;
-                }
-                Console.log("missing handler for routeName: $routeName");
-                BotToast.showText(text: "Chức năng đang được phát triển");
+              // track event
+              final String eventName = "home_select_utility";
+              TrackingManager.trackEvent(eventName, _screenName, params: {
+                "object_title": utility.title,
               });
+
+              final routeName = utility.navigatorName;
+              // case show all utilities
+              if (routeName == NavigatorName.utilities) {
+                final utilities = BlocProvider.of<HomeBloc>(context)
+                    .getAllUtilities(
+                        full: true,
+                        bcbStatus: stateLoaded?.model.bcbStatus ?? false);
+                Navigator.pushNamed(context, routeName, arguments: utilities);
+                return;
+              }
+
+              // other navigate case
+              if (routeName.startsWith("/")) {
+                Navigator.pushNamed(context, routeName);
+                return;
+              }
+
+              // special case for utilities
+              switch (routeName) {
+                case "share":
+                  String? shareLink = BranchioLinkConfig.instance.shareLink;
+                  if (shareLink != null) {
+                    AppShare.instance.userReferralCode(context, shareLink);
+                  }
+                  return;
+                default:
+                  break;
+              }
+              Console.log("missing handler for routeName: $routeName");
+              BotToast.showText(text: "Chức năng đang được phát triển");
             },
           );
 
