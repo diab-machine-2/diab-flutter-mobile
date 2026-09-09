@@ -343,91 +343,88 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage>
                 ),
               ],
             ),
-            GapH(12),
-            Container(
-              // height: 70,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(R.drawable.map_location_bg),
-                  fit: BoxFit.cover,
+            if (data.lat.isNotEmpty && data.lng.isNotEmpty) ...[
+              GapH(12),
+              Container(
+                // height: 70,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(R.drawable.map_location_bg),
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius: BorderRadius.circular(5),
                 ),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    flex: 6,
-                    child: Text(
-                      data.address,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        color: R.color.color0xff111515,
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      flex: 6,
+                      child: Text(
+                        data.address,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff111515,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Flexible(
-                    flex: 4,
-                    child: GestureDetector(
-                      onTap: data.extraAvatar.isNotEmpty
-                          ? () {
-                              if (widget.bookingType ==
-                                  Const.BOOKING_TYPE_CENTER) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => Dialog(
-                                    child: Image.network(
-                                        "${Utils.getHostDocosanUrl()}${data.extraAvatar.first.path}"),
-                                  ),
-                                );
-                              } else {
-                                final lat = data.lat;
-                                final lng = data.lng;
-                                if (lat.isNotEmpty && lng.isNotEmpty) {
-                                  launchUrl(
-                                      Uri.parse(
-                                          'https://www.google.com/maps/search/?api=1&query=$lat,$lng'),
-                                      mode: LaunchMode.externalApplication);
-                                }
-                              }
+                    Flexible(
+                      flex: 4,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+                            if (data.extraAvatar.isNotEmpty) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => Dialog(
+                                  child: Image.network(
+                                      "${Utils.getHostDocosanUrl()}${data.extraAvatar.first.path}"),
+                                ),
+                              );
                             }
-                          : null,
-                      child: Container(
-                        // width: 120,
-                        decoration: BoxDecoration(
-                          color: R.color.color0xff00B83D,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: EdgeInsets.all(8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: Image.asset(R.drawable.ic_map_direction),
-                            ),
-                            GapW(5),
-                            Text(
-                              R.string.view_map.tr(),
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                                color: R.color.white,
+                          } else {
+                            launchUrl(
+                                Uri.parse(
+                                    'https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}'),
+                                mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        child: Container(
+                          // width: 120,
+                          decoration: BoxDecoration(
+                            color: R.color.color0xff00B83D,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: EdgeInsets.all(8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: Image.asset(R.drawable.ic_map_direction),
                               ),
-                            ),
-                          ],
+                              GapW(5),
+                              Text(
+                                R.string.view_map.tr(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                  color: R.color.white,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
             if (goodAtList.isNotEmpty) GapH(24),
             if (goodAtList.isNotEmpty)
               Column(
