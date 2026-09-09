@@ -169,17 +169,28 @@ class _DsmesConfirmCreateInformationState
   }
 
   Widget _buildPage(BuildContext context) {
+    final isSubmitting = isProcessing['confirmBooking']!;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: GestureDetector(
-            onTap: () {
-              Utils.hideKeyboard(context);
-            },
-            child: Column(
-              children: [
-                DecoratedBox(
+          // Locks the form (note field, "chỉnh sửa" edit icons) while the
+          // booking request is in flight — otherwise a user can keep typing
+          // or navigate away to edit consult/service info after tapping
+          // confirm, and those changes are silently dropped since the
+          // request already captured a snapshot of the form when submitted.
+          child: AbsorbPointer(
+            absorbing: isSubmitting,
+            child: AnimatedOpacity(
+              opacity: isSubmitting ? 0.5 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: GestureDetector(
+                onTap: () {
+                  Utils.hideKeyboard(context);
+                },
+                child: Column(
+                  children: [
+                    DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -247,6 +258,8 @@ class _DsmesConfirmCreateInformationState
               ],
             ),
           ),
+            ),
+          ),
         ),
         Container(
           height: 74,
@@ -273,13 +286,13 @@ class _DsmesConfirmCreateInformationState
                     // Handle reschedule case
                     if (widget.action == 'reschedule' &&
                         widget.appointmentId != null) {
-                      _handleRescheduleBooking();
+                      await _handleRescheduleBooking();
                       return;
                     }
 
                     // Handle telemedicine clinic booking
                     if (isTelemedicineClinic) {
-                      _handleTelemedicineClinicBooking();
+                      await _handleTelemedicineClinicBooking();
                       return;
                     }
 
@@ -295,14 +308,14 @@ class _DsmesConfirmCreateInformationState
                         return;
                       }
 
-                      _handleCreateBooking();
+                      await _handleCreateBooking();
                     }
 
                     // Helper method to calculate total price
                   } finally {
                     setState(() => isProcessing['confirmBooking'] = false);
                   }
-                }),
+                }, isLoading: isProcessing['confirmBooking']!),
               ),
             ],
           ),
@@ -1355,9 +1368,9 @@ class _DsmesConfirmCreateInformationState
     );
   }
 
-  Widget _buildButton(String text, VoidCallback onTap) {
+  Widget _buildButton(String text, VoidCallback onTap, {bool isLoading = false}) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         height: 44,
         // width: 158,
@@ -1375,14 +1388,24 @@ class _DsmesConfirmCreateInformationState
           ),
         ),
         child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: R.color.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-            ),
-          ),
+          child: isLoading
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(R.color.white),
+                  ),
+                )
+              : Text(
+                  text,
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
         ),
       ),
     );

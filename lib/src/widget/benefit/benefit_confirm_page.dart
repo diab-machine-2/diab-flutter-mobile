@@ -147,15 +147,26 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
   }
 
   Widget _buildPage(BuildContext context) {
+    final isSubmitting = isProcessing['confirmBooking']!;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: GestureDetector(
-            onTap: () => Utils.hideKeyboard(context),
-            child: Column(
-              children: [
-                DecoratedBox(
+          // Locks the form (note field, "chỉnh sửa" edit icons) while the
+          // booking request is in flight — otherwise a user can keep typing
+          // or navigate away to edit consult info after tapping confirm, and
+          // those changes are silently dropped since the request already
+          // captured a snapshot of the form when it was submitted.
+          child: AbsorbPointer(
+            absorbing: isSubmitting,
+            child: AnimatedOpacity(
+              opacity: isSubmitting ? 0.5 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: GestureDetector(
+                onTap: () => Utils.hideKeyboard(context),
+                child: Column(
+                  children: [
+                    DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -188,24 +199,26 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: [
-                          _buildPatientInformation(),
-                          GapH(12),
-                          _buildConsultingInformation(),
-                          GapH(12),
-                          _buildVoucherAndPaymentSection(),
-                          _selectImageSection(),
-                        ],
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            children: [
+                              _buildPatientInformation(),
+                              GapH(12),
+                              _buildConsultingInformation(),
+                              GapH(12),
+                              _buildVoucherAndPaymentSection(),
+                              _selectImageSection(),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -239,6 +252,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                       setState(() => isProcessing['confirmBooking'] = false);
                     }
                   },
+                  isLoading: isProcessing['confirmBooking']!,
                 ),
               ),
             ],
@@ -1382,9 +1396,9 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     return '$weekDay, ${DateFormat('dd/MM/yyyy').format(date)}';
   }
 
-  Widget _buildButton(String text, VoidCallback onTap) {
+  Widget _buildButton(String text, VoidCallback onTap, {bool isLoading = false}) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         height: 44,
         decoration: BoxDecoration(
@@ -1401,14 +1415,24 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
           ),
         ),
         child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: R.color.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-            ),
-          ),
+          child: isLoading
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(R.color.white),
+                  ),
+                )
+              : Text(
+                  text,
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
         ),
       ),
     );
