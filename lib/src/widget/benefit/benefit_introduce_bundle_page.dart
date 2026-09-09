@@ -13,6 +13,7 @@ import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 import 'benefit_introduce_bundle_cubit.dart';
 
 class BenefitIntroduceBundlePage extends StatefulWidget {
@@ -29,8 +30,14 @@ class BenefitIntroduceBundlePage extends StatefulWidget {
 }
 
 class _BenefitIntroduceBundlePageState
-    extends BaseState<BenefitIntroduceBundlePage> {
+    extends BaseState<BenefitIntroduceBundlePage>
+    with SingleTickerProviderStateMixin {
   late final BenefitIntroduceBundleCubit _cubit;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   @override
   void initState() {
@@ -49,6 +56,12 @@ class _BenefitIntroduceBundlePageState
   }
 
   @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider.value(
@@ -64,7 +77,7 @@ class _BenefitIntroduceBundlePageState
           },
           builder: (context, state) {
             if (state is BenefitIntroduceBundleLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return _buildLoadingSkeleton(context);
             }
             if (state is BenefitIntroduceBundleSuccess) {
               final data = state.data;
@@ -76,6 +89,160 @@ class _BenefitIntroduceBundlePageState
             return const SizedBox();
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingSkeleton(BuildContext context) {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget headerCard() {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                box(width: 160, height: 18),
+                box(width: 70, height: 22, radius: BorderRadius.circular(200)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: box(width: 100, height: 14),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget progressCard() {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: R.color.color0xFFE5E7EB),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                box(width: 120, height: 15),
+                box(width: 60, height: 14),
+              ],
+            ),
+            const SizedBox(height: 12),
+            box(height: 10, radius: BorderRadius.circular(5)),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: box(width: 36, height: 14),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget sectionItem({bool isLast = false}) {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                box(width: 40, height: 40, radius: BorderRadius.circular(10)),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      box(width: double.infinity, height: 14),
+                      const SizedBox(height: 8),
+                      box(width: 80, height: 12),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!isLast)
+            Divider(height: 1, thickness: 1, color: R.color.color0xFFE5E7EB),
+        ],
+      );
+    }
+
+    Widget sectionCard(int count) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: R.color.color0xFFE5E7EB),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(
+              count, (i) => sectionItem(isLast: i == count - 1)),
+        ),
+      );
+    }
+
+    Widget sectionTitle() {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: box(width: 100, height: 15),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: R.color.backgroundColorNew,
+      body: Column(
+        children: [
+          _buildAppBar(context),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  headerCard(),
+                  const SizedBox(height: 16),
+                  progressCard(),
+                  const SizedBox(height: 20),
+                  sectionTitle(),
+                  const SizedBox(height: 10),
+                  sectionCard(3),
+                  const SizedBox(height: 24),
+                  sectionTitle(),
+                  const SizedBox(height: 10),
+                  sectionCard(2),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
