@@ -317,30 +317,25 @@ class _DsmesAppointmentHistoryPageState
                                               isProcessing['chooseService'] =
                                                   true;
                                               try {
-                                                final detailSuccess =
-                                                    await _cubit
-                                                        .getClinicDetail(
-                                                            id: data.clinicId);
-
-                                                if (!detailSuccess ||
-                                                    _cubit.selectedClinic ==
-                                                        null) {
-                                                  return;
-                                                }
-                                                final appointment = await _cubit
-                                                    .getDsmesAppointmentDetail(
-                                                        appointmentId: data.id);
-
-                                                DsmesNavigationMixin
+                                                // Navigate immediately — the
+                                                // booking detail page fetches
+                                                // its own clinic + appointment
+                                                // detail itself (on its own
+                                                // cubit) and shows its own
+                                                // shimmer skeleton, instead of
+                                                // blocking this transition on
+                                                // two sequential network
+                                                // round-trips.
+                                                await DsmesNavigationMixin
                                                         .getNavigationKey()
                                                     .currentState
                                                     ?.pushNamed(
                                                   NavigatorName
                                                       .dsmes_booking_detail,
                                                   arguments: {
-                                                    'serviceType':
-                                                        appointment?.mode,
-                                                    'appointment': appointment,
+                                                    'serviceType': data.mode,
+                                                    'appointmentId': data.id,
+                                                    'branchId': data.clinicId,
                                                     'previousRoute': NavigatorName
                                                         .dsmes_booking_history,
                                                     'bookingType':

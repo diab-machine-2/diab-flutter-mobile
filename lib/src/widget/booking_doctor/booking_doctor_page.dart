@@ -307,12 +307,23 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                     {
                       Map<String, dynamic>? args =
                           settings.arguments as Map<String, dynamic>?;
+                      // Fresh cubit, decoupled from this page's shared _cubit:
+                      // when appointment/branch ids are given (no pre-resolved
+                      // appointment), this page fetches its own detail data,
+                      // and doing so on the list page's cubit would make the
+                      // list's ambient BlocConsumer above react to those
+                      // fetches too, flashing its loading toast a second time.
                       return _buildRoute(
                         settings,
-                        DsmesBookingDetail(
-                          serviceType: args!["serviceType"],
-                          appointment: args["appointment"],
-                          bookingType: args["bookingType"],
+                        BlocProvider<DsmesAppointmentCubit>.value(
+                          value: DsmesAppointmentCubit(AppRepository()),
+                          child: DsmesBookingDetail(
+                            serviceType: args!["serviceType"],
+                            appointment: args["appointment"],
+                            appointmentId: args["appointmentId"] as int?,
+                            branchId: args["branchId"] as int?,
+                            bookingType: args["bookingType"],
+                          ),
                         ),
                       );
                     }
@@ -611,18 +622,21 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                             if (isProcessing['chooseService']!) return;
                             isProcessing['chooseService'] = true;
                             try {
-                              await _cubit.getClinicDetail(id: data.clinicId);
-                              final appointment =
-                                  await _cubit.getDsmesAppointmentDetail(
-                                      appointmentId: data.id);
-
-                              DsmesNavigationMixin.getNavigationKey()
+                              // Navigate immediately — the booking detail page
+                              // fetches its own clinic + appointment detail
+                              // itself (on its own cubit, see the
+                              // dsmes_booking_detail route above) and shows
+                              // its own shimmer skeleton, instead of blocking
+                              // this transition on two sequential network
+                              // round-trips.
+                              await DsmesNavigationMixin.getNavigationKey()
                                   .currentState
                                   ?.pushNamed(
                                 NavigatorName.dsmes_booking_detail,
                                 arguments: {
-                                  'serviceType': appointment?.mode,
-                                  'appointment': appointment,
+                                  'serviceType': data.mode,
+                                  'appointmentId': data.id,
+                                  'branchId': data.clinicId,
                                   'bookingType': Const.BOOKING_TYPE_DOCTOR,
                                 },
                               );
