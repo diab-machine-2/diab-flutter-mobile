@@ -124,11 +124,16 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection>
         // its detail page before tapping "Đặt lịch"), so _fetchClinicDetail
         // never runs — but a fresh booking request still needs to be built
         // here, otherwise createDsmesBookingRequest stays null/stale all
-        // the way to the confirm page.
-        _cubit.initCreateDsmesBookingRequest(
-          locale: context.locale.languageCode,
-          clearExamination: true,
-        );
+        // the way to the confirm page. Deferred to a post-frame callback:
+        // context.locale reads an InheritedWidget, which isn't available
+        // synchronously inside initState() yet.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _cubit.initCreateDsmesBookingRequest(
+            locale: context.locale.languageCode,
+            clearExamination: true,
+          );
+        });
       }
       _loadInitialData();
     }
