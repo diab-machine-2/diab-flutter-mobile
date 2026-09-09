@@ -29,8 +29,9 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     final galleryMedia = bannerMedia.skip(1).toList();
     final String coverUrl = coverMedia.imageUrl?.url ?? coverMedia.url ?? '';
 
-    // Expiration date string
-    String validUntilStr = '30/06/2030';
+    // Expiration date string. Null when the backend doesn't send validUntil
+    // — callers hide the expiry row entirely rather than showing a fallback.
+    String? validUntilStr;
     if (benefitType?.validUntil != null) {
       final dt =
           DateTime.fromMillisecondsSinceEpoch(benefitType!.validUntil! * 1000);
@@ -296,7 +297,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
     BuildContext context,
     BenefitType? benefitType,
     List<BenefitMedia> mediaList,
-    String validUntilStr,
+    String? validUntilStr,
     String voucherValueStr,
     String coverUrl,
   ) {
@@ -350,7 +351,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
   Widget _buildVoucherSection(
     BuildContext context,
     BenefitType? benefitType,
-    String validUntilStr,
+    String? validUntilStr,
     String voucherValueStr,
   ) {
     final code = benefitType?.voucherCode ?? '';
@@ -483,79 +484,93 @@ class BenefitPartnerIntroPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Voucher Code + Copy Button Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                R.string.benefit_voucher_code.tr(),
-                                style: const TextStyle(
-                                  color: Color(0xFF9CA3AF),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  height: 1.50,
-                                ),
-                              ),
-                              Text(
-                                code,
-                                style: const TextStyle(
-                                  color: Color(0xFF1F2937),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.50,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                            ],
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Clipboard.setData(ClipboardData(text: code));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    R.string.benefit_copied_voucher_code.tr(),
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 8),
-                              decoration: ShapeDecoration(
-                                color: const Color(0xFFF0FDF4),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: Row(
+                      // Voucher Code + Copy Button Row. Past a length
+                      // threshold the code can no longer share the row with
+                      // a labeled button without overflowing, so the button
+                      // collapses to icon-only.
+                      Builder(builder: (context) {
+                        final bool isCodeLong = code.length > 10;
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
-                                    Icons.copy,
-                                    size: 14,
-                                    color: Color(0xFF01645A),
-                                  ),
-                                  const SizedBox(width: 6),
                                   Text(
-                                    R.string.benefit_copy.tr(),
+                                    R.string.benefit_voucher_code.tr(),
                                     style: const TextStyle(
-                                      color: Color(0xFF01645A),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF9CA3AF),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
                                       height: 1.50,
+                                    ),
+                                  ),
+                                  Text(
+                                    code,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Color(0xFF1F2937),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.50,
+                                      letterSpacing: 1,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(width: 8),
+                            InkWell(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: code));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      R.string.benefit_copied_voucher_code.tr(),
+                                    ),
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: isCodeLong ? 10 : 14,
+                                    vertical: 8),
+                                decoration: ShapeDecoration(
+                                  color: const Color(0xFFF0FDF4),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.copy,
+                                      size: 14,
+                                      color: Color(0xFF01645A),
+                                    ),
+                                    if (!isCodeLong) ...[
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        R.string.benefit_copy.tr(),
+                                        style: const TextStyle(
+                                          color: Color(0xFF01645A),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          height: 1.50,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
                       const SizedBox(height: 14),
 
                       // Key Value Rows
@@ -570,13 +585,15 @@ class BenefitPartnerIntroPage extends StatelessWidget {
                         R.string.benefit_apply_for.tr(),
                         applicableTo,
                       ),
-                      const SizedBox(height: 8),
-                      _buildVoucherRow(
-                        R.string.benefit_valid_until.tr(),
-                        validUntilStr,
-                        valueColor: const Color(0xFF01645A),
-                        isBold: true,
-                      ),
+                      if (validUntilStr != null) ...[
+                        const SizedBox(height: 8),
+                        _buildVoucherRow(
+                          R.string.benefit_valid_until.tr(),
+                          validUntilStr,
+                          valueColor: const Color(0xFF01645A),
+                          isBold: true,
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       _buildVoucherRow(
                         R.string.benefit_applicable_location.tr(),
@@ -668,7 +685,7 @@ class BenefitPartnerIntroPage extends StatelessWidget {
   }
 
   Widget _buildBottomBar(BuildContext context, BenefitType? benefitType) {
-    String remainingDaysStr = R.string.benefit_remaining_days.tr(args: ['181']);
+    String? remainingDaysStr;
     if (benefitType?.validUntil != null) {
       final expiry =
           DateTime.fromMillisecondsSinceEpoch(benefitType!.validUntil! * 1000);
@@ -700,32 +717,34 @@ class BenefitPartnerIntroPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                R.string.benefit_voucher_expiry.tr(),
-                style: const TextStyle(
-                  color: Color(0xFF6B7280),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  height: 1.50,
+          if (remainingDaysStr != null) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  R.string.benefit_voucher_expiry.tr(),
+                  style: const TextStyle(
+                    color: Color(0xFF6B7280),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    height: 1.50,
+                  ),
                 ),
-              ),
-              Text(
-                remainingDaysStr,
-                style: const TextStyle(
-                  color: Color(0xFF01645A),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  height: 1.50,
-                  letterSpacing: -0.14,
+                Text(
+                  remainingDaysStr,
+                  style: const TextStyle(
+                    color: Color(0xFF01645A),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    height: 1.50,
+                    letterSpacing: -0.14,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
           SizedBox(
             width: double.infinity,
             height: 50,

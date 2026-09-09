@@ -12,7 +12,6 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
@@ -69,7 +68,6 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
-    _warmupLocation();
     // _cubit.getDsmesAppointmentList();
     // Requirement: don't fetch appointment list at init anymore.
     // Keep user registration logic inside initDsmesBooking.
@@ -80,20 +78,6 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _navigateToDoctorDetail();
       });
-    }
-  }
-
-  Future<void> _warmupLocation() async {
-    final cancel = BotToast.showLoading(allowClick: false);
-    try {
-      await resolveBookingProvidersPosition().timeout(
-        const Duration(seconds: 6),
-        onTimeout: () => null,
-      );
-    } catch (_) {
-      // Best-effort warmup only.
-    } finally {
-      cancel();
     }
   }
 
@@ -269,10 +253,16 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                   case NavigatorName.dsmes_booking_history:
                     Map<String, dynamic>? args =
                         settings.arguments as Map<String, dynamic>?;
+                    // Fresh cubit, decoupled from this page's shared _cubit
+                    // — see the identical fix in booking_clinic_page.dart's
+                    // same route case for why.
                     return _buildRoute(
                       settings,
-                      DsmesAppointmentHistoryPage(
-                        bookingType: args!["bookingType"],
+                      BlocProvider<DsmesAppointmentCubit>.value(
+                        value: DsmesAppointmentCubit(AppRepository()),
+                        child: DsmesAppointmentHistoryPage(
+                          bookingType: args!["bookingType"],
+                        ),
                       ),
                     );
                   case NavigatorName.dsmes_booking_offline:

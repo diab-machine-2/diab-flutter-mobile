@@ -1,4 +1,3 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +19,7 @@ import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 /// Shows clinic list for the Benefit flow.
@@ -48,10 +48,16 @@ class BenefitClinicListPage extends StatefulWidget {
   _BenefitClinicListPageState createState() => _BenefitClinicListPageState();
 }
 
-class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
+class _BenefitClinicListPageState extends State<BenefitClinicListPage>
+    with SingleTickerProviderStateMixin {
   late DsmesAppointmentCubit _cubit;
 
   final RefreshController _refreshController = RefreshController();
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   Map<String, bool> isProcessing = {
     'clinicDetail': false,
@@ -75,6 +81,7 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
   @override
   void dispose() {
     _refreshController.dispose();
+    _shimmerController.dispose();
     super.dispose();
   }
 
@@ -145,29 +152,23 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
   }
 
   Future<void> _handleViewClinicDetailInfo(BookingClinicProvider data) async {
-    final detailSuccess = await _cubit.getClinicDetail(id: data.id);
-    final rateSuccess = await _cubit.getClinicRate(id: data.id);
-    if (detailSuccess && rateSuccess) {
-      BenefitNavigatorScope.of(context)
-          .currentState
-          ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
-        'clinicId': data.id,
-        'bookingType': Const.BOOKING_TYPE_CLINIC,
-      });
-    }
+    // Navigate immediately — the clinic detail page fetches its own detail
+    // + rating and shows a shimmer skeleton, instead of this page blocking
+    // the transition on two sequential network round-trips.
+    await BenefitNavigatorScope.of(context)
+        .currentState
+        ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
+      'clinicId': data.id,
+      'bookingType': Const.BOOKING_TYPE_CLINIC,
+    });
   }
 
   Future<void> _handleBookingClinic(BookingClinicProvider data) async {
     if (isProcessing['bookingClinic'] == true) return;
     isProcessing['bookingClinic'] = true;
-    BotToast.showLoading(allowClick: false);
-
     try {
-      final detailSuccess =
-          await _cubit.getClinicDetail(id: data.id, isLoading: false);
-      if (!detailSuccess || _cubit.selectedClinic == null) return;
-
-      // Store branches for this clinic from clusters
+      // Store branches for this clinic from clusters — already available
+      // from the search response, no fetch needed for this part.
       for (final cluster in _cubit.listClinicClusters) {
         if (cluster.clinicId == data.id) {
           _cubit.selectedClinicBranches = cluster.branches;
@@ -175,15 +176,14 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
         }
       }
 
-      _cubit.initCreateDsmesBookingRequest(
-        locale: context.locale.languageCode,
-        clearExamination: true,
-      );
-
       final serviceType = _isTelemedicine
           ? DsmesAppointmentMode.telemedicine.toString()
           : DsmesAppointmentMode.atClinic.toString();
 
+      // Navigate immediately with clinicId — the schedule screen fetches
+      // the clinic detail itself (and calls initCreateDsmesBookingRequest)
+      // behind its own shimmer skeleton, instead of blocking this
+      // transition on that network round-trip.
       await BenefitNavigatorScope.of(context)
           .currentState
           ?.pushNamed(NavigatorName.benefit_calendar, arguments: {
@@ -193,9 +193,9 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
         'specialtyName': widget.specialtyName,
         'itemId': widget.itemId,
         'itemType': widget.itemType,
+        'clinicId': data.id,
       });
     } finally {
-      BotToast.closeAllLoading();
       isProcessing['bookingClinic'] = false;
     }
   }
@@ -259,7 +259,7 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
             builder: (context, state) {
               if (state is DsmesAppointmentLoading &&
                   _cubit.listBookingClinicProvider.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+                return _buildClinicListSkeleton();
               }
 
               if (_cubit.listBookingClinicProvider.isEmpty) {
@@ -369,6 +369,61 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildClinicListSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget card() {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [Utils.getBoxShadowDropCard()],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(width: 72, height: 72, child: box(radius: BorderRadius.circular(5))),
+                const GapW(12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      box(width: 140, height: 16),
+                      const SizedBox(height: 10),
+                      box(width: 90, height: 13),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const GapH(16),
+            box(width: 200, height: 13),
+            const GapH(16),
+            box(height: 36, radius: BorderRadius.circular(200)),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      itemCount: 4,
+      separatorBuilder: (_, __) => GapH(12),
+      itemBuilder: (_, __) => card(),
     );
   }
 

@@ -168,6 +168,9 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           serviceType: args!['serviceType'],
                           action: args['action'],
                           appointmentId: args['appointmentId'],
+                          clinicId: args['clinicId'] as int?,
+                          clinicIds: (args['clinicIds'] as List<dynamic>?)
+                              ?.cast<String>(),
                           bookingType: args['bookingType'],
                           specialtyName: args['specialtyName'] as String?,
                           itemId: args['itemId'] as String?,

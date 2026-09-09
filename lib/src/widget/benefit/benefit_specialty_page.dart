@@ -15,6 +15,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 
 /// Specialty selection page for the Benefit booking flow.
 ///
@@ -42,8 +43,14 @@ class BenefitSpecialtyPage extends StatefulWidget {
   _BenefitSpecialtyPageState createState() => _BenefitSpecialtyPageState();
 }
 
-class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
+class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
+    with SingleTickerProviderStateMixin {
   late DsmesAppointmentCubit _cubit;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   bool get _isTelemedicine =>
       widget.bookingType == Const.BENEFIT_BOOKING_TELEMEDICINE;
@@ -79,6 +86,12 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
     _initData();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
   }
 
   Future<void> _initData() async {
@@ -261,7 +274,29 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
         .map((e) => e.toString())
         .toList();
 
-    // 1. Call search API with clinic_ids filter for telemedicine
+    if (!isAutoResolve) {
+      // Manual tap: navigate immediately and let the schedule screen search
+      // for + resolve the clinic itself behind a skeleton, instead of this
+      // page blocking the transition on that network round-trip.
+      if (!mounted) return;
+      await BenefitNavigatorScope.of(context).currentState?.pushNamed(
+        NavigatorName.benefit_calendar,
+        arguments: {
+          'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+          'action': 'create',
+          'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
+          'specialtyName': specialty.name,
+          'itemId': widget.itemId,
+          'itemType': widget.itemType,
+          'clinicIds': clinicIds,
+        },
+      );
+      return;
+    }
+
+    // Auto-resolve (deep-link) path: resolve the clinic before navigating so
+    // a failure can fall back to revealing the manual specialty grid instead
+    // of landing on a dead-end error screen.
     _cubit.initSearchBookingClinicListRequest(
       page: 1,
       specialtyId: '',
@@ -289,61 +324,31 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       if (clinics.isEmpty) {
         BotToast.showSimpleNotification(
             title: R.string.empty_clinic_content.tr());
-        if (isAutoResolve && mounted) {
-          setState(() => _autoResolveFailed = true);
-        }
+        if (mounted) setState(() => _autoResolveFailed = true);
         return;
       }
 
-      // 2. Auto-select the first clinic
+      // Auto-select the first clinic and navigate immediately — the
+      // schedule screen fetches the clinic detail itself and shows its own
+      // loading/error state, instead of this page blocking the transition
+      // on a second sequential network round-trip.
       final firstClinic = clinics.first;
-      final detailSuccess = await _cubit.getClinicDetail(
-        id: firstClinic.id,
-        isLoading: false,
-      );
-      if (!detailSuccess || _cubit.selectedClinic == null) {
-        BotToast.showSimpleNotification(
-            title: R.string.empty_clinic_content.tr());
-        if (isAutoResolve && mounted) {
-          setState(() => _autoResolveFailed = true);
-        }
-        return;
-      }
-
-      // 3. Init booking request and navigate to schedule
-      _cubit.initCreateDsmesBookingRequest(
-        locale: context.locale.languageCode,
-        clearExamination: true,
-      );
-
-      final serviceType = DsmesAppointmentMode.telemedicine.toString();
-
       if (!mounted) return;
-      final navigatorState = BenefitNavigatorScope.of(context).currentState;
-      final args = {
-        'serviceType': serviceType,
-        'action': 'create',
-        'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
-        'specialtyName': specialty.name,
-        'itemId': widget.itemId,
-        'itemType': widget.itemType,
-      };
-      if (isAutoResolve) {
-        await navigatorState?.pushReplacementNamed(
-          NavigatorName.benefit_calendar,
-          arguments: args,
-        );
-      } else {
-        await navigatorState?.pushNamed(
-          NavigatorName.benefit_calendar,
-          arguments: args,
-        );
-      }
+      await BenefitNavigatorScope.of(context).currentState?.pushReplacementNamed(
+        NavigatorName.benefit_calendar,
+        arguments: {
+          'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+          'action': 'create',
+          'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
+          'specialtyName': specialty.name,
+          'itemId': widget.itemId,
+          'itemType': widget.itemType,
+          'clinicId': firstClinic.id,
+        },
+      );
     } catch (_) {
       BotToast.closeAllLoading();
-      if (isAutoResolve && mounted) {
-        setState(() => _autoResolveFailed = true);
-      }
+      if (mounted) setState(() => _autoResolveFailed = true);
     }
   }
 
@@ -480,14 +485,13 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
               ),
               Expanded(
                 child: (_hasAutoResolveIntent && !_autoResolveFailed)
-                    ? const Center(child: CircularProgressIndicator())
+                    ? _buildSpecialtyGridSkeleton()
                     : BlocBuilder<DsmesAppointmentCubit,
                         DsmesAppointmentState>(
                         builder: (context, state) {
                           if (state is DsmesAppointmentLoading &&
                               _cubit.listSpecialty.isEmpty) {
-                            return const Center(
-                                child: CircularProgressIndicator());
+                            return _buildSpecialtyGridSkeleton();
                           }
 
                           if (_cubit.listSpecialty.isEmpty) {
@@ -507,6 +511,37 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSpecialtyGridSkeleton() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isTablet = constraints.maxWidth > 600;
+        final crossAxisCount = isTablet ? 3 : 2;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: GridView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 170 / 238,
+            ),
+            itemCount: crossAxisCount * 3,
+            itemBuilder: (context, index) {
+              return ShimmerBox(
+                animation: _shimmerController,
+                borderRadius: BorderRadius.circular(12),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 

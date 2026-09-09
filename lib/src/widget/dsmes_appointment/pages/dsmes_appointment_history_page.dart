@@ -5,12 +5,14 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
@@ -27,7 +29,8 @@ class DsmesAppointmentHistoryPage extends StatefulWidget {
 }
 
 class _DsmesAppointmentHistoryPageState
-    extends State<DsmesAppointmentHistoryPage> {
+    extends State<DsmesAppointmentHistoryPage>
+    with SingleTickerProviderStateMixin {
   final RefreshController _refreshController = RefreshController();
   late DsmesAppointmentCubit _cubit;
   Map<String, bool> isProcessing = {
@@ -35,6 +38,11 @@ class _DsmesAppointmentHistoryPageState
   };
   bool isLoading = false;
   List<DsmesAppointment> sortedMyAppointments = [];
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   @override
   void initState() {
@@ -45,6 +53,7 @@ class _DsmesAppointmentHistoryPageState
 
   @override
   void dispose() {
+    _shimmerController.dispose();
     super.dispose();
   }
 
@@ -63,6 +72,54 @@ class _DsmesAppointmentHistoryPageState
         isLoading = false;
       });
     }
+  }
+
+  Widget _buildLoadingSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget card() {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [Utils.getBoxShadowDropCard()],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 24, height: 24, child: box(radius: BorderRadius.circular(6))),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  box(width: 140, height: 15),
+                  const SizedBox(height: 10),
+                  box(width: 200, height: 13),
+                  const SizedBox(height: 8),
+                  box(width: 120, height: 13),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: 3,
+      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      itemBuilder: (_, __) => card(),
+    );
   }
 
   @override
@@ -115,7 +172,7 @@ class _DsmesAppointmentHistoryPageState
               ),
               Expanded(
                 child: isLoading
-                    ? Container()
+                    ? _buildLoadingSkeleton()
                     : sortedMyAppointments.isEmpty
                         ? DsmesEmptyWidget(
                             imagePath: R.drawable.dsmes_empty,

@@ -17,6 +17,7 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 
 /// Benefit-flow booking detail page.
 ///
@@ -24,9 +25,17 @@ import 'package:medical/src/widgets/gap_widget.dart';
 /// navigation (Observable, BranchioLinkConfig, DsmesNavigationMixin,
 /// bookingType center/doctor distinction) and wired to the benefit
 /// navigator stack instead.
+///
+/// Either [appointment] is supplied already-resolved by the caller, or
+/// [appointmentId]/[branchId] are supplied and this page fetches the
+/// appointment + clinic detail itself on mount (showing a skeleton while it
+/// does) — lets the caller navigate here immediately instead of blocking the
+/// transition on those network calls.
 class BenefitBookingDetailPage extends StatefulWidget {
   final String serviceType;
-  final DsmesAppointment appointment;
+  final DsmesAppointment? appointment;
+  final int? appointmentId;
+  final int? branchId;
   final String bookingType;
   /// The route that navigated here. When non-null, back pops instead of
   /// clearing the stack to tabbar (supports the history-entry back flow).
@@ -36,18 +45,277 @@ class BenefitBookingDetailPage extends StatefulWidget {
   const BenefitBookingDetailPage({
     Key? key,
     required this.serviceType,
-    required this.appointment,
+    this.appointment,
+    this.appointmentId,
+    this.branchId,
     this.bookingType = Const.BENEFIT_BOOKING_AT_CLINIC,
     this.previousRoute,
     this.branchAddress,
   }) : super(key: key);
 
   @override
-  _BenefitBookingDetailPageState createState() =>
+  State<BenefitBookingDetailPage> createState() =>
       _BenefitBookingDetailPageState();
 }
 
-class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
+class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage>
+    with SingleTickerProviderStateMixin {
+  late DsmesAppointmentCubit _cubit;
+  DsmesAppointment? _resolvedAppointment;
+  bool _loadFailed = false;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = context.read<DsmesAppointmentCubit>();
+    _resolvedAppointment = widget.appointment;
+    if (_resolvedAppointment == null &&
+        widget.appointmentId != null &&
+        widget.branchId != null) {
+      _loadAppointmentDetail();
+    }
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadAppointmentDetail() async {
+    try {
+      // Both calls are independent — fire them concurrently rather than
+      // awaiting one before starting the other.
+      final detailFuture = _cubit.getClinicDetail(id: widget.branchId!);
+      final appointmentFuture =
+          _cubit.getDsmesAppointmentDetail(appointmentId: widget.appointmentId!);
+      final detailSuccess = await detailFuture;
+      final appointment = await appointmentFuture;
+      if (!mounted) return;
+      if (!detailSuccess || _cubit.selectedClinic == null || appointment == null) {
+        setState(() => _loadFailed = true);
+        return;
+      }
+      setState(() => _resolvedAppointment = appointment);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loadFailed = true);
+    }
+  }
+
+  void _navigateBack() {
+    if (widget.previousRoute != null) {
+      Navigator.of(context, rootNavigator: true).pop(true);
+    } else {
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+        NavigatorName.tabbar,
+        (route) => false,
+      );
+    }
+  }
+
+  Widget _buildHeader() {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [R.color.greenGradientTop02, R.color.greenGradientBottom],
+          stops: const [0.01, 0.99],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        ),
+      ),
+      child: CustomAppBar(
+        backgroundColor: Colors.transparent,
+        title: Text(
+          R.string.schedule_information.tr(),
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w700, color: R.color.white),
+        ),
+        leadingIcon: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            _navigateBack();
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        FocusScope.of(context).unfocus();
+        _navigateBack();
+        return false;
+      },
+      child: Scaffold(
+        drawerEnableOpenDragGesture: false,
+        body: Container(
+          decoration: BoxDecoration(color: R.color.backgroundColorNew),
+          child: _buildBody(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    final appointment = _resolvedAppointment;
+    if (appointment != null) {
+      return _BenefitBookingDetailContent(
+        serviceType: widget.serviceType,
+        appointment: appointment,
+        bookingType: widget.bookingType,
+        previousRoute: widget.previousRoute,
+        branchAddress: widget.branchAddress,
+      );
+    }
+    if (_loadFailed) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(R.string.error_can_not_connect_to_server.tr()),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () {
+                      setState(() => _loadFailed = false);
+                      _loadAppointmentDetail();
+                    },
+                    child: Text(R.string.retry.tr()),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(),
+        Expanded(child: _buildDetailSkeleton()),
+      ],
+    );
+  }
+
+  Widget _buildDetailSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget card({required List<Widget> rows}) {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            box(width: 140, height: 16),
+            const SizedBox(height: 16),
+            ...rows,
+          ],
+        ),
+      );
+    }
+
+    Widget row() {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            box(width: 100, height: 12),
+            box(width: 120, height: 14),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          card(rows: [row(), row()]),
+          card(rows: [row(), row()]),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                box(width: 80, height: 16),
+                const SizedBox(height: 16),
+                box(height: 12),
+                const SizedBox(height: 8),
+                box(height: 12),
+                const SizedBox(height: 8),
+                box(width: 200, height: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Renders the resolved [appointment] — split out from [BenefitBookingDetailPage]
+/// so that widget can show a skeleton/error state before the appointment is
+/// available, without every helper method below needing to handle a null
+/// appointment.
+class _BenefitBookingDetailContent extends StatefulWidget {
+  final String serviceType;
+  final DsmesAppointment appointment;
+  final String bookingType;
+  final String? previousRoute;
+  final String? branchAddress;
+
+  const _BenefitBookingDetailContent({
+    Key? key,
+    required this.serviceType,
+    required this.appointment,
+    required this.bookingType,
+    this.previousRoute,
+    this.branchAddress,
+  }) : super(key: key);
+
+  @override
+  _BenefitBookingDetailContentState createState() =>
+      _BenefitBookingDetailContentState();
+}
+
+class _BenefitBookingDetailContentState
+    extends State<_BenefitBookingDetailContent> {
   late DsmesAppointmentCubit _cubit;
   FocusNode symptomFocusNode = FocusNode();
   late TextEditingController symptomController;
@@ -103,22 +371,10 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        FocusScope.of(context).unfocus();
-        _navigateBack();
-        return false;
-      },
-      child: Scaffold(
-        drawerEnableOpenDragGesture: false,
-        body: Container(
-          decoration: BoxDecoration(
-            color: R.color.backgroundColorNew,
-          ),
-          child: _buildPage(context),
-        ),
-      ),
-    );
+    // The WillPopScope/Scaffold shell lives on the enclosing
+    // BenefitBookingDetailPage so it's present during its loading/error
+    // states too; this widget only renders once an appointment is resolved.
+    return _buildPage(context);
   }
 
   Widget _buildPage(BuildContext context) {

@@ -507,7 +507,9 @@ class AppRoutes {
             value: bookingCubit,
             child: DsmesBookingDetail(
               serviceType: args['serviceType'] as String? ?? '',
-              appointment: args['appointment'] as DsmesAppointment,
+              appointment: args['appointment'] as DsmesAppointment?,
+              appointmentId: args['appointmentId'] as int?,
+              branchId: args['branchId'] as int?,
               bookingType: args['bookingType'] as String? ?? '',
             ),
           );
@@ -572,7 +574,9 @@ class AppRoutes {
             value: bookingCubit,
             child: BenefitBookingDetailPage(
               serviceType: args['serviceType'] as String? ?? '',
-              appointment: args['appointment'] as DsmesAppointment,
+              appointment: args['appointment'] as DsmesAppointment?,
+              appointmentId: args['appointmentId'] as int?,
+              branchId: args['branchId'] as int?,
               bookingType: args['bookingType'] as String? ?? '',
               previousRoute: args['previousRoute'] as String?,
               branchAddress: args['branchAddress'] as String?,

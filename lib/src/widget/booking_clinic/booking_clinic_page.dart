@@ -11,6 +11,7 @@ import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
@@ -32,6 +33,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
@@ -55,7 +57,8 @@ class BookingClinicPage extends StatefulWidget {
   _BookingClinicPageState createState() => _BookingClinicPageState();
 }
 
-class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
+class _BookingClinicPageState extends State<BookingClinicPage>
+    with Observer, SingleTickerProviderStateMixin {
   final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
   String _currentRoute = '/';
@@ -64,6 +67,18 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     'onlineConsulting': false,
     'offlineConsulting': false,
   };
+
+  /// True until the appointment list's first fetch (triggered by
+  /// [_cubit.initDsmesBooking] in [initState]) resolves. Gates the
+  /// appointment-list section to a shimmer instead of relying on the ambient
+  /// page-wide BotToast, which also fires for unrelated cubit actions (e.g.
+  /// choosing an appointment) and would otherwise flash twice.
+  bool _isFirstAppointmentLoad = true;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   final _navigatorKey = DsmesNavigationMixin.createNavigatorKey();
 
@@ -109,6 +124,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     BotToast.closeAllLoading();
     Observable.instance.removeObserver(this);
     _controller.dispose();
+    _shimmerController.dispose();
     super.dispose();
   }
 
@@ -208,10 +224,19 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                   case NavigatorName.dsmes_booking_history:
                     Map<String, dynamic>? args =
                         settings.arguments as Map<String, dynamic>?;
+                    // Fresh cubit, decoupled from this page's shared _cubit:
+                    // this history page fetches its own appointment list on
+                    // mount, and doing so on the shared cubit would make
+                    // this page's ambient BlocConsumer above react to that
+                    // fetch too, flashing its loading toast on top of the
+                    // history page's own shimmer skeleton.
                     return _buildRoute(
                       settings,
-                      DsmesAppointmentHistoryPage(
-                        bookingType: args!["bookingType"],
+                      BlocProvider<DsmesAppointmentCubit>.value(
+                        value: DsmesAppointmentCubit(AppRepository()),
+                        child: DsmesAppointmentHistoryPage(
+                          bookingType: args!["bookingType"],
+                        ),
                       ),
                     );
                   case NavigatorName.dsmes_booking_offline:
@@ -256,12 +281,23 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                     {
                       Map<String, dynamic>? args =
                           settings.arguments as Map<String, dynamic>?;
+                      // Fresh cubit, decoupled from this page's shared _cubit:
+                      // when appointment/branch ids are given (no pre-resolved
+                      // appointment), this page fetches its own detail data,
+                      // and doing so on the list page's cubit would make the
+                      // list's ambient BlocConsumer above react to those
+                      // fetches too, flashing its loading toast a second time.
                       return _buildRoute(
                         settings,
-                        DsmesBookingDetail(
-                          serviceType: args!["serviceType"],
-                          appointment: args["appointment"],
-                          bookingType: args["bookingType"],
+                        BlocProvider<DsmesAppointmentCubit>.value(
+                          value: DsmesAppointmentCubit(AppRepository()),
+                          child: DsmesBookingDetail(
+                            serviceType: args!["serviceType"],
+                            appointment: args["appointment"],
+                            appointmentId: args["appointmentId"] as int?,
+                            branchId: args["branchId"] as int?,
+                            bookingType: args["bookingType"],
+                          ),
                         ),
                       );
                     }
@@ -367,9 +403,14 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
       listener: (context, state) {
         print('Current state: $state');
+        if (_isFirstAppointmentLoad &&
+            (state is DsmesAppointmentLoaded ||
+                state is DsmesAppointmentFailure)) {
+          setState(() => _isFirstAppointmentLoad = false);
+        }
         // For examination flow, we manage loading manually so that it stays
         // visible until the datetime page has finished loading.
-        if (!widget.isExamination) {
+        if (!widget.isExamination && !_isFirstAppointmentLoad) {
           if (state is DsmesAppointmentFailure) {
             BotToast.closeAllLoading();
             Message.showToastMessage(context, state.error);
@@ -384,7 +425,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
         DsmesAppointmentState state,
       ) {
         print('Building with state: $state');
-        if (!widget.isExamination) {
+        if (!widget.isExamination && !_isFirstAppointmentLoad) {
           if (state is DsmesAppointmentLoading) {
             BotToast.showLoading(allowClick: false);
           } else {
@@ -540,43 +581,9 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                 padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
                 child: Column(
                   children: [
-                    ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _cubit.listFilteredData.length,
-                      separatorBuilder: (context, index) => GapH(16),
-                      itemBuilder: (context, index) {
-                        final data = _cubit.listFilteredData[index];
-                        return DsmesAppointmentItem(
-                          data: data,
-                          onChooseService: () async {
-                            if (isProcessing['chooseService']!) return;
-                            isProcessing['chooseService'] = true;
-                            try {
-                              await _cubit.getClinicDetail(id: data.clinicId);
-                              final appointment =
-                                  await _cubit.getDsmesAppointmentDetail(
-                                      appointmentId: data.id);
-
-                              DsmesNavigationMixin.getNavigationKey()
-                                  .currentState
-                                  ?.pushNamed(
-                                NavigatorName.dsmes_booking_detail,
-                                arguments: {
-                                  'serviceType': appointment?.mode,
-                                  'appointment': appointment,
-                                  'bookingType': Const.BOOKING_TYPE_CLINIC,
-                                },
-                              );
-                            } finally {
-                              isProcessing['chooseService'] = false;
-                            }
-                          },
-                          cubit: _cubit,
-                        );
-                      },
-                    ),
+                    _isFirstAppointmentLoad
+                        ? _buildAppointmentListSkeleton()
+                        : _buildAppointmentList(),
                     _buildDiabSpecialty(),
                   ],
                 ),
@@ -648,6 +655,97 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
         'specialtyId': 0,
         'examinationType': widget.examinationType,
       },
+    );
+  }
+
+  Widget _buildAppointmentList() {
+    return ListView.separated(
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      itemCount: _cubit.listFilteredData.length,
+      separatorBuilder: (context, index) => GapH(16),
+      itemBuilder: (context, index) {
+        final data = _cubit.listFilteredData[index];
+        return DsmesAppointmentItem(
+          data: data,
+          onChooseService: () async {
+            if (isProcessing['chooseService']!) return;
+            isProcessing['chooseService'] = true;
+            try {
+              // Navigate immediately — the booking detail page fetches the
+              // clinic + appointment detail itself (on its own cubit, see
+              // the dsmes_booking_detail route below) and shows its own
+              // shimmer skeleton, instead of blocking this transition on
+              // two sequential network round-trips whose loading states
+              // would otherwise flash on this still-mounted list page too.
+              await DsmesNavigationMixin.getNavigationKey()
+                  .currentState
+                  ?.pushNamed(
+                NavigatorName.dsmes_booking_detail,
+                arguments: {
+                  'serviceType': data.mode,
+                  'appointmentId': data.id,
+                  'branchId': data.clinicId,
+                  'bookingType': Const.BOOKING_TYPE_CLINIC,
+                },
+              );
+            } finally {
+              isProcessing['chooseService'] = false;
+            }
+          },
+          cubit: _cubit,
+        );
+      },
+    );
+  }
+
+  Widget _buildAppointmentListSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget card() {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [Utils.getBoxShadowDropCard()],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 24, height: 24, child: box(radius: BorderRadius.circular(6))),
+            const GapW(12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  box(width: 140, height: 15),
+                  const SizedBox(height: 10),
+                  box(width: 200, height: 13),
+                  const SizedBox(height: 8),
+                  box(width: 120, height: 13),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        card(),
+        const GapH(16),
+        card(),
+      ],
     );
   }
 

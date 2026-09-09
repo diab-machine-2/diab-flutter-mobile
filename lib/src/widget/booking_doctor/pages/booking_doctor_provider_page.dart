@@ -1,4 +1,3 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +19,7 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BookingDoctorProvidersPage extends StatefulWidget {
@@ -40,9 +40,15 @@ class BookingDoctorProvidersPage extends StatefulWidget {
 }
 
 class _BookingDoctorProvidersPageState
-    extends State<BookingDoctorProvidersPage> {
+    extends State<BookingDoctorProvidersPage>
+    with SingleTickerProviderStateMixin {
   late DsmesAppointmentCubit _cubit;
   bool _isFirstLoading = true;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
   Map<String, bool> isProcessing = {
     'clinicDetail': false,
     'viewInfo': false,
@@ -107,7 +113,6 @@ class _BookingDoctorProvidersPageState
   }
 
   _initData() async {
-    final cancel = BotToast.showLoading(allowClick: false);
     try {
       final position = await AppSettings.getPositionPreferences();
 
@@ -147,7 +152,6 @@ class _BookingDoctorProvidersPageState
     } catch (e) {
       // Log error if needed
     } finally {
-      cancel();
       if (mounted) {
         setState(() {
           _isFirstLoading = false;
@@ -158,6 +162,7 @@ class _BookingDoctorProvidersPageState
 
   @override
   void dispose() {
+    _shimmerController.dispose();
     _searchController.dispose();
     _searchQuery.dispose();
     _filteredCities.dispose();
@@ -290,11 +295,11 @@ class _BookingDoctorProvidersPageState
           child: BlocBuilder<DsmesAppointmentCubit, DsmesAppointmentState>(
             builder: (context, state) {
               if (_isFirstLoading) {
-                return const SizedBox.shrink();
+                return _buildDoctorListSkeleton();
               }
               if (state is DsmesAppointmentLoading &&
                   _cubit.listBookingClinicProvider.isEmpty) {
-                return const SizedBox.shrink();
+                return _buildDoctorListSkeleton();
               }
               if (_cubit.listBookingClinicProvider.isEmpty) {
                 return BookingClinicEmptyWidget(
@@ -452,6 +457,58 @@ class _BookingDoctorProvidersPageState
     // Return the telemedicine service with the lowest price (even if price is 0)
     return telemedicineServices.reduce(
         (current, next) => current.fromPrice < next.fromPrice ? current : next);
+  }
+
+  Widget _buildDoctorListSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget card() {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [Utils.getBoxShadowDropCard()],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 72,
+              height: 72,
+              child: box(radius: BorderRadius.circular(5)),
+            ),
+            const GapW(12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  box(width: 140, height: 16),
+                  const SizedBox(height: 10),
+                  box(width: 90, height: 13),
+                  const SizedBox(height: 10),
+                  box(width: 110, height: 13),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      itemCount: 4,
+      separatorBuilder: (context, index) => const GapH(12),
+      itemBuilder: (context, index) => card(),
+    );
   }
 
   _buildDoctorItem(BookingClinicProvider data) {

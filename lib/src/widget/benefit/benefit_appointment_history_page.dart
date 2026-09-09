@@ -20,6 +20,7 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
@@ -41,13 +42,19 @@ class BenefitAppointmentHistoryPage extends StatefulWidget {
 }
 
 class _BenefitAppointmentHistoryPageState
-    extends BaseState<BenefitAppointmentHistoryPage> {
+    extends BaseState<BenefitAppointmentHistoryPage>
+    with SingleTickerProviderStateMixin {
   final RefreshController _refreshController = RefreshController();
   late DsmesAppointmentCubit _cubit;
   final AppRepository _repository = AppRepository();
 
   Map<String, bool> isProcessing = {'chooseService': false};
   bool isLoading = false;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   List<DsmesAppointment> sortedMyAppointments = [];
   List<MedicationOrderItem> medicationOrders = [];
@@ -63,6 +70,7 @@ class _BenefitAppointmentHistoryPageState
   @override
   void dispose() {
     _refreshController.dispose();
+    _shimmerController.dispose();
     super.dispose();
   }
 
@@ -223,14 +231,60 @@ class _BenefitAppointmentHistoryPageState
                 ),
               ),
               Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : _buildContent(),
+                child: isLoading ? _buildLoadingSkeleton() : _buildContent(),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLoadingSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget card() {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [Utils.getBoxShadowDropCard()],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 24, height: 24, child: box(radius: BorderRadius.circular(6))),
+            const GapW(12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  box(width: 140, height: 15),
+                  const SizedBox(height: 10),
+                  box(width: 200, height: 13),
+                  const SizedBox(height: 8),
+                  box(width: 120, height: 13),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: 3,
+      separatorBuilder: (_, __) => GapH(16),
+      itemBuilder: (_, __) => card(),
     );
   }
 
@@ -352,20 +406,19 @@ class _BenefitAppointmentHistoryPageState
           if (isProcessing['chooseService']!) return;
           isProcessing['chooseService'] = true;
           try {
-            final detailSuccess = await _cubit.getClinicDetail(
-                id: data.branchId ?? data.clinicId);
-            if (!detailSuccess || _cubit.selectedClinic == null) return;
-            final appointment =
-                await _cubit.getDsmesAppointmentDetail(appointmentId: data.id);
+            // Navigate immediately — the booking detail page fetches the
+            // clinic + appointment detail itself and shows its own
+            // loading/error state, instead of blocking this transition on
+            // two sequential network round-trips with no feedback.
             final result =
                 await Navigator.of(context, rootNavigator: true).pushNamed(
               NavigatorName.benefit_booking_detail,
               arguments: {
-                'serviceType': appointment?.mode,
-                'appointment': appointment,
+                'serviceType': data.mode,
+                'appointmentId': data.id,
+                'branchId': data.branchId ?? data.clinicId,
                 'previousRoute': NavigatorName.benefit_appointment_history,
                 'bookingType': benefitBookingType,
-                'branchAddress': _cubit.selectedClinic?.address,
               },
             );
             if (result == true) await _initData(showLoadingIndicator: false);

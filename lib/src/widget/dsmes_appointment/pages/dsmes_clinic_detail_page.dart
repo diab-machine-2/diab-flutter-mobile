@@ -14,6 +14,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DsmesClinicDetailPage extends StatefulWidget {
@@ -29,7 +30,8 @@ class DsmesClinicDetailPage extends StatefulWidget {
   _DsmesClinicDetailPageState createState() => _DsmesClinicDetailPageState();
 }
 
-class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
+class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage>
+    with SingleTickerProviderStateMixin {
   late DsmesAppointmentCubit _cubit;
   int _visibleComments = 3;
   bool _showingAll = false;
@@ -39,10 +41,56 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
     'clinicBooking': false,
   };
 
+  /// True while fetching clinic detail + rating on mount (only when they
+  /// haven't already been resolved for this [widget.clinicId] by the
+  /// caller). Gates the body to a shimmer skeleton so navigation into this
+  /// page doesn't need to wait on those fetches first.
+  bool _isLoadingDetail = false;
+  bool _loadFailed = false;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
   @override
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+    if (_cubit.selectedClinic?.id != widget.clinicId) {
+      _isLoadingDetail = true;
+      _fetchDetail();
+    }
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchDetail() async {
+    try {
+      final detailFuture = _cubit.getClinicDetail(id: widget.clinicId);
+      final rateFuture = _cubit.getClinicRate(id: widget.clinicId);
+      final detailSuccess = await detailFuture;
+      final rateSuccess = await rateFuture;
+      if (!mounted) return;
+      if (!detailSuccess || !rateSuccess || _cubit.selectedClinic == null) {
+        setState(() {
+          _isLoadingDetail = false;
+          _loadFailed = true;
+        });
+        return;
+      }
+      setState(() => _isLoadingDetail = false);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingDetail = false;
+        _loadFailed = true;
+      });
+    }
   }
 
   @override
@@ -57,34 +105,75 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
     );
   }
 
+  Widget _buildHeader() {
+    return CustomAppBar(
+      backgroundColor: R.color.transparent,
+      title: Text(
+        R.string.center_information.tr(),
+        style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: R.color.textDark),
+      ),
+      actions: [],
+      leadingIcon: IconButton(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        icon: Icon(
+          Icons.arrow_back,
+          color: R.color.textDark,
+        ),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
   Widget _buildPage(BuildContext context) {
+    if (_isLoadingDetail) {
+      return Column(
+        children: [
+          _buildHeader(),
+          Expanded(child: _buildDetailSkeleton()),
+        ],
+      );
+    }
+
+    if (_loadFailed) {
+      return Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(R.string.error_can_not_connect_to_server.tr()),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _loadFailed = false;
+                        _isLoadingDetail = true;
+                      });
+                      _fetchDetail();
+                    },
+                    child: Text(R.string.retry.tr()),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Stack(
       children: [
         Column(
           children: [
-            CustomAppBar(
-              backgroundColor: R.color.transparent,
-              title: Text(
-                R.string.center_information.tr(),
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    // fontFamily: 'sfpro',
-                    color: R.color.textDark),
-              ),
-              actions: [],
-              leadingIcon: IconButton(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: R.color.textDark,
-                ),
-                onPressed: () {
-                  DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
-                },
-              ),
-            ),
+            _buildHeader(),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -119,6 +208,63 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                 : _buildBookingClinicActionButtons(),
           ),
       ],
+    );
+  }
+
+  Widget _buildDetailSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 0),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 72,
+                  height: 72,
+                  child: box(radius: BorderRadius.circular(5)),
+                ),
+                const GapW(12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      box(width: 160, height: 16),
+                      const SizedBox(height: 10),
+                      box(width: 100, height: 20, radius: BorderRadius.circular(30)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const GapH(12),
+            box(height: 70, radius: BorderRadius.circular(5)),
+            const GapH(16),
+            box(width: 120, height: 15),
+            const SizedBox(height: 10),
+            box(height: 12),
+            const SizedBox(height: 8),
+            box(width: 220, height: 12),
+          ],
+        ),
+      ),
     );
   }
 

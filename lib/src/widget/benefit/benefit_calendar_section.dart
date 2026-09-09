@@ -17,6 +17,7 @@ import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
 import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 
 /// Dedicated calendar/schedule page for the Benefit booking flow.
 ///
@@ -27,6 +28,16 @@ class BenefitCalendarSection extends StatefulWidget {
   final String serviceType;
   final String action;
   final int? appointmentId;
+  /// When set and no clinic is selected on [DsmesAppointmentCubit] yet, this
+  /// page fetches the clinic detail itself on mount (see [_fetchClinicDetail])
+  /// instead of requiring the caller to await that fetch before navigating
+  /// here — lets the transition into this screen happen immediately.
+  final int? clinicId;
+  /// When [clinicId] is null and this is set, this page runs the
+  /// clinic-search itself (see [_searchThenFetchClinic]) before fetching
+  /// detail — used by the telemedicine specialty flow, which previously had
+  /// to await the search on the calling page before it could navigate here.
+  final List<String>? clinicIds;
   final String bookingType;
   final String? specialtyName;
   final String? branchName;
@@ -39,6 +50,8 @@ class BenefitCalendarSection extends StatefulWidget {
     required this.serviceType,
     this.action = 'create',
     this.appointmentId,
+    this.clinicId,
+    this.clinicIds,
     required this.bookingType,
     this.specialtyName,
     this.branchName,
@@ -51,7 +64,8 @@ class BenefitCalendarSection extends StatefulWidget {
   State<BenefitCalendarSection> createState() => _BenefitCalendarSectionState();
 }
 
-class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
+class _BenefitCalendarSectionState extends State<BenefitCalendarSection>
+    with SingleTickerProviderStateMixin {
   late DsmesAppointmentCubit _cubit;
   DateTime? selectedDate;
   bool isMorningSelected = true;
@@ -62,6 +76,20 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
   late List<DateTime> activeDates = [];
   late List<BookingSchedule> fullSchedule = [];
 
+  /// True while resolving the clinic on mount (either fetching detail for
+  /// [widget.clinicId], or searching [widget.clinicIds] first). Gates
+  /// [build] to a skeleton so navigation into this page doesn't need to
+  /// wait on that resolution first.
+  bool _isLoadingClinic = false;
+  bool _clinicLoadFailed = false;
+  /// True when a clinicIds search completed but returned no results —
+  /// distinct message from a network/detail failure.
+  bool _noClinicFound = false;
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   @override
   void initState() {
@@ -81,7 +109,108 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
             DateTime.parse(selectedBookingSchedule!.startTime).hour < 12;
       }
     }
+
+    if (widget.clinicId != null && _cubit.selectedClinic?.id != widget.clinicId) {
+      _isLoadingClinic = true;
+      _fetchClinicDetail(widget.clinicId!);
+    } else if (widget.clinicId == null &&
+        widget.clinicIds != null &&
+        widget.clinicIds!.isNotEmpty) {
+      _isLoadingClinic = true;
+      _searchThenFetchClinic();
+    } else {
+      if (widget.clinicId != null) {
+        // The clinic was already resolved on the cubit (e.g. the user viewed
+        // its detail page before tapping "Đặt lịch"), so _fetchClinicDetail
+        // never runs — but a fresh booking request still needs to be built
+        // here, otherwise createDsmesBookingRequest stays null/stale all
+        // the way to the confirm page.
+        _cubit.initCreateDsmesBookingRequest(
+          locale: context.locale.languageCode,
+          clearExamination: true,
+        );
+      }
+      _loadInitialData();
+    }
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _searchThenFetchClinic() async {
+    _cubit.initSearchBookingClinicListRequest(
+      page: 1,
+      specialtyId: '',
+      kind: Const.BOOKING_TYPE_CLINIC,
+      isFilterDistance: 0,
+      clinicIds: widget.clinicIds!,
+    );
+    _cubit.searchBookingClinicListRequest =
+        _cubit.searchBookingClinicListRequest?.copyWith(
+      svAvailable: ['telemedicine'],
+    );
+    final request = _cubit.searchBookingClinicListRequest;
+    if (request == null) {
+      setState(() {
+        _isLoadingClinic = false;
+        _clinicLoadFailed = true;
+      });
+      return;
+    }
+    try {
+      final clinics =
+          await _cubit.searchBookingClinicList(request: request, isRefresh: true);
+      if (!mounted) return;
+      if (clinics.isEmpty) {
+        setState(() {
+          _isLoadingClinic = false;
+          _clinicLoadFailed = true;
+          _noClinicFound = true;
+        });
+        return;
+      }
+      await _fetchClinicDetail(clinics.first.id);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingClinic = false;
+        _clinicLoadFailed = true;
+      });
+    }
+  }
+
+  Future<void> _fetchClinicDetail(int clinicId) async {
+    final success = await _cubit.getClinicDetail(id: clinicId);
+    if (!mounted) return;
+    if (!success || _cubit.selectedClinic == null) {
+      setState(() {
+        _isLoadingClinic = false;
+        _clinicLoadFailed = true;
+      });
+      return;
+    }
+    _cubit.initCreateDsmesBookingRequest(
+      locale: context.locale.languageCode,
+      clearExamination: true,
+    );
+    setState(() => _isLoadingClinic = false);
     _loadInitialData();
+  }
+
+  void _retryClinicResolution() {
+    setState(() {
+      _clinicLoadFailed = false;
+      _noClinicFound = false;
+      _isLoadingClinic = true;
+    });
+    if (widget.clinicId != null) {
+      _fetchClinicDetail(widget.clinicId!);
+    } else {
+      _searchThenFetchClinic();
+    }
   }
 
   void _loadInitialData() async {
@@ -275,8 +404,154 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
     }
   }
 
+  Widget _buildHeader() {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [R.color.greenGradientTop02, R.color.greenGradientBottom],
+          stops: [0.01, 0.99],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        ),
+      ),
+      child: CustomAppBar(
+        backgroundColor: R.color.transparent,
+        title: Text(
+          R.string.pick_time.tr(),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: R.color.white,
+            fontFamily: 'sfpro',
+          ),
+        ),
+        leadingIcon: IconButton(
+          splashColor: R.color.transparent,
+          highlightColor: R.color.transparent,
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+          onPressed: () => BenefitNavigatorScope.popOrRoot(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScheduleSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [Utils.getBoxShadowDropCard()],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          box(width: 120, height: 18),
+          const SizedBox(height: 16),
+          Row(
+            children: List.generate(4, (i) {
+              return Padding(
+                padding: EdgeInsets.only(right: i == 3 ? 0 : 8),
+                child: box(width: 64, height: 70, radius: BorderRadius.circular(12)),
+              );
+            }),
+          ),
+          const SizedBox(height: 24),
+          box(width: 90, height: 18),
+          const SizedBox(height: 16),
+          box(height: 43, radius: BorderRadius.circular(8)),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: box(height: 44, radius: BorderRadius.circular(8))),
+              const SizedBox(width: 12),
+              Expanded(child: box(height: 44, radius: BorderRadius.circular(8))),
+              const SizedBox(width: 12),
+              Expanded(child: box(height: 44, radius: BorderRadius.circular(8))),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(child: box(height: 44, radius: BorderRadius.circular(8))),
+              const SizedBox(width: 12),
+              Expanded(child: box(height: 44, radius: BorderRadius.circular(8))),
+              const SizedBox(width: 12),
+              Expanded(child: box(height: 44, radius: BorderRadius.circular(8))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingClinic) {
+      return Scaffold(
+        body: Container(
+          decoration: BoxDecoration(color: R.color.backgroundColorNew),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [_buildScheduleSkeleton()],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_clinicLoadFailed) {
+      return Scaffold(
+        body: Container(
+          decoration: BoxDecoration(color: R.color.backgroundColorNew),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(_noClinicFound
+                          ? R.string.empty_clinic_content.tr()
+                          : R.string.error_can_not_connect_to_server.tr()),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: _retryClinicResolution,
+                        child: Text(R.string.retry.tr()),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(color: R.color.backgroundColorNew),
@@ -285,38 +560,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        R.color.greenGradientTop02,
-                        R.color.greenGradientBottom
-                      ],
-                      stops: [0.01, 0.99],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                    ),
-                  ),
-                  child: CustomAppBar(
-                    backgroundColor: R.color.transparent,
-                    title: Text(
-                      R.string.pick_time.tr(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.white,
-                        fontFamily: 'sfpro',
-                      ),
-                    ),
-                    leadingIcon: IconButton(
-                      splashColor: R.color.transparent,
-                      highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: R.color.white),
-                      onPressed: () =>
-                          BenefitNavigatorScope.popOrRoot(context),
-                    ),
-                  ),
-                ),
+                _buildHeader(),
                 Expanded(
                   child: SafeArea(
                     top: false,
