@@ -56,7 +56,6 @@ class FetchClient {
   }
 
   Future<Options> options() async {
-    await checkNetwork();
     final token = await AppSettings.getToken();
 
     // final userAgent = await userAgent();
@@ -76,7 +75,6 @@ class FetchClient {
   }
 
   Future<Options> options1() async {
-    await checkNetwork();
     final token = await AppSettings.getToken();
     // final userAgent = await userAgent();
     final Options option = Options(
@@ -93,7 +91,6 @@ class FetchClient {
   }
 
   Future<Options> options2() async {
-    await checkNetwork();
     final token = await AppSettings.getToken();
     // final userAgent = await userAgent();
     // print(token);
@@ -112,7 +109,6 @@ class FetchClient {
   }
 
   Future<Options> options3() async {
-    await checkNetwork();
     final Options option = Options(
         // headers: {
         //   'Authorization': 'Bearer $token',
