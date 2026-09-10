@@ -19,6 +19,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 
 import '../../modal/notification/notification_list_model.dart';
 
@@ -32,11 +33,14 @@ class NotificationController extends StatefulWidget {
 }
 
 class NotificationControllerState extends State<NotificationController>
-    with AutomaticKeepAliveClientMixin<NotificationController>, Observer {
+    with
+        AutomaticKeepAliveClientMixin<NotificationController>,
+        Observer,
+        SingleTickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
 
-  late BuildContext currentContext;
+  late final NotificationBloc _bloc;
 
   int page = 1;
   bool hasMore = false;
@@ -45,6 +49,11 @@ class NotificationControllerState extends State<NotificationController>
   List<String?> readIds = [];
   List<NotificationListModel> model = [];
 
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +61,8 @@ class NotificationControllerState extends State<NotificationController>
     Observable.instance.addObserver(this);
     //  }
     firebaseSetup();
+    _bloc = NotificationBloc();
+    _bloc.add(FetchNotification(isRead: widget.isRemovealbe, page: page));
   }
 
   Future firebaseSetup() async {
@@ -86,6 +97,11 @@ class NotificationControllerState extends State<NotificationController>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    _shimmerController.dispose();
+    // Closes any BotToast loading overlay a mid-flight _delete() call may
+    // have shown, so it can't survive a back-navigation and get stuck on
+    // top of Home forever.
+    BotToast.closeAllLoading();
     super.dispose();
   }
 
@@ -94,42 +110,28 @@ class NotificationControllerState extends State<NotificationController>
       return true;
     } else {
       isLoading = true;
-      BlocProvider.of<NotificationBloc>(currentContext).add(
-        FetchNotification(isRead: widget.isRemovealbe, page: page),
-      );
+      _bloc.add(FetchNotification(isRead: widget.isRemovealbe, page: page));
     }
     return true;
   }
 
   Future<bool> refresh() async {
     page = 1;
-    BlocProvider.of<NotificationBloc>(currentContext).add(
-      FetchNotification(isRead: widget.isRemovealbe, page: page),
-    );
+    _bloc.add(FetchNotification(isRead: widget.isRemovealbe, page: page));
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocProvider<NotificationBloc>(
-      create: (context) => NotificationBloc(),
+    return BlocProvider<NotificationBloc>.value(
+      value: _bloc,
       child: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (BuildContext context, NotificationState state) {
-          currentContext = context;
-
-          if (state is NotificationInitial) {
-            Future.delayed(Duration(milliseconds: 10));
-            BotToast.showLoading();
-            BlocProvider.of<NotificationBloc>(context).add(
-              FetchNotification(isRead: widget.isRemovealbe, page: page),
-            );
-          }
           if (state is NotificationError) {
             Message.showToastMessage(context, state.message);
           }
           if (state is NotificationLoaded) {
-            BotToast.closeAllLoading();
             model = state.model?.models ?? [];
             hasMore = state.model?.hasMore ?? false;
             if (hasMore) {
@@ -140,15 +142,64 @@ class NotificationControllerState extends State<NotificationController>
           return RefreshIndicator(
             onRefresh: refresh,
             child: Scaffold(
-              body: model == null
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+              body: state is NotificationInitial
+                  ? _buildNotificationSkeleton()
                   : _buildNotificationList(model, state),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildNotificationSkeleton() {
+    Widget box({double? width, double height = 12, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    Widget row() {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: box(radius: BorderRadius.circular(20)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  box(width: 160, height: 15),
+                  const SizedBox(height: 10),
+                  box(height: 12),
+                  const SizedBox(height: 8),
+                  box(width: 120, height: 12),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      padding: const EdgeInsets.only(bottom: 32, top: 16),
+      itemCount: 6,
+      separatorBuilder: (context, index) => Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16),
+        child: Container(color: R.color.color0xffE5E5E5, height: 1),
+      ),
+      itemBuilder: (context, index) => row(),
     );
   }
 
@@ -171,9 +222,7 @@ class NotificationControllerState extends State<NotificationController>
           );
         },
         itemBuilder: (BuildContext context, int index) {
-          if (state is NotificationInitial) {
-            return Container();
-          } else if (model.isNotEmpty != true) {
+          if (model.isNotEmpty != true) {
             return Container(
               height: MediaQuery.of(context).size.height - 190,
               child: Center(
