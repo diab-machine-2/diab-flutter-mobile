@@ -1,0 +1,585 @@
+name: Flutter iOS Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Build environment'
+        type: choice
+        options:
+          - dev
+          - staging
+          - pre-production
+          - production
+          - ngrok-dev
+          - ngrok-staging
+          - ngrok-production
+        default: 'dev'
+      version:
+        description: 'App version (e.g., 2.6.0) - Leave empty to use pubspec.yaml'
+        required: false
+        type: string
+      build_number:
+        description: 'Build number (e.g., 5) - Leave empty to use GitHub run number'
+        required: false
+        type: string
+
+concurrency:
+  group: ios-build-${{ github.ref }}-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: true
+
+jobs:
+  build-ios:
+    runs-on: macos-26
+    timeout-minutes: 60
+
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+      FLUTTER_VERSION: '3.27.1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Cache Flutter Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache/hosted
+          key: flutter-deps-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            flutter-deps-${{ runner.os }}-
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      - name: Clear Git Plugin Cache
+        run: rm -rf ~/.pub-cache/git/flutter_zoom_meeting_sdk-* || true
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Generate Pigeon Files for Wakelock Plus
+        run: |
+          set -e
+          WAKELOCK_PATH=$(find ~/.pub-cache/hosted/pub.dev -type d -name "wakelock_plus-*" 2>/dev/null | sort -V | tail -1)
+          [ -z "$WAKELOCK_PATH" ] && echo "wakelock_plus not found" && exit 1
+
+          PLUGIN_M_FILE=$(find "$WAKELOCK_PATH/ios" -name "WakelockPlusPlugin.m" 2>/dev/null | head -1)
+          [ -n "$PLUGIN_M_FILE" ] && PLUGIN_M_DIR=$(dirname "$PLUGIN_M_FILE")
+
+          PIGEON_INPUT="$WAKELOCK_PATH/pigeons/messages.dart"
+          [ ! -f "$PIGEON_INPUT" ] && echo "Pigeon input not found" && exit 1
+
+          dart pub global activate pigeon
+          cd "$WAKELOCK_PATH"
+          mkdir -p ios/wakelock_plus/Sources/wakelock_plus lib
+
+          dart pub global run pigeon \
+            --input pigeons/messages.dart \
+            --dart_out lib/messages.g.dart \
+            --objc_header_out ios/wakelock_plus/Sources/wakelock_plus/messages.g.h \
+            --objc_source_out ios/wakelock_plus/Sources/wakelock_plus/messages.g.m \
+            --package_name=wakelock_plus
+
+          HEADER_FILE=$(find ios/wakelock_plus/Sources/wakelock_plus -name "messages.g.h" 2>/dev/null | head -1)
+          SOURCE_FILE=$(find ios/wakelock_plus/Sources/wakelock_plus -name "messages.g.m" 2>/dev/null | head -1)
+
+          if [ -z "$HEADER_FILE" ] || [ -z "$SOURCE_FILE" ]; then
+            echo "Generated pigeon files not found"
+            exit 1
+          fi
+
+          if [ -n "$PLUGIN_M_DIR" ]; then
+            cp -f "$HEADER_FILE" "$PLUGIN_M_DIR/" 2>/dev/null || true
+            cp -f "$SOURCE_FILE" "$PLUGIN_M_DIR/" 2>/dev/null || true
+          fi
+
+          echo "WAKELOCK_PATH=$WAKELOCK_PATH" >> $GITHUB_ENV
+
+      - name: Cache Zoom SDK
+        id: cache-zoom
+        uses: actions/cache@v4
+        with:
+          path: zoom-sdk
+          key: zoom-sdk-v1
+
+      - name: Download Zoom SDK
+        if: steps.cache-zoom.outputs.cache-hit != 'true'
+        run: |
+          set -e
+          ZOOM_URL="https://drive.usercontent.google.com/download?id=1J1EzrRYNiMMovJRymw32_a1ZNQf38vww&export=download&confirm=t"
+          for i in 1 2 3; do
+            curl -L -f --retry 3 --retry-delay 5 "$ZOOM_URL" -o zoom.zip && break
+            [ $i -lt 3 ] && sleep 10 || exit 1
+          done
+
+          [ -f zoom.zip ] && [ -s zoom.zip ] || exit 1
+
+          mkdir -p zoom-sdk
+          unzip -o -q zoom.zip -d zoom-sdk
+
+          ZOOM_DIR=$(find zoom-sdk -maxdepth 2 -type d \( -name "*zoom*" -o -name "*RTC*" -o -name "*mobilertc*" \) | grep -v ".zip" | head -1)
+          if [ -n "$ZOOM_DIR" ] && [ "$ZOOM_DIR" != "zoom-sdk" ]; then
+            mv "$ZOOM_DIR"/* zoom-sdk/ 2>/dev/null || true
+            rm -rf "$ZOOM_DIR"
+          fi
+          rm -f zoom.zip
+
+      - name: Setup Zoom SDK in Plugin
+        run: |
+          set -e
+          PLUGIN_PATH=$(find ~/.pub-cache/git -type d -name "flutter_zoom_meeting_sdk-*" | grep -v "/cache/" | sort -V | tail -1)
+          [ -z "$PLUGIN_PATH" ] && echo "Plugin flutter_zoom_meeting_sdk not found" && exit 1
+
+          PLUGIN_IOS="$PLUGIN_PATH/ios"
+          [ ! -d "$PLUGIN_IOS" ] && echo "Plugin iOS folder not found" && exit 1
+
+          rsync -a zoom-sdk/ "$PLUGIN_IOS/" 2>/dev/null || cp -Rf zoom-sdk/* "$PLUGIN_IOS/"
+          find "$PLUGIN_IOS/" -name "*MobileRTC*" -type d | grep -q . || (echo "MobileRTC not found after copy" && exit 1)
+
+          echo "PLUGIN_PATH=$PLUGIN_PATH" >> $GITHUB_ENV
+          echo "PLUGIN_IOS=$PLUGIN_IOS" >> $GITHUB_ENV
+
+      - name: Configure Plugin Podspec
+        run: |
+          set -e
+          PODSPEC="$PLUGIN_IOS/flutter_zoom_meeting.podspec"
+          [ ! -f "$PODSPEC" ] && echo "Podspec not found" && exit 1
+
+          cp "$PODSPEC" "$PODSPEC.original"
+
+          FW_PATH=""
+          if [ -d "$PLUGIN_IOS/lib/MobileRTC.xcframework" ]; then
+            FW_PATH="lib/MobileRTC.xcframework"
+          elif [ -d "$PLUGIN_IOS/lib/MobileRTC.framework" ]; then
+            FW_PATH="lib/MobileRTC.framework"
+          elif [ -d "$PLUGIN_IOS/Frameworks/MobileRTC.xcframework" ]; then
+            FW_PATH="Frameworks/MobileRTC.xcframework"
+          elif [ -d "$PLUGIN_IOS/Frameworks/MobileRTC.framework" ]; then
+            FW_PATH="Frameworks/MobileRTC.framework"
+          elif [ -d "$PLUGIN_IOS/MobileRTC.xcframework" ]; then
+            FW_PATH="MobileRTC.xcframework"
+          elif [ -d "$PLUGIN_IOS/MobileRTC.framework" ]; then
+            FW_PATH="MobileRTC.framework"
+          else
+            echo "ERROR: MobileRTC not found"
+            find "$PLUGIN_IOS/" -name "MobileRTC.xcframework" -o -name "MobileRTC.framework" | head -5
+            exit 1
+          fi
+
+          echo "Found framework: $FW_PATH"
+
+          grep -v "s.vendored_frameworks" "$PODSPEC.original" > "$PODSPEC.temp"
+          grep -v "s.xcconfig.*OTHER_LDFLAGS.*MobileRTC" "$PODSPEC.temp" > "$PODSPEC.temp2"
+
+          # Determine the directory containing the framework (for bundle lookup)
+          FW_DIR=$(dirname "$FW_PATH")
+          if [ "$FW_DIR" = "." ]; then
+            BUNDLE_GLOB="*.bundle"
+          else
+            BUNDLE_GLOB="${FW_DIR}/*.bundle"
+          fi
+          echo "Bundle glob: $BUNDLE_GLOB"
+
+          perl -i -pe "s|^end\$|  s.vendored_frameworks = '$FW_PATH'\n  s.resources = '$BUNDLE_GLOB'\n  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework MobileRTC' }\nend|" "$PODSPEC.temp2"
+          mv "$PODSPEC.temp2" "$PODSPEC"
+
+          echo "Podspec vendored_frameworks:"
+          grep "s.vendored_frameworks" "$PODSPEC" || echo "ERROR"
+          rm -f "$PODSPEC.temp" "$PODSPEC.temp2"
+
+      - name: Clean Build Environment
+        run: |
+          flutter clean
+          cd ios && rm -rf build Pods .symlinks Podfile.lock && cd ..
+
+      - name: Regenerate Flutter Files
+        run: flutter pub get
+
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod repo update || true
+          pod install --verbose
+          cd ..
+
+      - name: Post-Install Pigeon File Fix
+        run: |
+          if [ -d "ios/Pods/wakelock_plus" ]; then
+            PODS_M=$(find ios/Pods/wakelock_plus -name "WakelockPlusPlugin.m" 2>/dev/null | head -1)
+            if [ -n "$PODS_M" ]; then
+              PODS_M_DIR=$(dirname "$PODS_M")
+              H=$(find "$WAKELOCK_PATH/ios" -name "messages.g.h" 2>/dev/null | head -1)
+              M=$(find "$WAKELOCK_PATH/ios" -name "messages.g.m" 2>/dev/null | head -1)
+              [ -n "$H" ] && [ -n "$M" ] && cp -f "$H" "$M" "$PODS_M_DIR/" 2>/dev/null || true
+            fi
+          fi
+
+      - name: Install Certificates and Profiles
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          if [ -n "$CERTIFICATE_BASE64" ]; then
+            echo "🔐 Installing certificates..."
+
+            mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+
+            echo "$CERTIFICATE_BASE64" | base64 -d > certificate.p12
+
+            if [ ! -s certificate.p12 ]; then
+              echo "❌ certificate.p12 is empty"
+              exit 1
+            fi
+            echo "✅ certificate.p12 size: $(wc -c < certificate.p12) bytes"
+
+            KEYCHAIN_PASS="build_keychain_pass"
+            security create-keychain -p "$KEYCHAIN_PASS" build.keychain
+            # Include BOTH build.keychain and login.keychain so xcodebuild can find cert
+            security list-keychains -s build.keychain ~/Library/Keychains/login.keychain-db
+            security default-keychain -s build.keychain
+            security unlock-keychain -p "$KEYCHAIN_PASS" build.keychain
+            security set-keychain-settings -lut 21600 build.keychain
+            echo "KEYCHAIN_PASS=$KEYCHAIN_PASS" >> $GITHUB_ENV
+
+            echo "Trying import with empty password..."
+            security import certificate.p12 \
+              -k build.keychain -P "" \
+              -T /usr/bin/codesign \
+              -T /usr/bin/xcodebuild 2>/dev/null && echo "✅ Import OK (empty pw)" || {
+              echo "Trying import with P12_PASSWORD..."
+              security import certificate.p12 \
+                -k build.keychain -P "$P12_PASSWORD" \
+                -T /usr/bin/codesign \
+                -T /usr/bin/xcodebuild && echo "✅ Import OK (P12_PASSWORD)" || {
+                echo "❌ Import failed"
+                exit 1
+              }
+            }
+
+            security set-key-partition-list \
+              -S apple-tool:,apple:,codesign: \
+              -s -k "$KEYCHAIN_PASS" build.keychain
+
+            # Install provisioning profile
+            if [ -n "$PROVISIONING_PROFILE_BASE64" ]; then
+              echo "$PROVISIONING_PROFILE_BASE64" | base64 -d \
+                > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+              echo "✅ Provisioning profile installed"
+
+              # Lấy UUID của profile để dùng khi build
+              PROFILE_PLIST=$(security cms -D -i ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision)
+              PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< "$PROFILE_PLIST")
+              echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+              echo "📋 Profile UUID: $PROFILE_UUID"
+
+              # Xác định export method từ profile
+              GET_TASK_ALLOW=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:get-task-allow" /dev/stdin <<< "$PROFILE_PLIST" 2>/dev/null || echo "false")
+              PROVISIONS_ALL_DEVICES=$(/usr/libexec/PlistBuddy -c "Print :ProvisionsAllDevices" /dev/stdin <<< "$PROFILE_PLIST" 2>/dev/null || echo "false")
+              HAS_DEVICES=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" /dev/stdin <<< "$PROFILE_PLIST" 2>/dev/null || echo "false")
+
+              if [ "$PROVISIONS_ALL_DEVICES" = "true" ]; then
+                EXPORT_METHOD="enterprise"
+              elif [ "$GET_TASK_ALLOW" = "true" ]; then
+                EXPORT_METHOD="development"
+              elif [ "$HAS_DEVICES" != "false" ]; then
+                EXPORT_METHOD="ad-hoc"
+              else
+                EXPORT_METHOD="app-store"
+              fi
+              echo "EXPORT_METHOD=$EXPORT_METHOD" >> $GITHUB_ENV
+              echo "📋 Export method: $EXPORT_METHOD"
+
+              # Lấy tên certificate từ profile
+              CERT_NAME=$(security find-identity -v -p codesigning build.keychain \
+                | grep -E "iPhone|Apple" | head -1 \
+                | sed -e 's/.*"\(.*\)".*/\1/')
+              echo "CODE_SIGN_IDENTITY=$CERT_NAME" >> $GITHUB_ENV
+              echo "📋 Certificate: $CERT_NAME"
+            fi
+
+            echo "✅ Installed identities:"
+            security find-identity -v -p codesigning build.keychain
+          else
+            echo "⚠️ No certificates - building without code signing"
+          fi
+      - name: Bump Version and Build Number
+        run: |
+          # Extract version from pubspec.yaml (e.g. 2.6.0 from 2.6.0+202)
+          VERSION_FROM_PUBSPEC=$(grep '^version: ' pubspec.yaml | sed -e 's/version: //' -e 's/+.*//' | tr -d '[[:space:]]')
+          echo "📋 Target Version from pubspec.yaml: $VERSION_FROM_PUBSPEC"
+
+          if [ -n "${{ inputs.version }}" ]; then
+            TARGET_VERSION="${{ inputs.version }}"
+            echo "📋 Using manual version: $TARGET_VERSION"
+          else
+            TARGET_VERSION="$VERSION_FROM_PUBSPEC"
+            echo "📋 Using version from pubspec.yaml: $TARGET_VERSION"
+          fi
+
+          if [ -n "$TARGET_VERSION" ]; then
+            # Update MARKETING_VERSION in Xcode project
+            sed -i '' "s/MARKETING_VERSION = [0-9.]*;/MARKETING_VERSION = $TARGET_VERSION;/g" ios/Runner.xcodeproj/project.pbxproj
+            echo "✅ Xcode MARKETING_VERSION updated to $TARGET_VERSION"
+          else
+            echo "⚠️ Could not determine target version"
+          fi
+
+          # Determine build number
+          if [ -n "${{ inputs.build_number }}" ]; then
+            TARGET_BUILD="${{ inputs.build_number }}"
+            echo "📋 Using manual build number: $TARGET_BUILD"
+          else
+            TARGET_BUILD="${{ github.run_number }}"
+            echo "📋 Using default build number (run number): $TARGET_BUILD"
+          fi
+
+          # Update CFBundleVersion in Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $TARGET_BUILD" \
+            ios/Runner/Info.plist
+          echo "✅ Build number set to: $TARGET_BUILD"
+
+      - name: Update const.dart for Environment
+        run: |
+          ENVIRONMENT="${{ env.ENVIRONMENT }}"
+          CONST_FILE="lib/src/utils/const.dart"
+          
+          # 1. Determine CONST_ENVIRONMENT
+          if [[ "$ENVIRONMENT" == "production" || "$ENVIRONMENT" == "ngrok-production" ]]; then
+            CONST_ENVIRONMENT="product"
+          elif [[ "$ENVIRONMENT" == "pre-production" ]]; then
+            CONST_ENVIRONMENT="product"
+          elif [[ "$ENVIRONMENT" == "staging" || "$ENVIRONMENT" == "ngrok-staging" ]]; then
+            CONST_ENVIRONMENT="staging"
+          else
+            CONST_ENVIRONMENT="dev"
+          fi
+          
+          # 2. Determine IS_ENDPOINT
+          if [[ "$ENVIRONMENT" == "production" || "$ENVIRONMENT" == "ngrok-production" || "$ENVIRONMENT" == "pre-production" ]]; then
+            IS_ENDPOINT="is.diab.com.vn"
+          elif [[ "$ENVIRONMENT" == "staging" || "$ENVIRONMENT" == "ngrok-staging" ]]; then
+            IS_ENDPOINT="is.staging.diab.com.vn"
+          else
+            IS_ENDPOINT="is.dev.diab.vn"
+          fi
+          
+          # 3. Determine API_ENDPOINT
+          case "$ENVIRONMENT" in
+            "production")     API_ENDPOINT="api.diab.com.vn" ;;
+            "pre-production") API_ENDPOINT="api.preprod.diab.com.vn" ;;
+            "staging")        API_ENDPOINT="api.staging.diab.com.vn" ;;
+            "ngrok-dev")      API_ENDPOINT="ngrok.api.dev.diab.vn" ;;
+            "ngrok-dev-2")    API_ENDPOINT="ngrok-2.api.dev.diab.vn" ;;
+            "ngrok-staging")  API_ENDPOINT="ngrok.api.staging.diab.com.vn" ;;
+            "ngrok-production") API_ENDPOINT="ngrok.api.diab.com.vn" ;;
+            *)                API_ENDPOINT="api.dev.diab.vn" ;;
+          esac
+
+          echo "===== UPDATE const.dart ====="
+          echo "CONST_ENVIRONMENT=$CONST_ENVIRONMENT"
+          echo "IS_ENDPOINT=$IS_ENDPOINT"
+          echo "API_ENDPOINT=$API_ENDPOINT"
+
+          # Use sed -i '' on macOS to update the file in-place
+          sed -i '' "s|ENVIRONMENT_DEFAULT = \"[^\"]*\"|ENVIRONMENT_DEFAULT = \"$CONST_ENVIRONMENT\"|" "$CONST_FILE"
+
+          if [ "$CONST_ENVIRONMENT" = "product" ]; then
+              sed -i '' "s|static const String DOMAIN = \"[^\"]*\"|static const String DOMAIN = \"$API_ENDPOINT\"|" "$CONST_FILE"
+              sed -i '' "s|static const String IS_DOMAIN = \"[^\"]*\"|static const String IS_DOMAIN = \"$IS_ENDPOINT\"|" "$CONST_FILE"
+          fi
+          if [ "$CONST_ENVIRONMENT" = "staging" ]; then
+              sed -i '' "s|static const String DOMAIN_STAGING = \"[^\"]*\"|static const String DOMAIN_STAGING = \"$API_ENDPOINT\"|" "$CONST_FILE"
+              sed -i '' "s|static const String IS_DOMAIN_STAGING = \"[^\"]*\"|static const String IS_DOMAIN_STAGING = \"$IS_ENDPOINT\"|" "$CONST_FILE"
+          fi
+          if [ "$CONST_ENVIRONMENT" = "dev" ]; then
+              sed -i '' "s|static const String DOMAIN_DEV = \"[^\"]*\"|static const String DOMAIN_DEV = \"$API_ENDPOINT\"|" "$CONST_FILE"
+              sed -i '' "s|static const String IS_DOMAIN_DEV = \"[^\"]*\"|static const String IS_DOMAIN_DEV = \"$IS_ENDPOINT\"|" "$CONST_FILE"
+          fi
+
+      - name: Build iOS (Archive + Export IPA)
+        run: |
+          set -e
+          set -o pipefail
+          cd ios
+
+          # Map environment → Xcode scheme (always Release build for TestFlight)
+          case "$ENVIRONMENT" in
+            staging|ngrok-staging)                       SCHEME="Stag.Release" ;;
+            production|ngrok-production|pre-production)  SCHEME="Release" ;;
+            *)                                           SCHEME="Release" ;;  # dev, ngrok-dev → Release scheme, dart-define controls API
+          esac
+
+          # Dart define to pass ENVIRONMENT into Flutter app (controls API endpoint)
+          DART_DEFINE="ENVIRONMENT=$ENVIRONMENT"
+
+          echo "🏗️ Building IPA: $ENVIRONMENT - $SCHEME"
+
+          ARCHIVE_PATH="$PWD/build/Runner.xcarchive"
+          EXPORT_PATH="$PWD/build/export"
+          mkdir -p "$EXPORT_PATH"
+
+          HAS_CERTS=$(security find-identity -v -p codesigning build.keychain | grep -cE "iPhone|Apple" || echo "0")
+
+          if [ "$HAS_CERTS" -gt "0" ] && [ -n "$PROFILE_UUID" ]; then
+            echo "✅ Building with MANUAL code signing"
+            echo "   Certificate : $CODE_SIGN_IDENTITY"
+            echo "   Profile UUID: $PROFILE_UUID"
+            echo "   Export Method: $EXPORT_METHOD"
+
+            cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>${EXPORT_METHOD:-development}</string>
+            <key>teamID</key>
+            <string>${{ secrets.TEAM_ID }}</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.cactusoftware.diab</key>
+              <string>${PROFILE_UUID}</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+
+            # Unlock keychain again right before archive (may lock between steps)
+            security unlock-keychain -p "$KEYCHAIN_PASS" build.keychain 2>/dev/null || true
+            security list-keychains -s build.keychain ~/Library/Keychains/login.keychain-db
+
+            xcodebuild archive \
+              -workspace Runner.xcworkspace \
+              -scheme "$SCHEME" \
+              -sdk iphoneos \
+              -destination 'generic/platform=iOS' \
+              -archivePath "$ARCHIVE_PATH" \
+              DEVELOPMENT_TEAM="${{ secrets.TEAM_ID }}" \
+              CODE_SIGN_STYLE=Manual \
+              CODE_SIGN_IDENTITY="$CODE_SIGN_IDENTITY" \
+              PROVISIONING_PROFILE="$PROFILE_UUID" \
+              ONLY_ACTIVE_ARCH=NO \
+              DART_DEFINES="$(echo -n "$DART_DEFINE" | base64)" \
+              | tee archive.log
+
+          else
+            echo "⚠️ Building WITHOUT code signing"
+
+            cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+
+            xcodebuild archive \
+              -workspace Runner.xcworkspace \
+              -scheme "$SCHEME" \
+              -sdk iphoneos \
+              -destination 'generic/platform=iOS' \
+              -archivePath "$ARCHIVE_PATH" \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGN_IDENTITY="" \
+              ONLY_ACTIVE_ARCH=NO \
+              DART_DEFINES="$(echo -n "$DART_DEFINE" | base64)" \
+              | tee archive.log
+          fi
+
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist ExportOptions.plist \
+            | tee export.log
+
+          echo "=== Export folder ==="
+          ls -la "$EXPORT_PATH" || true
+
+          IPA_FILE=$(find "$EXPORT_PATH" -maxdepth 1 -name "*.ipa" | head -1)
+          if [ -n "$IPA_FILE" ]; then
+            echo "✅ IPA generated: $IPA_FILE"
+          else
+            echo "❌ IPA not generated!"
+            tail -150 export.log || true
+            exit 1
+          fi
+
+          cd ..
+
+      - name: Verify IPA Entitlements (Universal Links)
+        run: |
+          set -e
+          IPA_FILE=$(find ios/build/export -maxdepth 1 -name "*.ipa" | head -1)
+          if [ -z "$IPA_FILE" ]; then
+            echo "❌ Không tìm thấy file IPA để kiểm tra!"
+            exit 1
+          fi
+
+          echo "🔍 Đang kiểm tra Entitlements của file: $IPA_FILE..."
+          mkdir -p temp_verify_ipa
+          unzip -q "$IPA_FILE" -d temp_verify_ipa
+          APP_PATH=$(find temp_verify_ipa/Payload -maxdepth 1 -name "*.app")
+
+          ENTITLEMENTS=$(codesign -d --entitlements :- "$APP_PATH" 2>&1 || true)
+          echo "=================== IPA ENTITLEMENTS ==================="
+          echo "$ENTITLEMENTS"
+          echo "========================================================"
+
+          if echo "$ENTITLEMENTS" | grep -q "com.apple.developer.associated-domains"; then
+            echo "🎉 XÁC NHẬN NGUYÊN VẸN: Cờ Universal Links (associated-domains) ĐÃ CÓ trong file IPA!"
+          else
+            echo "❌ THẤT BẠI: File IPA tạo ra KHÔNG CÓ cờ com.apple.developer.associated-domains!"
+            echo "👉 Nguyên nhân: GitHub Secret 'PROVISIONING_PROFILE_BASE64' đang chứa Profile cũ chưa tích chọn Associated Domains trên Apple Developer Portal."
+            exit 1
+          fi
+          rm -rf temp_verify_ipa
+
+      - name: Upload iOS Artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-artifacts-${{ env.ENVIRONMENT }}-${{ github.run_number }}
+          path: |
+            ios/build/export/*.ipa
+            ios/build/Runner.xcarchive
+            ios/archive.log
+            ios/export.log
+            ios/ExportOptions.plist
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f zoom.zip certificate.p12
+          find . -maxdepth 1 -type d -name "*zoom*" -exec rm -rf {} + 2>/dev/null || true
+          security delete-keychain build.keychain 2>/dev/null || true
