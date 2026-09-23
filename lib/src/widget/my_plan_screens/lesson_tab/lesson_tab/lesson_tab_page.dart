@@ -140,6 +140,15 @@ class _LessonTabPageState extends State<LessonTabPage>
         'lessonType': PlanType.lesson.planTypeIndex,
       });
       BranchioLinkConfig.instance.removeLessonId();
+      // TabbarV2's own NAVIGATE_TO_LESSON_DETAIL handler only jumps the
+      // bottom tab bar to Library when it runs before this page consumes
+      // the id (observer order is LIFO — see Observable.notifyObservers).
+      // When this page was already mounted/kept-alive from an earlier visit,
+      // it runs first and clears the id before TabbarV2's turn, so the tab
+      // indicator is left stale. Re-broadcast the dedicated tab-switch event
+      // here so the indicator stays in sync regardless of observer order.
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
     }
   }
 

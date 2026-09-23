@@ -1268,16 +1268,6 @@ class BranchioLinkConfig {
     return id;
   }
 
-  /// Atomically consume the lessonId: returns the value and clears it.
-  String? consumeLessonId() {
-    final id = _lessonId;
-    if (id != null) {
-      _lessonId = null;
-      print('[ROUTE] Lesson ID consumed: $id');
-    }
-    return id;
-  }
-
   void removeZoomId() {
     _zoomId = null;
   }

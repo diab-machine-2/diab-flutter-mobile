@@ -281,9 +281,13 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkExistLessonId() async {
-    // Use consume pattern: atomically read + clear the ID so no other
-    // code path can read the same value and trigger duplicate navigation.
-    final String? lessonId = BranchioLinkConfig.instance.consumeLessonId();
+    // Peek (don't consume) the lessonId — this only decides which tab to
+    // jump to. LessonTabPage is the one that actually pushes the lesson
+    // detail route once it (re)builds on the Library tab, and it consumes
+    // the id itself via removeLessonId() after navigating. Consuming it
+    // here would race LessonTabPage's own observer callback and could
+    // clear the id before LessonTabPage ever reads it.
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
     final String? activityId = BranchioLinkConfig.instance.consumeActivityId();
     if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
