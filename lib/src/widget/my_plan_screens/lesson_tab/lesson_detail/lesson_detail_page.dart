@@ -28,6 +28,7 @@ import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
+import 'package:medical/src/widgets/shimmer_box.dart';
 
 import '../course_quiz/course_quiz.dart';
 import 'lesson_detail_cubit.dart';
@@ -52,7 +53,8 @@ class LessonDetailPage extends StatefulWidget {
   _LessonDetailPageState createState() => _LessonDetailPageState();
 }
 
-class _LessonDetailPageState extends State<LessonDetailPage> {
+class _LessonDetailPageState extends State<LessonDetailPage>
+    with SingleTickerProviderStateMixin {
   late final LessonDetailCubit _cubit;
   bool _isShowModal = false;
   int percentComplete = 10;
@@ -63,6 +65,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   bool _showMiniBar = false;
   bool _showMiniAudioBar = false;
   final ScrollController _scrollController = ScrollController();
+
+  late final AnimationController _shimmerController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   List<String> _ratingReasonsByScore(int score) {
     switch (score) {
@@ -127,6 +134,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     _cubit.videoManager?.disposeAllVideo();
     _cubit.audioManager?.disposeAllAudio();
     _scrollController.dispose();
+    _shimmerController.dispose();
 
     // Schedule async tracking after disposal (only if lessonDetail is available)
     if (_cubit.lessonDetail?.id != null && _cubit.lessonDetail?.name != null) {
@@ -156,6 +164,88 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     return youtubeRegex.hasMatch(videoAddressLink);
   }
 
+  /// Shown for the first load only (see [showFirstLoadSkeleton] in
+  /// [build]'s `builder`) — a real, tappable header (matching the loaded
+  /// page's gradient/back-button) over a shimmer body, instead of blocking
+  /// the whole screen behind a BotToast spinner while the section list
+  /// loads. No video/audio managers exist yet at this point (both stay
+  /// null until [LessonDetailCubit.initData] resolves), so a plain pop is
+  /// enough here — the loaded page's back button additionally pauses
+  /// playback, which doesn't apply yet.
+  Widget _buildFirstLoadSkeleton() {
+    Widget box({double? width, double height = 14, BorderRadius? radius}) {
+      return ShimmerBox(
+        animation: _shimmerController,
+        width: width,
+        height: height,
+        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
+      );
+    }
+
+    return Scaffold(
+      body: BackgroundPage(
+        background: R.drawable.bg_lesson_detail,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+                ),
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => NavigationUtil.pop(context),
+                        child: Icon(Icons.arrow_back, size: 26, color: R.color.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const GapH(16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: box(width: 220, height: 20),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    box(
+                        width: double.infinity,
+                        height: 190,
+                        radius: BorderRadius.circular(12)),
+                    const SizedBox(height: 20),
+                    box(width: double.infinity, height: 14),
+                    const SizedBox(height: 10),
+                    box(width: double.infinity, height: 14),
+                    const SizedBox(height: 10),
+                    box(width: 220, height: 14),
+                    const SizedBox(height: 10),
+                    box(width: 160, height: 14),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -174,7 +264,18 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
             }
           }
           if (state is LessonDetailLoading) {
-            BotToast.showLoading();
+            // The very first load (lessonDetail still null, non-quiz lesson)
+            // already shows its own shimmer skeleton in `builder` below —
+            // showing the blocking BotToast spinner here too would stack a
+            // second loading indicator on top of it. Every other loading
+            // moment (section change, quiz progression, rating submit,
+            // etc. — i.e. once lessonDetail is populated, or for quiz
+            // lessons which never go through this cubit's section-list
+            // fetch) keeps the existing blocking-spinner treatment, since
+            // there's real content already on screen for it to overlay.
+            if (_cubit.lessonDetail != null || _cubit.showQuizLesson) {
+              BotToast.showLoading();
+            }
           } else {
             BotToast.closeAllLoading();
           }
@@ -240,6 +341,22 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
+          // First-load only: true from the very first frame (before the
+          // cubit even emits LessonDetailLoading — getSectionList() awaits
+          // Future.delayed(Duration.zero) before its first emit) through to
+          // when it succeeds and populates lessonDetail. Excludes quiz-type
+          // lessons (lessonDetail never gets set for those — showQuizLesson
+          // is already true synchronously from initData()) and a failed
+          // first load (falls back to today's existing failure UI instead
+          // of shimmering forever).
+          final bool showFirstLoadSkeleton = _cubit.lessonDetail == null &&
+              !_cubit.showQuizLesson &&
+              state is! LessonDetailFailure;
+
+          if (showFirstLoadSkeleton) {
+            return _buildFirstLoadSkeleton();
+          }
+
           return WillPopScope(
             onWillPop: () async {
               debugPrint(
