@@ -429,7 +429,14 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
       NavigationUtil.popToFirst(context);
 
-      await UserClient().fetchUser().then((value) {
+      // skipNotifiUI: this handler already rebuilds `tabs` (including a
+      // fresh HomeController) below to reflect the updated user info: letting
+      // fetchUser() also broadcast "user_info_change" makes Home's own
+      // listener (_HomeControllerState.update()) re-dispatch FetchHome() a
+      // second time. This notifyName is only ever fired from
+      // home_v2.dart's _pullToRefresh() and calendar_page.dart — neither
+      // needs the broader broadcast on top of the tabs rebuild here.
+      await UserClient().fetchUser(skipNotifiUI: true).then((value) {
         // Rebuild tabs with updated user info
         setState(() {
           tabs = [

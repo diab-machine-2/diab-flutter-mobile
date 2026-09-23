@@ -55,7 +55,6 @@ import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../modal/medicine/daily_medicine_model.dart';
-import '../../repo/home/home_client.dart';
 import '../../repo/medicine/medicine_client.dart';
 import '../../service/rating_service.dart';
 import 'schema/home_schema.dart';
@@ -132,8 +131,7 @@ class _HomeControllerState extends State<HomeController>
     _initHealthApp();
     initTarget();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      log('[HOME_DEBUG] postFrame init check started - will call checkExerciseData/checkMedicineSchedule');
-      await checkExerciseData();
+      log('[HOME_DEBUG] postFrame init check started - will call checkMedicineSchedule');
       await checkMedicineSchedule();
       await _fetchExamResults();
     });
@@ -267,17 +265,6 @@ class _HomeControllerState extends State<HomeController>
     } catch (_) {
       // Silently ignore — count stays 0
     }
-  }
-
-  Future<void> checkExerciseData() async {
-    final client = HomeClient();
-    final exerciseData = await client.fetchHomes();
-    bool isChecked = false;
-    if (exerciseData.exercise != null) {
-      isChecked = exerciseData.exercise!.isDataNotEmpty!;
-      _hasExerciseData = isChecked;
-    }
-    setState(() {});
   }
 
   Future<void> checkMedicineSchedule() async {
@@ -637,10 +624,9 @@ class _HomeControllerState extends State<HomeController>
   Future<bool> _pullToRefresh() async {
     _courseSuggestKey.currentState?.loadData();
     page = 1;
-    // _homeBloc.add(FetchHome());
-    user = await UserClient().fetchUser();
+    _homeBloc.add(FetchHome());
+    user = await UserClient().fetchUser(skipNotifiUI: true);
     AppSettings.isReloadCurrentUserInfo = true;
-    checkExerciseData(); // To update hasExerciseData after sync from health connnect then pull to refresh
 
     _isDisplayedWelcome = false;
 
@@ -703,6 +689,7 @@ class _HomeControllerState extends State<HomeController>
           HomeLoaded? stateLoaded;
           if (state is HomeLoaded) {
             model = state.model;
+            _hasExerciseData = model?.exercise?.isDataNotEmpty ?? false;
             // Defer: AppSettings.hasBundle= synchronously fires
             // Observable.notifyObservers, which TabbarController observes and
             // reacts to with setState. Doing that while this BlocBuilder is

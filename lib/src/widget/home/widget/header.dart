@@ -85,7 +85,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
           context: context, code: widget.sharedCode.toString());
     }
     if (AppSettings.isGetUser == false) {
-      user = await UserClient().fetchUser();
+      user = await UserClient().fetchUser(skipNotifiUI: true);
       setState(() {});
     }
   }
