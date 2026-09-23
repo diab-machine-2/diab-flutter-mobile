@@ -36,6 +36,7 @@ class BranchioLinkConfig {
       BranchioLinkConfig._privateConstructor();
 
   StreamSubscription? _subLink;
+  bool _isDeepLinkHandlerSetUp = false;
   String? _courseId;
   String? _endTime;
   int? _interviewType;
@@ -153,6 +154,12 @@ class BranchioLinkConfig {
   }
 
   void setUpHandleDeepLink() {
+    if (_isDeepLinkHandlerSetUp) {
+      print(
+          '[BRANCH_DEBUG] setUpHandleDeepLink() already set up, skipping duplicate registration');
+      return;
+    }
+    _isDeepLinkHandlerSetUp = true;
     print('[BRANCH_DEBUG] Inside setUpHandleDeepLink()');
     SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
       screenName: 'deeplink',

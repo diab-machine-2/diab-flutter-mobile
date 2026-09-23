@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/glucose/glucose_faq.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class FirebaseRemoteSetting {
   FirebaseRemoteSetting._privateConstructor();
@@ -64,7 +65,8 @@ class FirebaseRemoteSetting {
     Map<String, dynamic> localSetting =
         localSettings.isNotEmpty ? jsonDecode(localSettings) : {};
     // Set default for settings if fetch fail
-    await remoteConfig.setDefaults({
+    try {
+      await remoteConfig.setDefaults({
       "APP_STORE_VERSION": localSetting["APP_STORE_VERSION"] ?? '1.4.3',
       "PLAY_STORE_VERSION": localSetting["PLAY_STORE_VERSION"] ?? '1.4.5',
       "STORE_NAVIGATION_URL": localSetting["STORE_NAVIGATION_URL"] ??
@@ -91,19 +93,28 @@ class FirebaseRemoteSetting {
           localSetting["EXCLUDE_SPECIALTY_CLINIC"] ?? '',
       "EXCLUDE_SPECIALTY_TELEMEDICINE":
           localSetting["EXCLUDE_SPECIALTY_TELEMEDICINE"] ?? 'co-xuong-khop'
-    });
+      }).timeout(const Duration(seconds: 5));
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
     // Config timeout for remoteConfig
-    await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: timeout,
-      minimumFetchInterval: const Duration(minutes: 5),
-    ));
+    try {
+      await remoteConfig
+          .setConfigSettings(RemoteConfigSettings(
+            fetchTimeout: timeout,
+            minimumFetchInterval: const Duration(minutes: 5),
+          ))
+          .timeout(const Duration(seconds: 5));
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
 
     /**
      * if fetch success it get all config save local and set retry false
      * else set retry true to retry fetch again in login screen
      */
     try {
-      await remoteConfig.fetchAndActivate();
+      await remoteConfig.fetchAndActivate().timeout(timeout);
       Map<String, RemoteConfigValue> allValues = remoteConfig.getAll();
       Map<String, String> parsedValues = {};
       for (var entry in allValues.entries) {

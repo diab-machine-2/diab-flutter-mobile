@@ -31,7 +31,7 @@ class TrackingManager {
   static Future<void> initializeFlutterFire() async {
     try {
       // Wait for Firebase to initialize
-      await Firebase.initializeApp();
+      await Firebase.initializeApp().timeout(const Duration(seconds: 8));
     } catch (e, s) {
       debugPrint(
           'TrackingManager.initializeFlutterFire Firebase init failed: $e');

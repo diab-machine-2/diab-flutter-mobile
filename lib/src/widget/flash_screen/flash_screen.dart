@@ -67,15 +67,22 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   }
 
   Future<void> getVersion() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    AppSettings.version = packageInfo.version;
-    AppSettings.buildNumber = packageInfo.buildNumber;
+    try {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform()
+          .timeout(const Duration(seconds: 3));
+      AppSettings.version = packageInfo.version;
+      AppSettings.buildNumber = packageInfo.buildNumber;
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   Future<void> getSecuredModel() async {
     AppVersionResponse? appVersion;
     try {
-      appVersion = await UserClient().getAppVersion(context);
+      appVersion = await UserClient()
+          .getAppVersion(context)
+          .timeout(const Duration(seconds: 8));
     } catch (error) {
       appVersion = AppVersionResponse(
         id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
@@ -87,7 +94,9 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     }
 
     try {
-      secureModel = await UserClient().fetchInfoSecure();
+      secureModel = await UserClient()
+          .fetchInfoSecure()
+          .timeout(const Duration(seconds: 8));
     } catch (exception) {
       secureModel = SecureModel(
         email: "lienhe@diab.com.vn",
@@ -114,9 +123,19 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   }
 
   Future<void> getData(BuildContext context) async {
-    final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
+    String? sharedCode;
     try {
-      await FirebaseRemoteSetting.instance.init();
+      sharedCode = await DeepLinkConfig.instance
+          .getInitLink()
+          .timeout(const Duration(seconds: 3));
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+      sharedCode = null;
+    }
+    try {
+      await FirebaseRemoteSetting.instance
+          .init()
+          .timeout(const Duration(seconds: 10));
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     }

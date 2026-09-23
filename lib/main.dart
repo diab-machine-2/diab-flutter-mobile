@@ -73,8 +73,9 @@ Future<void> main() async {
   while (branchRetries < maxBranchRetries) {
     try {
       await FlutterBranchSdk.init(
-          enableLogging: true,
-          branchAttributionLevel: BranchAttributionLevel.FULL);
+              enableLogging: true,
+              branchAttributionLevel: BranchAttributionLevel.FULL)
+          .timeout(const Duration(seconds: 8));
       // Subscribe to deeplink stream immediately after init
       BranchioLinkConfig.instance.setUpHandleDeepLink();
       break;
