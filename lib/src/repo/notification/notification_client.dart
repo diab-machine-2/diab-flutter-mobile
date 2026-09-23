@@ -9,9 +9,15 @@ import '../../modal/notification/notification_data_list_model.dart';
 import '../../modal/notification/notification_list_model.dart';
 
 class NotificationClient extends FetchClient {
+  // Notification list page size. The backend's meta for this endpoint has no
+  // canNext/total field to tell us whether more pages exist (unlike other
+  // paginated endpoints in this app), so hasMore below is derived from
+  // whether a full page came back instead.
+  static const int _pageSize = 20;
+
   Future<NotificationDataListModel?> fetchNotifications(bool? isRead, int page) async {
     try {
-      Map<String, String> params = {'page': page.toString(), 'size': '1000'};
+      Map<String, String> params = {'page': page.toString(), 'size': '$_pageSize'};
       if (isRead != null) {
         params['isRead'] = isRead.toString();
       }
@@ -20,8 +26,12 @@ class NotificationClient extends FetchClient {
         if (response.data['data'] == null) {
           return null;
         } else {
-          return NotificationDataListModel(
-              models: NotificationListModel.toList(response.data['data']), hasMore: response.data['meta']['canNext']);
+          final items = NotificationListModel.toList(response.data['data']);
+          // Prefer a real canNext if the backend ever starts sending one —
+          // only fall back to the heuristic when it's actually missing.
+          final canNext = response.data['meta']?['canNext'];
+          final hasMore = canNext is bool ? canNext : items.length >= _pageSize;
+          return NotificationDataListModel(models: items, hasMore: hasMore);
         }
       } else {
         final error = Error.fromJson(response);
