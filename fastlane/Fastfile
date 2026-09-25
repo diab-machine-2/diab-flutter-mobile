@@ -1,0 +1,68 @@
+default_platform(:ios)
+
+platform :ios do
+  # Lane for uploading to TestFlight
+  lane :upload_tf do
+    api_key = app_store_connect_api_key(
+      key_id:                ENV["ASC_KEY_ID"],
+      issuer_id:             ENV["ASC_ISSUER_ID"],
+      key_content:           ENV["ASC_KEY_BASE64"],
+      is_key_content_base64: true,
+      duration:              1200,
+      in_house:              false
+    )
+
+    pilot(
+      api_key:                           api_key,
+      ipa:                               ENV["SIGNED_IPA"],
+      changelog:                         ENV["RELEASE_NOTES"],
+      skip_submission:                   true,
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  # Lane for generating Distribution Certificate + App Store Profile
+  lane :generate_all do
+    api_key = app_store_connect_api_key(
+      key_id:    ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: File.expand_path("~/.appstoreconnect/private_keys/AuthKey_#{ENV['ASC_KEY_ID']}.p8"),
+      duration:  1200,
+      in_house:  false
+    )
+
+    # Revoke all existing distribution certificates first (max limit reached)
+    UI.message("🗑️ Revoking existing Distribution certificates...")
+    begin
+      certs = Spaceship::ConnectAPI::Certificate.all(
+        filter: { certificateType: "DISTRIBUTION" },
+      )
+      certs.each do |c|
+        UI.message("  Revoking: #{c.id} (#{c.display_name})")
+        c.delete!
+      end
+      UI.success("✅ Revoked #{certs.count} existing Distribution certificate(s)")
+    rescue => e
+      UI.important("⚠️ Revoke error (non-fatal): #{e.message}")
+    end
+
+    cert(
+      api_key:          api_key,
+      development:      false,
+      force:            true,
+      output_path:      "./certs",
+      keychain_path:    "/Users/runner/Library/Keychains/login.keychain-db",
+      keychain_password: ""
+    )
+
+    sigh(
+      api_key:        api_key,
+      app_identifier: ENV["APP_IDENTIFIER"],
+      force:          true,
+      output_path:    "./profiles",
+      filename:       "AppStore_profile.mobileprovision"
+    )
+
+    UI.success("✅ Distribution Certificate + App Store Profile generated!")
+  end
+end
