@@ -70,6 +70,16 @@ class _LessonTabPageState extends State<LessonTabPage>
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
     // Trigger loads after the first frame so BlocConsumer listeners are mounted.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // This page is itself built lazily — the very first time it's inserted
+      // into the tree is often *because* a lesson deep link/notification just
+      // forced a jump to this tab. In that case a pending lessonId is already
+      // waiting, and it must not sit behind the list load below (getInitData
+      // alone was measured at ~1.3-1.5s on a first visit): the deep link's
+      // own NAVIGATE_TO_LESSON_DETAIL notification fires before this widget
+      // even exists, so update() below never sees it for this first build —
+      // this is the only place that can catch it in time.
+      _checkExistLessonId();
+
       // Ensure the first navigation always shows bot loading.
       if (!_didShowInitialBotToast) {
         _didShowInitialBotToast = true;
@@ -117,13 +127,16 @@ class _LessonTabPageState extends State<LessonTabPage>
       _cubit.silentRefreshAll();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
+      // Navigate immediately off the lessonId alone — it doesn't depend on
+      // lessonsList. Previously this awaited the full tab list fetch first,
+      // adding ~1.3s of dead wait before a deep-linked/notification lesson
+      // could open. When lessonsList is still null, kick the tab's own load
+      // off in the background (unawaited) so the Library tab has data ready
+      // by the time the user backs out of lesson_detail into it.
       if (_cubit.lessonsList == null) {
-        await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
-        _setBotToastLessonLoadingVisible(true);
-        BotToast.showLoading();
-      } else {
-        _checkExistLessonId();
+        _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
       }
+      _checkExistLessonId();
     }
   }
 
