@@ -135,37 +135,11 @@ class _NotificationDetailControllerState
                       Visibility(
                         visible: (notification?.hyperLink != null &&
                             notification!.hyperLink!.isNotEmpty),
-                        child: Material(
-                          color: R.color.transparent,
-                          borderRadius: BorderRadius.circular(20),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () {
-                              _launchInBrowser(notification?.hyperLink ?? '');
-                            },
-                            child: Container(
-                                margin: const EdgeInsets.all(16),
-                                width: 195,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 12),
-                                decoration: BoxDecoration(
-                                    color: R.color.mainColor,
-                                    borderRadius: BorderRadius.circular(20),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [
-                                          R.color.greenGradientTop,
-                                          R.color.greenGradientBottom
-                                        ])),
-                                child: Center(
-                                    child: Text(notification?.hyperText ?? '',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: R.color.white,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14)))),
-                          ),
+                        child: _HyperlinkCtaButton(
+                          text: notification?.hyperText ?? '',
+                          onTap: () {
+                            _launchInBrowser(notification?.hyperLink ?? '');
+                          },
                         ),
                       )
                     ],
@@ -234,12 +208,82 @@ class _NotificationDetailControllerState
 
   Future<void> _launchInBrowser(String url) async {
     // openLink() dispatches to Branch (fire-and-forget) or url_launcher —
-    // the CTA's own InkWell ripple is the tap feedback; a timed BotToast
+    // the CTA's own press animation is the tap feedback; a timed BotToast
     // here was disconnected from real completion and just added a second,
     // unrelated flash before the destination screen's own loading state.
     final opened = await BranchioLinkConfig.instance.openLink(url);
     if (!opened) {
       throw 'Could not launch $url';
     }
+  }
+}
+
+/// The "Xem ngay" CTA pill. A plain InkWell here gave a full-pill Material
+/// ripple/highlight that looked oversized for a button this small — swapped
+/// for a smaller press cue: the shadow flattens and the pill dips slightly
+/// while held, no ripple.
+class _HyperlinkCtaButton extends StatefulWidget {
+  const _HyperlinkCtaButton({required this.text, required this.onTap});
+
+  final String text;
+  final VoidCallback onTap;
+
+  @override
+  State<_HyperlinkCtaButton> createState() => _HyperlinkCtaButtonState();
+}
+
+class _HyperlinkCtaButtonState extends State<_HyperlinkCtaButton> {
+  bool _pressed = false;
+
+  void _setPressed(bool pressed) {
+    if (_pressed == pressed) return;
+    setState(() => _pressed = pressed);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => _setPressed(true),
+      onTapCancel: () => _setPressed(false),
+      onTapUp: (_) => _setPressed(false),
+      onTap: widget.onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        margin: const EdgeInsets.all(16),
+        width: 195,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        transform: Matrix4.identity()..scale(_pressed ? 0.97 : 1.0),
+        transformAlignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: R.color.mainColor,
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.centerRight,
+              colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
+          boxShadow: _pressed
+              ? []
+              : [
+                  BoxShadow(
+                    color: R.color.black.withOpacity(0.18),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+        ),
+        child: Center(
+          child: Text(
+            widget.text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: R.color.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
