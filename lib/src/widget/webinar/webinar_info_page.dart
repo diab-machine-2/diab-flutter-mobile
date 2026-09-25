@@ -58,10 +58,13 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
       _loading = true;
     });
     try {
-      final ApiResult<WebinarDetailResponse> detailResult =
-          await _repository.getLearningPostEvent(widget.id);
-      final ApiResult<List<WebinarDetailResponse>> eventsResult =
-          await _repository.getLearningPostEvents();
+      final results = await Future.wait([
+        _repository.getLearningPostEvent(widget.id),
+        _repository.getLearningPostEvents(),
+      ]);
+      final detailResult = results[0] as ApiResult<WebinarDetailResponse>;
+      final eventsResult =
+          results[1] as ApiResult<List<WebinarDetailResponse>>;
 
       detailResult.when(
         success: (resp) {
