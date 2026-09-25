@@ -12,7 +12,24 @@ import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 
+// Matches the timeout convention already used by AppClient/DocosanClient
+// (lib/src/model/service/app_client.dart, docosan_client.dart) — FetchClient
+// itself never had any timeout, which meant any endpoint going through it
+// (Login/User/Notification/Medicine/...) could hang on a stalled
+// connection or an unresponsive server indefinitely.
+const _fetchClientConnectTimeout = Duration(minutes: 1);
+const _fetchClientReceiveTimeout = Duration(minutes: 1);
+const _fetchClientSendTimeout = Duration(minutes: 1);
+
 class FetchClient {
+  Dio _createDio() {
+    final dio = Dio();
+    dio.options.connectTimeout = _fetchClientConnectTimeout;
+    dio.options.receiveTimeout = _fetchClientReceiveTimeout;
+    dio.options.sendTimeout = _fetchClientSendTimeout;
+    return dio;
+  }
+
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
     //return 'id.savvycom.asia';
@@ -130,7 +147,7 @@ class FetchClient {
   }) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
 
     Uri uri = Uri.https(domain, url, params);
@@ -150,7 +167,7 @@ class FetchClient {
       Map<String, String?>? params}) async {
     final option = await options3();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
     Response response =
         await dio.getUri(Uri.https(domain, url, params), options: option);
@@ -163,7 +180,7 @@ class FetchClient {
       Map<String, String?>? params}) async {
     final option = await options3();
     final domain = Const.DOMAIN;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
     return dio.getUri(Uri.https(domain, url, params), options: option);
   }
@@ -176,7 +193,7 @@ class FetchClient {
   }) async {
     final option = await options2();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
     Response response = await dio.postUri(
         Uri.https(
@@ -198,7 +215,7 @@ class FetchClient {
   }) async {
     final Options option = baseOption ? await options() : await options1();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
     Response response = await dio.postUri(
         Uri.https(
@@ -365,7 +382,7 @@ class FetchClient {
   }) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
     Console.logJson('API', url);
     Console.logJson('Request', params);
@@ -392,7 +409,7 @@ class FetchClient {
   }) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
     Response response = await dio.putUri(
         Uri.https(
@@ -441,7 +458,7 @@ class FetchClient {
       Map<String, dynamic>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    final Dio dio = Dio();
+    final Dio dio = _createDio();
     logRequest(dio);
     Response response = await dio.deleteUri(
         Uri.https(
@@ -476,6 +493,7 @@ class FetchClient {
       },
     ));
     dio.interceptors.add(TrackingInterceptor());
+    dio.interceptors.add(ApiTimingInterceptor());
   }
 
   checkNetwork() async {
@@ -503,6 +521,40 @@ class FetchClient {
   }
 }
 
+/// Logs `[API_TIMING] <ms>ms <METHOD> <path>` for every request/response or
+/// error on completion — a permanent, single-line-per-call record of how
+/// long each endpoint actually took, independent of the verbose
+/// request/response body logging above. Grep this tag to build a
+/// slowest-endpoints report without needing to add temporary debug prints.
+class ApiTimingInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.extra['__requestStart'] = DateTime.now();
+    handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    _log(response.requestOptions, statusCode: response.statusCode);
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    _log(err.requestOptions,
+        statusCode: err.response?.statusCode, errorType: err.type);
+    handler.next(err);
+  }
+
+  void _log(RequestOptions options, {int? statusCode, DioExceptionType? errorType}) {
+    final start = options.extra['__requestStart'] as DateTime?;
+    if (start == null) return;
+    final ms = DateTime.now().difference(start).inMilliseconds;
+    final status = errorType != null ? 'ERROR($errorType)' : '$statusCode';
+    print('[API_TIMING] ${ms}ms ${options.method} ${options.path} $status');
+  }
+}
+
 class TrackingInterceptor extends Interceptor {
   @override
   Future<void> onResponse(
@@ -520,7 +572,7 @@ class TrackingInterceptor extends Interceptor {
 
       final Options option = await FetchClient().options();
       final domain = FetchClient.baseURL;
-      final Dio dio = Dio();
+      final Dio dio = FetchClient()._createDio();
       await dio.postUri(Uri.https(domain, '/App/Logs'),
           data: {'content': jsonEncode(errorData)}, options: option);
     }
@@ -544,7 +596,7 @@ class TrackingInterceptor extends Interceptor {
 
       final Options option = await FetchClient().options();
       final domain = FetchClient.baseURL;
-      final Dio dio = Dio();
+      final Dio dio = FetchClient()._createDio();
       await dio.postUri(Uri.https(domain, '/App/Logs'),
           data: {'content': jsonEncode(errorData)}, options: option);
     }

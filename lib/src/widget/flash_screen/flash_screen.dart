@@ -21,7 +21,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../modal/user/secure.dart';
 import '../../model/repository/app_repository.dart';
-import '../../model/response/app_version_response.dart';
 import '../../model/service/app_client.dart';
 
 class FlashScreenController extends StatefulWidget {
@@ -32,7 +31,6 @@ class FlashScreenController extends StatefulWidget {
 class _FlashScreenControllerState extends State<FlashScreenController> {
   bool isNavigateToStepList = false;
   SecureModel? secureModel;
-  AppVersionResponse? appVersion;
   bool _isInitialized = false;
 
   @override
@@ -78,48 +76,45 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   }
 
   Future<void> getSecuredModel() async {
-    AppVersionResponse? appVersion;
-    try {
-      appVersion = await UserClient()
-          .getAppVersion(context)
-          .timeout(const Duration(seconds: 8));
-    } catch (error) {
-      appVersion = AppVersionResponse(
-        id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
-        code: "123",
-        platform: "iOs",
-        enviroment: "production",
-        version: "1.1.6",
-      );
-    }
-
-    try {
-      secureModel = await UserClient()
-          .fetchInfoSecure()
-          .timeout(const Duration(seconds: 8));
-    } catch (exception) {
-      secureModel = SecureModel(
-        email: "lienhe@diab.com.vn",
-        support: "Supporter",
-        hotline: "0768 07 07 27",
-        security: "security",
-        environment: "production",
-      );
-    }
-
-    appVersion = AppVersionResponse(
-      id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
-      code: "123",
-      platform: "iOs",
-      enviroment: Const.ENVIRONMENT_DEFAULT,
-      version: "1.1.6",
+    // Fallback available immediately so AppSettings.secureModel is never
+    // null while the real fetch is in flight. No screen needs this
+    // synchronously on splash — only Profile and the welcome-package screen
+    // read it, both post-Home/Login, and Profile already re-fetches on its
+    // own if this hasn't landed by the time it's opened
+    // (profile_controller.dart's `if (AppSettings.secureModel == null)`).
+    secureModel = SecureModel(
+      email: "lienhe@diab.com.vn",
+      support: "Supporter",
+      hotline: "0768 07 07 27",
+      security: "security",
+      environment: "production",
     );
-
-    await AppSettings.saveEnvironment(appVersion.enviroment);
-    AppSettings.environment = appVersion.enviroment ?? "";
     AppSettings.secureModel = secureModel;
+    _fetchInfoSecureInBackground();
+
+    // getAppVersion() used to be awaited here too, but its result was never
+    // read anywhere (it got unconditionally overwritten before use) — the
+    // network call (and the store-version check inside it) was pure dead
+    // weight on every cold start, removed entirely.
+    await AppSettings.saveEnvironment(Const.ENVIRONMENT_DEFAULT);
+    AppSettings.environment = Const.ENVIRONMENT_DEFAULT;
     appClient = AppClient().getAppClient();
     docosanClient = DocosanClient().getDocosanClient();
+  }
+
+  // Fire-and-forget: splash must not block on this (see getSecuredModel).
+  void _fetchInfoSecureInBackground() async {
+    try {
+      final model = await UserClient()
+          .fetchInfoSecure()
+          .timeout(const Duration(seconds: 8));
+      if (model != null) {
+        secureModel = model;
+        AppSettings.secureModel = model;
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   Future<void> getData(BuildContext context) async {

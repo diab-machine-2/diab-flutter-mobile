@@ -592,7 +592,8 @@ class BranchioLinkConfig {
       } else {
         await AppSettings.saveHasCheckedFirstReferringParams(true);
         try {
-          final firstParams = await FlutterBranchSdk.getFirstReferringParams();
+          final firstParams = await FlutterBranchSdk.getFirstReferringParams()
+              .timeout(const Duration(seconds: 5));
           if (firstParams.isNotEmpty) {
             print('[BRANCH_DEBUG] getFirstReferringParams data: $firstParams');
             final isClicked = firstParams['+clicked_branch_link'] == true;
@@ -634,7 +635,8 @@ class BranchioLinkConfig {
     // Fallback for URI-scheme opens where listSession fired but without
     // clicked_branch_link context.
     try {
-      final latestParams = await FlutterBranchSdk.getLatestReferringParams();
+      final latestParams = await FlutterBranchSdk.getLatestReferringParams()
+          .timeout(const Duration(seconds: 5));
       if (latestParams.isNotEmpty &&
           latestParams['+clicked_branch_link'] == true) {
         print('[BRANCH_DEBUG] getLatestReferringParams data: $latestParams');

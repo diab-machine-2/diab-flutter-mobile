@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/http_helper.dart' show ApiTimingInterceptor;
 
 import '../app_api.dart';
 
@@ -146,6 +147,9 @@ class AppClient {
     if (kDebugMode) {
       _dio.interceptors.add(FullLogInterceptor(tag: 'APP API'));
     }
+    // Unlike FullLogInterceptor above, timing must also work in release
+    // builds — it's how slow-endpoint reports get built from real usage.
+    _dio.interceptors.add(ApiTimingInterceptor());
 
     _dio.interceptors
         .add(InterceptorsWrapper(onRequest: (options, handler) async {

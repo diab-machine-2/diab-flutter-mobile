@@ -246,7 +246,8 @@ class ZoomService {
   Future<List<dynamic>> getMeetingStatus() async {
     try {
       final zoom = ZoomView();
-      final status = await zoom.meetingStatus();
+      final status =
+          await zoom.meetingStatus().timeout(const Duration(seconds: 5));
       if (kDebugMode) {
         print("[Meeting Status]: $status");
       }
