@@ -1052,6 +1052,17 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<LearningPostListResponse>> getActiveLearningPosts() async {
+    try {
+      final LearningPostListResponse response =
+          await appClient.getActiveLearningPosts();
+
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<WebinarDetailResponse>> getLearningPostEvent(
       String id) async {
     try {

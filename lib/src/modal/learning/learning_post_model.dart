@@ -18,6 +18,11 @@ class LearningPostModel {
   final String? partnerName;
   final String createDatetime;
   final List<LearningPostTagMappings> learningPostTagMappings;
+  // From the merged /App/LearningPost/Active endpoint: a post can be pinned
+  // to more than one slot (e.g. both the banner carousel and the news list),
+  // so callers filter this client-side instead of the backend returning one
+  // list per slot.
+  final List<int> positions;
   // Webinar fields
   final String? accountId;
   final bool? eventType;
@@ -41,6 +46,7 @@ class LearningPostModel {
     required this.enableLink,
     required this.createDatetime,
     required this.learningPostTagMappings,
+    this.positions = const [],
     this.imagePartnerUrl,
     this.imageBannerUrl,
     this.partnerName,
@@ -77,6 +83,13 @@ class LearningPostModel {
       partnerName: json['partnerName'],
       createDatetime: json['createDatetime']?.toString() ?? '',
       learningPostTagMappings: _learningPostTagMappings,
+      positions: json['positions'] is List
+          ? (json['positions'] as List)
+              .map((e) =>
+                  e is Map ? (e['position'] as num?)?.toInt() : null)
+              .whereType<int>()
+              .toList()
+          : const <int>[],
       imageUrl: json['imageUrl'] != null && json['imageUrl'] is Map
           ? ImagesModel.fromJson(json['imageUrl'] as Map<String, dynamic>)
           : const ImagesModel(id: null, url: null),
@@ -139,6 +152,7 @@ class LearningPostModel {
       'learningPostTagMappings': learningPostTagMappings
           .map((tag) => {'id': tag.id, 'name': tag.name, 'type': tag.type})
           .toList(),
+      'positions': positions.map((p) => {'position': p}).toList(),
       'accountId': accountId,
       'eventType': eventType,
       'eventJoinCount': eventJoinCount,

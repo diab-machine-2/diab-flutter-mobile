@@ -462,6 +462,15 @@ abstract class AppApi {
   Future<LearningPostListResponse> getBanners(
       {@Query('Position') int? position});
 
+  // Merged replacement for the old separate banner (position=9) / news
+  // (position=1) calls — each returned item now carries its own `positions`
+  // list, so a single fetch covers both and callers filter client-side.
+  @GET("App/LearningPost/Active")
+  Future<LearningPostListResponse> getActiveLearningPosts({
+    @Query('page') int page = 1,
+    @Query('size') int size = 1000,
+  });
+
   // Webinar / Events
   @GET('/App/LearningPost/event/{id}')
   Future<WebinarDetailResponse> getLearningPostEvent(

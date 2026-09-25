@@ -148,17 +148,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // line finishes), independent of when its Future is later awaited.
         final remindersFuture = _fetchRemindersPatch();
         final activitiesFuture = _fetchActivitiesPatch();
-        final bannersFuture = _fetchBannersPatch();
-        final newsFuture = _fetchNewsPatch();
+        final newsAndBannersFuture = _fetchNewsAndBannersPatch();
         final lessonsFuture = _fetchLessonsPatch();
 
         // Apply results in the order we want the UI to update — banner and
         // news first (previously loaded dead last, behind reminders and
-        // activities, despite appearing near the top of the screen).
-        currentState = (await bannersFuture)(currentState);
-        yield currentState;
-
-        currentState = (await newsFuture)(currentState);
+        // activities, despite appearing near the top of the screen). Banners
+        // and news now come from one merged /App/LearningPost/Active call
+        // (see _fetchNewsAndBannersPatch), so they apply in a single yield
+        // instead of two separate network round trips.
+        currentState = (await newsAndBannersFuture)(currentState);
         yield currentState;
 
         currentState = (await remindersFuture)(currentState);
@@ -429,45 +428,63 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  /// Fires the "featured news" network call immediately; returns a sync
-  /// applier.
-  Future<HomeLoaded Function(HomeLoaded)> _fetchNewsPatch() async {
-    try {
-      final learningClient = LearningClient();
-      final newsResponse = await learningClient.fetchLearningPost(1);
-      if (newsResponse.isNotEmpty) {
-        return (HomeLoaded state) => state.copyWith(news: newsResponse);
-      }
-      return (HomeLoaded state) => state;
-    } catch (e, s) {
-      // Same reasoning as reminders above — the original had no try/catch
-      // here either, so a news-fetch failure used to blank the whole home
-      // screen with HomeError.
-      TrackingManager.recordError(e, s);
-      return (HomeLoaded state) => state;
-    }
-  }
-
-  /// Fires the banners network call immediately; returns a sync applier.
-  Future<HomeLoaded Function(HomeLoaded)> _fetchBannersPatch() async {
+  /// Fetches the merged active-post list once (backend now returns banner
+  /// and news posts from the same /App/LearningPost/Active call, each
+  /// tagged with the slot(s) it belongs to via `positions`) — replaces the
+  /// old pair of position=1 (news) / position=9 (banner) requests.
+  Future<List<LearningPostModel>> _fetchActiveLearningPosts() async {
     try {
       final ApiResult<LearningPostListResponse> apiResult =
-          await AppRepository().getBanners(position: 9);
-      List<LearningPostModel>? bannersResp;
+          await AppRepository().getActiveLearningPosts();
+      List<LearningPostModel>? posts;
       apiResult.when(success: (LearningPostListResponse response) {
-        bannersResp = response.data?.map((e) => e).toList();
+        posts = response.data;
       }, failure: (error) {
         TrackingManager.recordError(error, null);
       });
-      final banners = bannersResp ?? [];
-      if (banners.isNotEmpty) {
-        return (HomeLoaded state) => state.copyWith(banners: banners);
-      }
-      return (HomeLoaded state) => state;
+      return posts ?? [];
     } catch (e, s) {
       TrackingManager.recordError(e, s);
-      return (HomeLoaded state) => state;
+      return [];
     }
+  }
+
+  /// Fires the merged banners+news call immediately; returns a sync applier
+  /// that sets both fields from the one response. Used by `_fetchHomes()`.
+  Future<HomeLoaded Function(HomeLoaded)> _fetchNewsAndBannersPatch() async {
+    final posts = await _fetchActiveLearningPosts();
+    final banners = posts.where((p) => p.positions.contains(9)).toList();
+    final news = posts.where((p) => p.positions.contains(1)).toList();
+    return (HomeLoaded state) {
+      HomeLoaded result = state;
+      if (banners.isNotEmpty) result = result.copyWith(banners: banners);
+      if (news.isNotEmpty) result = result.copyWith(news: news);
+      return result;
+    };
+  }
+
+  /// Fires the "featured news" network call immediately; returns a sync
+  /// applier. Only reachable via the currently-unused HomeFetchNewsEvent —
+  /// `_fetchHomes()` uses the merged `_fetchNewsAndBannersPatch()` above.
+  Future<HomeLoaded Function(HomeLoaded)> _fetchNewsPatch() async {
+    final posts = await _fetchActiveLearningPosts();
+    final news = posts.where((p) => p.positions.contains(1)).toList();
+    if (news.isNotEmpty) {
+      return (HomeLoaded state) => state.copyWith(news: news);
+    }
+    return (HomeLoaded state) => state;
+  }
+
+  /// Fires the banners network call immediately; returns a sync applier.
+  /// Only reachable via the currently-unused HomeFetchBannersEvent —
+  /// `_fetchHomes()` uses the merged `_fetchNewsAndBannersPatch()` above.
+  Future<HomeLoaded Function(HomeLoaded)> _fetchBannersPatch() async {
+    final posts = await _fetchActiveLearningPosts();
+    final banners = posts.where((p) => p.positions.contains(9)).toList();
+    if (banners.isNotEmpty) {
+      return (HomeLoaded state) => state.copyWith(banners: banners);
+    }
+    return (HomeLoaded state) => state;
   }
 
   /// Fires the lessons network call immediately; returns a sync applier.
