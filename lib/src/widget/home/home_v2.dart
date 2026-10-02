@@ -1023,7 +1023,9 @@ class _HomeControllerState extends State<HomeController>
                               child: CarouselSlider.builder(
                                 options: CarouselOptions(
                                   autoPlay: banners.length > 1 ? true : false,
-                                  aspectRatio: 16 / 7,
+                                  // Match BE banner size (2500x900) so the
+                                  // image fills the slot without letterboxing.
+                                  aspectRatio: 2500 / 900,
                                   autoPlayInterval: Duration(seconds: 3),
                                   viewportFraction: 1.0,
                                   initialPage: 0,
