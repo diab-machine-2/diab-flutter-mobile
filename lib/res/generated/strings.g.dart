@@ -1892,5 +1892,6 @@ class Strings {
   String get benefit_voucher_subtext => 'benefit_voucher_subtext';
   String get benefit_voucher_expired => 'benefit_voucher_expired';
   String get please_select_package_before_leaving => 'please_select_package_before_leaving';
+  String get mes_force_update_required => 'mes_force_update_required';
   String get benefit_no_longer_available => 'benefit_no_longer_available';
 }

@@ -59,6 +59,7 @@ import 'package:medical/src/widget/conversation/conversation_setting.dart';
 import 'package:medical/src/widget/conversation/conversation_user_profile.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
+import 'package:medical/src/widget/force_update/force_update_gate.dart';
 import 'package:medical/src/widget/home/widget/sync_loading.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/create_new_password.dart';
@@ -139,6 +140,8 @@ class App extends StatelessWidget {
                 //   child: child!,
                 // );
                 child = BotToastInit()(context, child);
+                // Mandatory store-update popup, above every route and toast.
+                child = ForceUpdateGate(child: child);
                 return SafeArea(
                   top: false,
                   child: child,

@@ -1,6 +1,10 @@
 class Const {
   static const String ENVIRONMENT_DEFAULT = "product"; //product or staging or dev
 
+  // Numeric App Store id (apps.apple.com/app/id<ID>). Android uses the
+  // runtime package name instead. White-label builds must change this.
+  static const String IOS_APP_STORE_ID = "1569353448";
+
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
   static const String IS_DOMAIN_DEV = "is.dev.diab.vn";

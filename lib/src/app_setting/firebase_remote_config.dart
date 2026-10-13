@@ -12,8 +12,16 @@ class FirebaseRemoteSetting {
       FirebaseRemoteSetting._privateConstructor();
   final remoteConfig = FirebaseRemoteConfig.instance;
 
-  late String _appStoreVersion;
-  late String _playStoreVersion;
+  // Minimum app version required per platform (force update). Empty = no
+  // forced update. Non-`late` on purpose: they're read on app resume and may
+  // be accessed before `init()` finishes (it can outlive the splash timeout).
+  String _appStoreVersion = '';
+  String _playStoreVersion = '';
+  final Completer<void> _initialized = Completer<void>();
+
+  /// Completes once `init()` has populated values (fetched, cached or
+  /// defaults) — regardless of whether the caller's own timeout fired first.
+  Future<void> get initialized => _initialized.future;
   late String? _storeNavigationUrl;
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
@@ -62,8 +70,14 @@ class FirebaseRemoteSetting {
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
     var localSettings = await AppSettings.getFirebaseRemoteSettings();
-    Map<String, dynamic> localSetting =
-        localSettings.isNotEmpty ? jsonDecode(localSettings) : {};
+    // A corrupt saved copy must not throw here: that would skip completing
+    // [initialized] and silently disable the force-update check.
+    Map<String, dynamic> localSetting = {};
+    try {
+      if (localSettings.isNotEmpty) localSetting = jsonDecode(localSettings);
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
     // Set default for settings if fetch fail
     try {
       await remoteConfig.setDefaults({
@@ -132,6 +146,9 @@ class FirebaseRemoteSetting {
 
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
+    // Complete right after the version keys are read, so a later parsing
+    // error (e.g. malformed GLUCOSE_FAQS JSON) can't block the update check.
+    if (!_initialized.isCompleted) _initialized.complete();
     _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');
     _activePopupHealthConnect =
         remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
@@ -154,5 +171,19 @@ class FirebaseRemoteSetting {
     _excludeSpecialtyClinic = remoteConfig.getString('EXCLUDE_SPECIALTY_CLINIC');
     _excludeSpecialtyTelemedicine =
         remoteConfig.getString('EXCLUDE_SPECIALTY_TELEMEDICINE');
+  }
+
+  /// Re-fetches Remote Config (throttled by `minimumFetchInterval`) and
+  /// refreshes only the store-version keys. Used by the force-update check on
+  /// app resume. Never throws — on failure the last activated values stay.
+  Future<void> refreshStoreVersions(
+      {Duration timeout = const Duration(seconds: 10)}) async {
+    try {
+      await remoteConfig.fetchAndActivate().timeout(timeout);
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+    _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
+    _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
   }
 }

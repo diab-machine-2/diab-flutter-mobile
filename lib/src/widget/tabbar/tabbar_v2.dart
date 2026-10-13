@@ -1,9 +1,7 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -48,8 +46,6 @@ import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:medical/src/widget/benefit/benefit_introduce_bundle_page.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:store_redirect/store_redirect.dart';
 
 // Lightweight global accessor for current tab index
 class TabbarRouteState {
@@ -124,9 +120,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
     pageController = PageController(initialPage: _initialPage);
 
-    if (Const.ENVIRONMENT_DEFAULT == 'product') {
-      await _getNewVersion();
-    }
+    // Store-version check moved to the app-wide ForceUpdateGate (app.dart).
 
     if (AppSettings.userInfo?.packageType == PackageType.free) {
       await _subscriptionCubit.getSubscriptionBanners();
@@ -542,17 +536,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     );
   }
 
-  int _stringToInt(String versionStr) {
-    List<String> versionParts = versionStr.split('.');
-    int versionInt = 0;
-
-    for (String part in versionParts) {
-      versionInt = versionInt * 100 + int.parse(part);
-    }
-
-    return versionInt;
-  }
-
   Widget _buildProgramTab() {
     final bool hasBundle = AppSettings.checkHasBundle();
     // log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
@@ -731,40 +714,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
   }
 
-  Future<void> _getNewVersion() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    final _currentVersion = packageInfo.version;
-    late String storeVersion;
-    if (Platform.isAndroid) {
-      storeVersion = FirebaseRemoteSetting.instance.playStoreVersion;
-    } else if (Platform.isIOS) {
-      storeVersion = FirebaseRemoteSetting.instance.appStoreVersion;
-    }
-    bool hasNewVersion =
-        _stringToInt(storeVersion) > _stringToInt(_currentVersion);
-    if (hasNewVersion) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: Text(R.string.cap_nhat.tr()),
-          content: Text(
-              R.string.mes_new_version_available.tr(args: ['$storeVersion']),
-              textAlign: TextAlign.center),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: Text(R.string.cap_nhat.tr()),
-              onPressed: () => StoreRedirect.redirect(
-                androidAppId: "com.vbhc.diab",
-                iOSAppId: "1569353448",
-              ),
-            )
-          ],
-        ),
-      );
-    }
-  }
 }
 
 void showPopupWeight({String? nextRoute, dynamic args, bool? hasExerciseData}) {
