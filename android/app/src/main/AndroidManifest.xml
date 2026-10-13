@@ -177,6 +177,14 @@
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
 
+        <!-- Keeps lesson video audio alive while the screen is locked
+             (permissions FOREGROUND_SERVICE + FOREGROUND_SERVICE_MEDIA_PLAYBACK
+             are already declared above). -->
+        <service
+            android:name=".LessonPlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />

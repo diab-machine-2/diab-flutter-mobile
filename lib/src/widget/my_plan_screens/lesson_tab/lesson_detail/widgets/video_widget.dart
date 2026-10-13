@@ -50,6 +50,26 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   bool _isDisposed = false;
   bool _isInitializing = false;
 
+  /// Playback position to restore after the player is rebuilt on app resume
+  /// (see [didChangeAppLifecycleState]); null when nothing to restore.
+  Duration? _positionToRestore;
+
+  /// Whether to resume playback after restoring [_positionToRestore].
+  bool _resumePlaybackAfterRestore = false;
+
+  /// One-shot flags carried from the errored manager to the rebuilt one, so
+  /// onPlay and the completion-percentage callback don't fire a second time.
+  bool _carryHasPlayed = false;
+  bool _carryPercentCallbackDone = false;
+
+  /// When the app last resumed; a player exception shortly after this is
+  /// treated like an error that happened while backgrounded.
+  DateTime? _resumedAt;
+  static const Duration _resumeErrorWindow = Duration(seconds: 5);
+
+  /// True while [_rebuildPlayerKeepingPosition] is rebuilding the player.
+  bool _isRebuilding = false;
+
   String _getTimestamp() {
     return DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
   }
@@ -70,6 +90,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     if (oldWidget.url != widget.url) {
       url = widget.url;
       retryCount = 0;
+      _clearRestoreState();
       debugPrint(
           '[VIDEO][${_getTimestamp()}] VideoWidget.didUpdateWidget url changed to $url');
       _cleanupAndRefresh();
@@ -197,9 +218,14 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.resumed:
         debugPrint('App resumed');
+        _resumedAt = DateTime.now();
         if (playerController != null &&
             playerController!.videoPlayerController?.value.hasError == true) {
-          _refreshVideo();
+          // The player errored while backgrounded (e.g. the stream was cut
+          // after the OS suspended playback on screen lock). _refreshVideo
+          // builds a brand-new controller that starts at 00:00, so remember
+          // where the user was and seek back there once it's ready.
+          _rebuildPlayerKeepingPosition();
         }
         break;
       case AppLifecycleState.detached:
@@ -211,6 +237,57 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       default:
         break;
     }
+  }
+
+  /// Rebuilds an errored player, restoring the position (the errored
+  /// controller often reports 0 — fall back to the last progress event the
+  /// manager saw) and resuming playback if the user was playing.
+  void _rebuildPlayerKeepingPosition() {
+    // The resume check and the exception listener can both fire for the same
+    // failure; a second concurrent rebuild would dispose the first player
+    // mid-restore and lose the position.
+    if (_isRebuilding) return;
+    _isRebuilding = true;
+    final position = playerController?.videoPlayerController?.value.position;
+    final lastKnownMs = videoManager?.currentMillisecond ?? 0;
+    if (position != null && position > Duration.zero) {
+      _positionToRestore = position;
+    } else if (lastKnownMs > 0) {
+      _positionToRestore = Duration(milliseconds: lastKnownMs);
+    }
+    _resumePlaybackAfterRestore = videoManager?.wasPlaying == true;
+    _carryHasPlayed = videoManager?.hasPlayed == true;
+    _carryPercentCallbackDone =
+        videoManager?.callbackByPercentVideoSuccess == true;
+    debugPrint(
+        '[VIDEO][${_getTimestamp()}] Rebuilding errored player - restore=$_positionToRestore play=$_resumePlaybackAfterRestore');
+    _refreshVideo().whenComplete(() {
+      _isRebuilding = false;
+      // Don't let a restore that never got applied (e.g. the rebuild failed)
+      // leak into a later manual retry.
+      _clearRestoreState();
+    });
+  }
+
+  void _clearRestoreState() {
+    _positionToRestore = null;
+    _resumePlaybackAfterRestore = false;
+    _carryHasPlayed = false;
+    _carryPercentCallbackDone = false;
+  }
+
+  /// Catches a player exception that only surfaces right after the app comes
+  /// back (the stream was cut while locked, ExoPlayer reports it on resume).
+  void _onPlayerEvent(BetterPlayerEvent event) {
+    if (event.betterPlayerEventType != BetterPlayerEventType.exception) return;
+    final resumedAt = _resumedAt;
+    if (resumedAt == null ||
+        DateTime.now().difference(resumedAt) > _resumeErrorWindow) {
+      return;
+    }
+    _resumedAt = null; // handle once per resume
+    if (!mounted || _isDisposed) return;
+    _rebuildPlayerKeepingPosition();
   }
 
   bool isYouTubeLink(String? url) => YoutubeVideoExtractor.isYoutubeLink(url);
@@ -388,6 +465,44 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         if (isReady) {
           debugPrint(
               '[VIDEO][${_getTimestamp()}] Video successfully initialized on attempt ${attempt + 1}');
+          playerController?.addEventsListener(_onPlayerEvent);
+          final restore = _positionToRestore;
+          final resumePlayback = _resumePlaybackAfterRestore;
+          _positionToRestore = null;
+          _resumePlaybackAfterRestore = false;
+          if (restore != null) {
+            final manager = videoManager;
+            final controller = playerController;
+            final volume =
+                controller?.videoPlayerController?.value.volume ?? 1.0;
+            // The play below is only a means to seek; keep it silent and
+            // invisible to analytics / keep-alive unless playback resumes.
+            manager?.beginRestore();
+            try {
+              await controller?.setVolume(0);
+              // Play BEFORE seeking: on Android, better_player_plus sets up
+              // its media notification on a new player's first play and
+              // that does exoPlayer.seekTo(0), wiping any earlier seek.
+              await controller?.play();
+              await controller?.seekTo(restore);
+              if (!resumePlayback) {
+                await controller?.pause();
+              }
+            } catch (e) {
+              debugPrint(
+                  '[VIDEO][${_getTimestamp()}] Error restoring position: $e');
+            } finally {
+              try {
+                await controller?.setVolume(volume);
+              } catch (e) {
+                debugPrint(
+                    '[VIDEO][${_getTimestamp()}] Error restoring volume: $e');
+              }
+              manager?.endRestore(
+                  playing:
+                      resumePlayback && controller?.isPlaying() == true);
+            }
+          }
           if (mounted && !_isDisposed) {
             setState(() {
               isInitializing = false;
@@ -513,6 +628,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       videoArtist: widget.videoArtist,
       videoThumbnail: widget.videoThumbnail,
     );
+    if (_positionToRestore != null) {
+      videoManager!
+        ..hasPlayed = _carryHasPlayed
+        ..callbackByPercentVideoSuccess = _carryPercentCallbackDone;
+    }
 
     if (mounted && !_isDisposed) {
       debugPrint('[VIDEO][${_getTimestamp()}] Setting video manager in parent');

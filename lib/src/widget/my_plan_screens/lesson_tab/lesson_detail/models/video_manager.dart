@@ -4,7 +4,9 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/service/lesson_playback_service.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class VideoManager {
   VideoManager({
@@ -40,9 +42,32 @@ class VideoManager {
   bool _isInitializing = false;
   bool _isDisposed = false;
   bool _isPausing = false;
+  bool _keepAliveActive = false;
+
+  /// True while VideoWidget restores the position on a rebuilt player; see
+  /// [beginRestore] / [endRestore].
+  bool isRestoring = false;
+
+  /// True between a play and the next pause/finish — i.e. the user expects
+  /// the video to be playing. Unlike [_keepAliveActive] it survives a player
+  /// exception, so a rebuilt player can resume playback.
+  bool wasPlaying = false;
   Duration? videoDuration;
   int currentMillisecond = 0;
   CustomPlayerEventType? currentEventState;
+
+  /// Bounded read-ahead. better_player_plus defaults maxBufferMs to ~109 min,
+  /// so ExoPlayer keeps buffering a long lesson until its ~128 MB byte cap —
+  /// held in the Java heap. Past 3/4 of the heap limit Android releases the
+  /// (stopped) activity as soon as the screen locks ("low-mem"), which tears
+  /// down the Flutter engine: audio stops and the lesson reopens at 00:00.
+  static const BetterPlayerBufferingConfiguration _bufferingConfiguration =
+      BetterPlayerBufferingConfiguration(
+    minBufferMs: 15000,
+    maxBufferMs: 30000,
+    bufferForPlaybackMs: 2500,
+    bufferForPlaybackAfterRebufferMs: 5000,
+  );
 
   final String? videoTitle;
   final String? videoArtist;
@@ -123,6 +148,7 @@ class VideoManager {
         final dataSource = BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           url,
+          bufferingConfiguration: _bufferingConfiguration,
           notificationConfiguration: BetterPlayerNotificationConfiguration(
             showNotification: true,
             title: videoTitle ?? 'DiaB Lesson',
@@ -259,6 +285,7 @@ class VideoManager {
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         url!,
+        bufferingConfiguration: _bufferingConfiguration,
         notificationConfiguration: BetterPlayerNotificationConfiguration(
           showNotification: true,
           title: videoTitle ?? 'DiaB Lesson',
@@ -407,16 +434,45 @@ class VideoManager {
             finishedVideo = false;
           }
 
-          if (!hasPlayed && onPlay != null) {
+          // iOS: re-assert AVAudioSessionCategoryPlayback on every play.
+          // better_player only sets it once when the player is created, and
+          // other audio plugins in the app (audioplayers/just_audio/Zoom) can
+          // change the shared session category afterwards; with a
+          // non-playback category iOS stops the audio as soon as the screen
+          // locks. (Android is left alone — this call would change its
+          // audio-focus behaviour.)
+          if (Platform.isIOS) {
+            try {
+              _controller?.setMixWithOthers(false);
+            } catch (e) {
+              print(
+                  '[VIDEO] ${_getTimestamp()} - Error setting audio session: $e');
+            }
+          }
+
+          if (!hasPlayed && onPlay != null && !isRestoring) {
             onPlay!();
             hasPlayed = true;
           }
 
           _placeholderStreamController.add(true);
+          wasPlaying = true;
+          _setPlaybackActive(true);
           break;
 
         case BetterPlayerEventType.pause:
           checkCallbackEventListener(CustomPlayerEventType.videoPause);
+          wasPlaying = false;
+          _setPlaybackActive(false);
+          break;
+
+        case BetterPlayerEventType.finished:
+          wasPlaying = false;
+          _setPlaybackActive(false);
+          break;
+
+        case BetterPlayerEventType.exception:
+          _setPlaybackActive(false);
           break;
 
         case BetterPlayerEventType.progress:
@@ -439,6 +495,14 @@ class VideoManager {
           break;
 
         case BetterPlayerEventType.hideFullscreen:
+          // better_player_plus calls WakelockPlus.disable() right after it
+          // emits hideFullscreen; re-take the wakelock once that has run if
+          // the video is still playing inline.
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (!_isDisposed && _controller?.isPlaying() == true) {
+              _setPlaybackActive(true);
+            }
+          });
           if (onExitFullScreen != null) {
             await Future.delayed(const Duration(seconds: 1));
             onExitFullScreen!.call();
@@ -528,7 +592,58 @@ class VideoManager {
     }
   }
 
+  /// While a video plays: keep the screen on (better_player_plus only does
+  /// that in fullscreen) and, on Android, keep the mediaPlayback foreground
+  /// service up so locking the screen doesn't cut the audio. Released on
+  /// pause / finish / error / dispose.
+  void _setPlaybackActive(bool active) {
+    // The restore's internal play/pause isn't a user play; endRestore()
+    // re-activates if playback should continue.
+    if (active && isRestoring) return;
+    // Only release what this manager took, so disposing/pausing an idle
+    // player doesn't drop another player's keep-alive.
+    if (!active && !_keepAliveActive) return;
+    try {
+      if (active) {
+        if (!_keepAliveActive) {
+          _keepAliveActive = true;
+          PlaybackKeepAlive.acquire(videoTitle);
+        } else {
+          // Already counted; re-take the wakelock (e.g. after better_player
+          // dropped it on leaving fullscreen).
+          PlaybackKeepAlive.refresh(videoTitle);
+        }
+      } else {
+        _keepAliveActive = false;
+        PlaybackKeepAlive.release();
+      }
+    } catch (e) {
+      print('[VIDEO] ${_getTimestamp()} - Error toggling playback keep-alive: $e');
+    }
+  }
+
+  /// Starts a position restore on a freshly rebuilt player (see VideoWidget):
+  /// the play → seek (→ pause) it does is not a user action, so it must not
+  /// fire onPlay / tracking callbacks or toggle the keep-alive.
+  void beginRestore() {
+    isRestoring = true;
+  }
+
+  /// Ends a restore. If [playing], the user was playing before the player
+  /// was rebuilt: mark it so and take the keep-alive.
+  void endRestore({required bool playing}) {
+    isRestoring = false;
+    if (_isDisposed) return;
+    if (playing) {
+      wasPlaying = true;
+      _setPlaybackActive(true);
+    } else {
+      wasPlaying = false;
+    }
+  }
+
   void checkCallbackEventListener(CustomPlayerEventType type) {
+    if (isRestoring) return;
     try {
       if (callbackEventListener != null &&
               currentEventState != type &&
@@ -569,6 +684,7 @@ class VideoManager {
     _isDisposed = true;
     _isInitializing = false;
     hasVideo = false;
+    _setPlaybackActive(false);
 
     try {
       print(
@@ -606,5 +722,57 @@ class VideoManager {
     } catch (e) {
       print('[VIDEO] ${_getTimestamp()} - Error disposing video: $e');
     }
+  }
+}
+
+/// Process-wide playback keep-alive (screen wakelock + Android
+/// [LessonPlaybackService]). Both are global, so they're reference-counted
+/// across VideoManager instances: released only when the last active player
+/// lets go, so one player pausing/disposing can't drop another's keep-alive.
+class PlaybackKeepAlive {
+  PlaybackKeepAlive._();
+
+  static int _activeCount = 0;
+
+  /// Number of players currently holding the keep-alive.
+  static int get activeCount => _activeCount;
+
+  @visibleForTesting
+  static void Function(String? title) onActivate = _activate;
+
+  @visibleForTesting
+  static void Function() onDeactivate = _deactivate;
+
+  @visibleForTesting
+  static void debugReset() {
+    _activeCount = 0;
+    onActivate = _activate;
+    onDeactivate = _deactivate;
+  }
+
+  static void _activate(String? title) {
+    WakelockPlus.enable();
+    LessonPlaybackService.start(title: title);
+  }
+
+  static void _deactivate() {
+    WakelockPlus.disable();
+    LessonPlaybackService.stop();
+  }
+
+  static void acquire(String? title) {
+    _activeCount++;
+    onActivate(title);
+  }
+
+  /// Re-applies the keep-alive for a player that already holds it.
+  static void refresh(String? title) {
+    if (_activeCount > 0) onActivate(title);
+  }
+
+  static void release() {
+    if (_activeCount == 0) return;
+    _activeCount--;
+    if (_activeCount == 0) onDeactivate();
   }
 }

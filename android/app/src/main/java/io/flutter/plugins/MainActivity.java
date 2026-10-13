@@ -93,6 +93,7 @@ public class MainActivity extends FlutterFragmentActivity {
     private static final String TAG = "MainActivity";
     private static final String VNPAY_CHANNEL = "paymentGateway";
     private static final String VNPAY_APP_SCHEME = "diabvnpay";
+    private static final String LESSON_PLAYBACK_CHANNEL = "com.vbhc.diab/lesson_playback";
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +104,14 @@ public class MainActivity extends FlutterFragmentActivity {
 
     @Override
     protected void onDestroy() {
+        // The player lives in this activity's Flutter engine, so playback ends
+        // with it — don't leave the lesson playback service orphaned.
+        try {
+            LessonPlaybackService.stopRequested = true;
+            stopService(new Intent(this, LessonPlaybackService.class));
+        } catch (Exception e) {
+            Log.w(TAG, "[LESSON_PLAYBACK] stop on destroy failed: " + e);
+        }
         IBLE_Manager.getInstance().DestroySDK();
         super.onDestroy();
     }
@@ -171,6 +180,46 @@ public class MainActivity extends FlutterFragmentActivity {
                                 Log.d(TAG, "[VNPAY] Opening VNPay SDK with URL: " + url);
                                 startVNPayActivity(url, tmnCode, scheme, isSandbox);
                                 result.success(true);
+                            } else {
+                                result.notImplemented();
+                            }
+                        }
+                );
+
+        // Lesson video playback: keeps a mediaPlayback foreground service up
+        // while a lesson video plays (see LessonPlaybackService).
+        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), LESSON_PLAYBACK_CHANNEL)
+                .setMethodCallHandler(
+                        (call, result) -> {
+                            Intent serviceIntent = new Intent(this, LessonPlaybackService.class);
+                            if (call.method.equals("start")) {
+                                try {
+                                    serviceIntent.setAction(LessonPlaybackService.ACTION_START);
+                                    String title = call.argument("title");
+                                    serviceIntent.putExtra(LessonPlaybackService.EXTRA_TITLE, title);
+                                    LessonPlaybackService.stopRequested = false;
+                                    ContextCompat.startForegroundService(this, serviceIntent);
+                                    result.success(true);
+                                } catch (Exception e) {
+                                    // e.g. ForegroundServiceStartNotAllowedException /
+                                    // IllegalStateException when not in the foreground.
+                                    Log.w(TAG, "[LESSON_PLAYBACK] start failed: " + e);
+                                    result.success(false);
+                                }
+                            } else if (call.method.equals("stop")) {
+                                try {
+                                    // stopService is allowed from the background
+                                    // (startService with a stop action is not).
+                                    // The flag covers a stop that overtakes a
+                                    // pending start: the service then calls
+                                    // startForeground() and stops itself.
+                                    LessonPlaybackService.stopRequested = true;
+                                    stopService(serviceIntent);
+                                    result.success(true);
+                                } catch (Exception e) {
+                                    Log.w(TAG, "[LESSON_PLAYBACK] stop failed: " + e);
+                                    result.success(false);
+                                }
                             } else {
                                 result.notImplemented();
                             }

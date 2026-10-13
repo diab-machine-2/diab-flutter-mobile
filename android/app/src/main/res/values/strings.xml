@@ -14,4 +14,8 @@
     <!-- Zalo -->
     <string name="zalo_flutter_app_id">3372616423345602339</string>
     <string name="zalo_flutter_app_id_protocol">zalo-3372616423345602339</string>
+
+    <!-- Lesson video playback foreground service (LessonPlaybackService) -->
+    <string name="lesson_playback_channel_name">Lesson playback</string>
+    <string name="lesson_playback_text">Playing lesson</string>
 </resources>
