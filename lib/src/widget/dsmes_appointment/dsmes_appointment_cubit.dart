@@ -208,7 +208,14 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return clinics;
   }
 
-  Future<bool> getClinicDetail({required int id, bool isLoading = true}) async {
+  /// [emitFailure] = false keeps a failed fetch silent (no
+  /// [DsmesAppointmentFailure] → no error toast from listeners) for callers
+  /// that have their own fallback when this fetch fails.
+  Future<bool> getClinicDetail({
+    required int id,
+    bool isLoading = true,
+    bool emitFailure = true,
+  }) async {
     if (isLoading) {
       emit(DsmesAppointmentLoading());
     }
@@ -219,7 +226,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       emit(DsmesAppointmentLoaded());
       return true;
     }, failure: (NetworkExceptions error) {
-      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      emit(emitFailure
+          ? DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error))
+          : DsmesAppointmentLoaded());
       return false;
     });
   }

@@ -69,9 +69,11 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
       (widget.specialtyId != null ||
           (widget.specialtyName?.trim().isNotEmpty ?? false));
 
-  /// Flips true if auto-resolution can't complete (no specialty match,
-  /// clinic search/detail failure, etc.) so the grid reveals itself as a
-  /// manual fallback instead of leaving the user on a spinner forever.
+  /// Flips true if auto-resolution can't complete here (no specialty match,
+  /// no telemedicine clinic ids, at-clinic search/detail failure, etc.) so
+  /// the grid reveals itself as a manual fallback instead of leaving the user
+  /// on a spinner forever. Telemedicine clinic-resolution failures happen on
+  /// the schedule screen instead, which shows its own error + retry state.
   bool _autoResolveFailed = false;
 
   /// Guards against double/rapid taps on a specialty card pushing the next
@@ -274,81 +276,41 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
         .map((e) => e.toString())
         .toList();
 
-    if (!isAutoResolve) {
-      // Manual tap: navigate immediately and let the schedule screen search
-      // for + resolve the clinic itself behind a skeleton, instead of this
-      // page blocking the transition on that network round-trip.
-      if (!mounted) return;
-      await BenefitNavigatorScope.of(context).currentState?.pushNamed(
-        NavigatorName.benefit_calendar,
-        arguments: {
-          'serviceType': DsmesAppointmentMode.telemedicine.toString(),
-          'action': 'create',
-          'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
-          'specialtyName': specialty.name,
-          'itemId': widget.itemId,
-          'itemType': widget.itemType,
-          'clinicIds': clinicIds,
-        },
-      );
+    // No backend-configured telemedicine clinic for this specialty — nothing
+    // to resolve on the schedule screen, so stop here (and reveal the grid
+    // for the deep-link path).
+    if (clinicIds.isEmpty) {
+      BotToast.showSimpleNotification(
+          title: R.string.empty_clinic_content.tr());
+      if (isAutoResolve && mounted) setState(() => _autoResolveFailed = true);
       return;
     }
 
-    // Auto-resolve (deep-link) path: resolve the clinic before navigating so
-    // a failure can fall back to revealing the manual specialty grid instead
-    // of landing on a dead-end error screen.
-    _cubit.initSearchBookingClinicListRequest(
-      page: 1,
-      specialtyId: '',
-      kind: Const.BOOKING_TYPE_CLINIC,
-      isFilterDistance: 0,
-      clinicIds: clinicIds,
-    );
-
-    _cubit.searchBookingClinicListRequest =
-        _cubit.searchBookingClinicListRequest?.copyWith(
-      svAvailable: ['telemedicine'],
-    );
-
-    final request = _cubit.searchBookingClinicListRequest;
-    if (request == null) return;
-
-    BotToast.showLoading(allowClick: false);
-    try {
-      final clinics = await _cubit.searchBookingClinicList(
-        request: request,
-        isRefresh: true,
-      );
-      BotToast.closeAllLoading();
-
-      if (clinics.isEmpty) {
-        BotToast.showSimpleNotification(
-            title: R.string.empty_clinic_content.tr());
-        if (mounted) setState(() => _autoResolveFailed = true);
-        return;
-      }
-
-      // Auto-select the first clinic and navigate immediately — the
-      // schedule screen fetches the clinic detail itself and shows its own
-      // loading/error state, instead of this page blocking the transition
-      // on a second sequential network round-trip.
-      final firstClinic = clinics.first;
-      if (!mounted) return;
-      await BenefitNavigatorScope.of(context).currentState?.pushReplacementNamed(
+    // Navigate immediately for both manual taps and deep-link auto-resolve;
+    // the schedule screen fetches the clinic profile for clinicIds.first
+    // directly (falling back to a clinic-search only if that fails) behind a
+    // skeleton, so this page never blocks the transition on the network.
+    if (!mounted) return;
+    final navigatorState = BenefitNavigatorScope.of(context).currentState;
+    final args = {
+      'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+      'action': 'create',
+      'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
+      'specialtyName': specialty.name,
+      'itemId': widget.itemId,
+      'itemType': widget.itemType,
+      'clinicIds': clinicIds,
+    };
+    if (isAutoResolve) {
+      await navigatorState?.pushReplacementNamed(
         NavigatorName.benefit_calendar,
-        arguments: {
-          'serviceType': DsmesAppointmentMode.telemedicine.toString(),
-          'action': 'create',
-          'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
-          'specialtyName': specialty.name,
-          'itemId': widget.itemId,
-          'itemType': widget.itemType,
-          'clinicId': firstClinic.id,
-        },
+        arguments: args,
       );
-    } catch (_) {
-      BotToast.closeAllLoading();
-      if (mounted) setState(() => _autoResolveFailed = true);
+    } else {
+      await navigatorState?.pushNamed(
+        NavigatorName.benefit_calendar,
+        arguments: args,
+      );
     }
   }
 

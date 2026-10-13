@@ -33,10 +33,10 @@ class BenefitCalendarSection extends StatefulWidget {
   /// instead of requiring the caller to await that fetch before navigating
   /// here — lets the transition into this screen happen immediately.
   final int? clinicId;
-  /// When [clinicId] is null and this is set, this page runs the
-  /// clinic-search itself (see [_searchThenFetchClinic]) before fetching
-  /// detail — used by the telemedicine specialty flow, which previously had
-  /// to await the search on the calling page before it could navigate here.
+  /// When [clinicId] is null and this is set, this page resolves the clinic
+  /// itself (see [_resolveClinicFromIds]): fetches detail for the first id
+  /// directly, falling back to a clinic-search only if that fails — used by
+  /// the telemedicine specialty flow.
   final List<String>? clinicIds;
   final String bookingType;
   final String? specialtyName;
@@ -117,7 +117,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection>
         widget.clinicIds != null &&
         widget.clinicIds!.isNotEmpty) {
       _isLoadingClinic = true;
-      _searchThenFetchClinic();
+      _resolveClinicFromIds();
     } else {
       if (widget.clinicId != null) {
         // The clinic was already resolved on the cubit (e.g. the user viewed
@@ -143,6 +143,33 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection>
   void dispose() {
     _shimmerController.dispose();
     super.dispose();
+  }
+
+  /// [widget.clinicIds] comes from the specialty's backend-configured
+  /// `telemedicine_clinic_ids`, so the first id is fetched straight from
+  /// `api/clinics/profile` — skipping the `seo-static-link-multi-diab` search
+  /// round-trip. Only if that direct fetch fails does this fall back to the
+  /// old search-then-fetch path.
+  Future<void> _resolveClinicFromIds() async {
+    final firstId = int.tryParse(widget.clinicIds!.first);
+    if (firstId != null) {
+      final success = await _cubit.getClinicDetail(
+        id: firstId,
+        emitFailure: false,
+      );
+      if (!mounted) return;
+      // The search path filtered on sv_available=telemedicine; keep that
+      // guarantee here so a clinic that has since turned telemedicine off
+      // falls through to the search instead of being booked.
+      if (success &&
+          _cubit.selectedClinic != null &&
+          _cubit.selectedClinic!
+              .hasServiceAvailable(DsmesAppointmentMode.telemedicine)) {
+        _onClinicResolved();
+        return;
+      }
+    }
+    await _searchThenFetchClinic();
   }
 
   Future<void> _searchThenFetchClinic() async {
@@ -197,6 +224,10 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection>
       });
       return;
     }
+    _onClinicResolved();
+  }
+
+  void _onClinicResolved() {
     _cubit.initCreateDsmesBookingRequest(
       locale: context.locale.languageCode,
       clearExamination: true,
@@ -214,7 +245,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection>
     if (widget.clinicId != null) {
       _fetchClinicDetail(widget.clinicId!);
     } else {
-      _searchThenFetchClinic();
+      _resolveClinicFromIds();
     }
   }
 
