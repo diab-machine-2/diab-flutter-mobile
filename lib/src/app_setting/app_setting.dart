@@ -54,6 +54,39 @@ class AppSettings {
     }
   }
 
+  /// True once a successful /App/Home response has set [hasBundle] this
+  /// session. From then on the on-disk `home_data` cache is only a
+  /// first-paint hint and must never override it — otherwise a bundle
+  /// deleted server-side keeps getting resurrected from the stale cache
+  /// (see [checkHasBundle]), flip-flopping hasBundle true/false on every
+  /// TabbarController rebuild. Reset on [deleteHomeData] (logout).
+  static bool _hasBundleFromServer = false;
+
+  /// Authoritative value from a fresh /App/Home response. Also patches the
+  /// cached `home_data` right away so the next cold start's first paint
+  /// doesn't show the stale value, even if the rest of the home fetch (which
+  /// rewrites the full cache later) never completes.
+  static void setHasBundleFromServer(bool value) {
+    _hasBundleFromServer = true;
+    hasBundle = value;
+    final cached = appPreference.getData('home_data') ?? '';
+    if (cached.isEmpty) return;
+    try {
+      final jsonData = json.decode(cached);
+      if (jsonData is Map<String, dynamic> && jsonData['hasBundle'] != value) {
+        jsonData['hasBundle'] = value;
+        appPreference.setData('home_data', jsonEncode(jsonData));
+      }
+    } catch (_) {}
+  }
+
+  /// Value read from the on-disk cache — ignored once the server has
+  /// answered this session.
+  static void setHasBundleFromCache(bool value) {
+    if (_hasBundleFromServer) return;
+    hasBundle = value;
+  }
+
   static bool isFirstDownload = true;
 
   static bool isSyncSuccess = false;
@@ -366,6 +399,8 @@ class AppSettings {
     final jsonString = jsonEncode(data);
     appPreference.setData('home_data', jsonString);
     if (data != null && data['hasBundle'] != null) {
+      // Every caller passes a fresh /App/Home response.
+      _hasBundleFromServer = true;
       hasBundle = data['hasBundle'] == true;
     }
     return true;
@@ -378,12 +413,15 @@ class AppSettings {
     }
     final jsonData = json.decode(userData);
     final data = HomeModel.fromJson(jsonData);
-    hasBundle = data.hasBundle;
+    setHasBundleFromCache(data.hasBundle);
     return data;
   }
 
   static bool checkHasBundle() {
-    if (hasBundle) return true;
+    // Disk fallback only covers the window before anything has loaded; once
+    // the server has answered, re-reading a stale `hasBundle: true` from disk
+    // would resurrect a deleted bundle.
+    if (hasBundle || _hasBundleFromServer) return hasBundle;
     final userData = appPreference.getData('home_data') ?? '';
     if (userData.isNotEmpty) {
       try {
@@ -399,6 +437,7 @@ class AppSettings {
 
   static Future<bool> deleteHomeData() async {
     appPreference.removeData('home_data');
+    _hasBundleFromServer = false;
     hasBundle = false;
     return true;
   }
@@ -552,11 +591,14 @@ class AppSettings {
       }
       userInfo = null;
       appPreference.setData(Const.hasInputedWaist, false);
+      // Clear the cached home (incl. hasBundle) before any network call
+      // below can throw and skip it — otherwise the next account to log in
+      // on this device first-paints the previous user's bundle state.
+      await deleteHomeData();
       await FetchClient().checkNetwork();
       // Clear Branch user identity so future deep links are attributed correctly
       FlutterBranchSdk.logout();
       await LoginClient().logout();
-      await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
       await clearIsSyncing();

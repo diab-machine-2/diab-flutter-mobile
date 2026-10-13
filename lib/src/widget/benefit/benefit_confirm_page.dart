@@ -16,6 +16,7 @@ import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/benefit/benefit_availability_guard.dart';
 import 'package:medical/src/widget/booking_clinic/helper/vnpay_payment_service.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -249,7 +250,9 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                       }
                       await _handleCreateBooking();
                     } finally {
-                      setState(() => isProcessing['confirmBooking'] = false);
+                      if (mounted) {
+                        setState(() => isProcessing['confirmBooking'] = false);
+                      }
                     }
                   },
                   isLoading: isProcessing['confirmBooking']!,
@@ -270,6 +273,10 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
       await _handleRescheduleBooking();
       return;
     }
+
+    // Never create a booking / open VNPay against a bundle removed
+    // server-side — the guard shows a dialog and pops back to root.
+    if (!await BenefitAvailabilityGuard.ensureAvailable()) return;
 
     final data = _sectionAddSymptomKey.currentState?.getNote();
     String symptom = data?.note ?? '';

@@ -1,11 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/modal/medicine/medicine_item_model.dart';
 import 'package:medical/src/model/request/medication_request_body.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/clinic_result_scan_response.dart';
+import 'package:medical/src/model/response/common_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/widget/benefit/benefit_availability_guard.dart';
 import 'package:medical/src/repo/medicine/medicine_client.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 
@@ -99,11 +104,7 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
         note: note,
       );
 
-      await _repository.submitMedicationRequest(body.toJson());
-      if (itemId != null && itemType != null) {
-        await _repository.useBenefitService(
-            itemId: itemId!, itemType: itemType!);
-      }
+      if (!await _submit(body.toJson())) return;
       emit(const BenefitServiceRequestSubmitSuccess(
           type: BenefitServiceType.medicine));
     } catch (e) {
@@ -132,15 +133,46 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
         note: note,
       );
 
-      await _repository.submitMedicationRequest(body.toJson());
-      if (itemId != null && itemType != null) {
-        await _repository.useBenefitService(
-            itemId: itemId!, itemType: itemType!);
-      }
+      if (!await _submit(body.toJson())) return;
       emit(const BenefitServiceRequestSubmitSuccess(
           type: BenefitServiceType.labTest));
     } catch (e) {
       emit(BenefitServiceRequestError(e.toString()));
     }
+  }
+
+  /// Submits the request and, when started from a bundle item, marks it
+  /// used. Returns `true` once the submit succeeded (a failing mark-used is
+  /// only logged) — otherwise it has already emitted
+  /// [BenefitServiceRequestError] / [BenefitServiceRequestUnavailable], so
+  /// the UI never shows a fake success.
+  Future<bool> _submit(Map<String, dynamic> body) async {
+    final bool fromBundle = itemId != null && itemType != null;
+    // Don't submit against a bundle removed server-side since the flow began
+    // (the guard shows the dialog and pops back to root).
+    if (fromBundle && !await BenefitAvailabilityGuard.ensureAvailable()) {
+      emit(const BenefitServiceRequestUnavailable());
+      return false;
+    }
+
+    final submitResult = await _repository.submitMedicationRequest(body);
+    if (submitResult is Failure<CommonResponse>) {
+      emit(BenefitServiceRequestError(
+          NetworkExceptions.getErrorMessage(submitResult.error)));
+      return false;
+    }
+
+    if (fromBundle) {
+      final useResult = await _repository.useBenefitService(
+          itemId: itemId!, itemType: itemType!);
+      // The request is already sent — surfacing an error here would invite a
+      // retry that duplicates it, so only log and still report success.
+      if (useResult is Failure<CommonResponse>) {
+        debugPrint('[BenefitServiceRequestCubit] useBenefitService failed '
+            'after submit (itemId=$itemId): '
+            '${NetworkExceptions.getErrorMessage(useResult.error)}');
+      }
+    }
+    return true;
   }
 }

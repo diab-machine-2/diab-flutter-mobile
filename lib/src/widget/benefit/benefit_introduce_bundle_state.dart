@@ -21,3 +21,9 @@ class BenefitIntroduceBundleFailure extends BenefitIntroduceBundleState {
   const BenefitIntroduceBundleFailure(this.message);
   final String message;
 }
+
+/// `my-benefit` returned no bundle (null data or a 4xx) — the user's bundle
+/// was removed/expired server-side.
+class BenefitIntroduceBundleUnavailable extends BenefitIntroduceBundleState {
+  const BenefitIntroduceBundleUnavailable();
+}

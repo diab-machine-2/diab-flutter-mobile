@@ -3,6 +3,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_benefit_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/widget/benefit/benefit_availability_guard.dart';
 
 part 'benefit_introduce_bundle_state.dart';
 
@@ -26,6 +27,14 @@ class BenefitIntroduceBundleCubit extends Cubit<BenefitIntroduceBundleState> {
 
   Future<void> _fetchMyBenefit() async {
     final ApiResult<MyBenefitResponse> result = await _repository.getMyBenefit();
+    // Bundle removed server-side (null data or 404) — the page hands this
+    // to BenefitAvailabilityGuard instead of showing a dead-end error. Other
+    // failures (incl. 400/401/403 = UnauthorizedRequest) stay Failure.
+    if (BenefitAvailabilityGuard.isUnavailableResult(result)) {
+      benefitData = null;
+      emit(const BenefitIntroduceBundleUnavailable());
+      return;
+    }
     result.when(
       success: (MyBenefitResponse response) {
         benefitData = response.data;

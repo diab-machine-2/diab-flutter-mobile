@@ -43,3 +43,9 @@ class BenefitServiceRequestError extends BenefitServiceRequestState {
 
   const BenefitServiceRequestError(this.message);
 }
+
+/// The bundle was removed server-side — [BenefitAvailabilityGuard] owns the
+/// user-facing dialog/navigation, so pages only need to stop loading.
+class BenefitServiceRequestUnavailable extends BenefitServiceRequestState {
+  const BenefitServiceRequestUnavailable();
+}

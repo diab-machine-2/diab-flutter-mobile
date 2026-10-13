@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/benefit/benefit_availability_guard.dart';
 import 'package:medical/src/widget/benefit/benefit_branch_page.dart';
 import 'package:medical/src/widget/benefit/benefit_calendar_section.dart';
 import 'package:medical/src/widget/benefit/benefit_clinic_list_page.dart';
@@ -72,6 +73,14 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
     _cubit.isBenefitFlow = true;
     // Pre-call to register docosan user & get token (no appointments needed)
     _cubit.initDsmesBooking(isLoadAppointments: false);
+    // Bundle may have been removed server-side since Home last loaded — the
+    // guard shows a dialog and pops back to the tab bar if so, but only while
+    // this page's route is still active (the result may arrive late).
+    // Post-frame: ModalRoute.of can't be read during initState.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      BenefitAvailabilityGuard.ensureAvailable(origin: ModalRoute.of(context));
+    });
   }
 
   @override

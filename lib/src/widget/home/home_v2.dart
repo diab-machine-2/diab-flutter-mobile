@@ -76,7 +76,20 @@ class HomeController extends StatefulWidget {
 }
 
 class _HomeControllerState extends State<HomeController>
-    with Observer, AutomaticKeepAliveClientMixin<HomeController>, RouteAware {
+    with
+        Observer,
+        AutomaticKeepAliveClientMixin<HomeController>,
+        RouteAware,
+        WidgetsBindingObserver {
+  /// Refresh-on-resume throttle — e.g. a bundle removed server-side while
+  /// the app was backgrounded should disappear from Home on return.
+  static const Duration _resumeRefreshInterval = Duration(seconds: 60);
+  DateTime? _lastHomeLoadedAt;
+  StreamSubscription<HomeState>? _homeLoadedSub;
+  /// A resume happened while another route covered Home — run the resume
+  /// refresh in [didPopNext] instead.
+  bool _pendingResumeRefresh = false;
+
   // Session-scoped guard: show medicine session bottom sheet only once
   // for the current authenticated user session.
   static bool _hasShownMedicineSessionBottomSheet = false;
@@ -122,6 +135,10 @@ class _HomeControllerState extends State<HomeController>
     super.initState();
     log('[HOME_DEBUG] initState called - HomeController mounted');
     Observable.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
+    _homeLoadedSub = _homeBloc.stream.listen((state) {
+      if (state is HomeLoaded) _lastHomeLoadedAt = DateTime.now();
+    });
 
     if (user?.isShare == true) {
       ShareProfilePopup.instance.onHasSharedCode(
@@ -160,7 +177,33 @@ class _HomeControllerState extends State<HomeController>
       log('[HOME_DEBUG] reset medicine sheet session guard (user logged out)');
     }
     Observable.instance.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
+    _homeLoadedSub?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    // Another screen is on top — defer to didPopNext so the refresh doesn't
+    // run (and trigger Home's popups/sheets) underneath it.
+    if (ModalRoute.of(context)?.isCurrent != true) {
+      _pendingResumeRefresh = true;
+      return;
+    }
+    _refreshIfStale();
+  }
+
+  /// Refreshes Home unless it loaded within [_resumeRefreshInterval].
+  void _refreshIfStale() {
+    _pendingResumeRefresh = false;
+    final lastLoadedAt = _lastHomeLoadedAt;
+    // null = first load still owned by the normal startup flow.
+    if (lastLoadedAt == null ||
+        DateTime.now().difference(lastLoadedAt) < _resumeRefreshInterval) {
+      return;
+    }
+    _refresh();
   }
 
   String _currentMedicineSheetUserKey() {
@@ -195,6 +238,7 @@ class _HomeControllerState extends State<HomeController>
 
   @override
   void didPopNext() {
+    if (_pendingResumeRefresh) _refreshIfStale();
     // A route above this one was popped, and home is visible again
     // Check phone validation when returning to home screen (defer to ensure we're really at home)
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -690,16 +734,12 @@ class _HomeControllerState extends State<HomeController>
           if (state is HomeLoaded) {
             model = state.model;
             _hasExerciseData = model?.exercise?.isDataNotEmpty ?? false;
-            // Defer: AppSettings.hasBundle= synchronously fires
-            // Observable.notifyObservers, which TabbarController observes and
-            // reacts to with setState. Doing that while this BlocBuilder is
-            // still mid-build throws "setState called during build" on the
-            // ancestor TabbarController. Post-frame callback runs once this
-            // build pass is finished, when setState is safe again.
-            final newHasBundle = model?.hasBundle ?? false;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              AppSettings.hasBundle = newHasBundle;
-            });
+            // AppSettings.hasBundle is NOT written here: HomeBloc._fetchHomes
+            // already sets it (outside any build) for both the cached and the
+            // network model. Writing it from build() re-notified
+            // TabbarController on every rebuild, which ping-ponged with
+            // checkHasBundle()'s stale-cache read into an endless rebuild
+            // loop once a bundle was deleted server-side.
             stateLoaded = state;
             if (false == model?.packageAccount?.isDisplayedWelcome &&
                 !_isDisplayedWelcome) {

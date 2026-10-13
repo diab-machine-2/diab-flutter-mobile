@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/benefit/benefit_availability_guard.dart';
 import 'package:medical/src/widget/benefit/benefit_capture_image_page.dart';
 import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
@@ -450,8 +452,12 @@ class _BenefitServiceIntroView extends StatelessWidget {
     );
   }
 
-  void _navigateToCapture(BuildContext context) {
+  Future<void> _navigateToCapture(BuildContext context) async {
     final cubit = context.read<BenefitServiceRequestCubit>();
+    BotToast.showLoading(allowClick: false);
+    final available = await BenefitAvailabilityGuard.ensureAvailable();
+    BotToast.closeAllLoading();
+    if (!available || !context.mounted) return;
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(

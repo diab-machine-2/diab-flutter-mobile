@@ -7,6 +7,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_benefit_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'benefit_availability_guard.dart';
 import 'benefit_introduce_bundle_cubit.dart';
 
 /// Lists every [BenefitBundleItemType.partnerIntro] item across all
@@ -41,10 +42,8 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
               child: BlocConsumer<BenefitIntroduceBundleCubit,
                   BenefitIntroduceBundleState>(
                 listener: (context, state) {
-                  if (state is BenefitIntroduceBundleFailure) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
+                  if (state is BenefitIntroduceBundleUnavailable) {
+                    BenefitAvailabilityGuard.handleUnavailable();
                   }
                 },
                 builder: (context, state) {
@@ -56,7 +55,11 @@ class _BenefitMyVoucherPageState extends State<BenefitMyVoucherPage> {
                     return _buildList(context, items);
                   }
                   if (state is BenefitIntroduceBundleFailure) {
-                    return Center(child: Text(R.string.no_data.tr()));
+                    return Center(child: Text(state.message));
+                  }
+                  if (state is BenefitIntroduceBundleUnavailable) {
+                    return Center(
+                        child: Text(R.string.benefit_no_longer_available.tr()));
                   }
                   return const Center(child: CircularProgressIndicator());
                 },

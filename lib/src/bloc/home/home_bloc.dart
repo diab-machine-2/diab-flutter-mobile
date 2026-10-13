@@ -83,7 +83,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final model =
             (AppSettings.popPrecachedHome() ?? await AppSettings.getHome());
         if (model != null) {
-          AppSettings.hasBundle = model.hasBundle;
+          AppSettings.setHasBundleFromCache(model.hasBundle);
           // if have cache
           _cached = HomeLoaded(
             model: model,
@@ -118,7 +118,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       try {
         // Load measurements
         final home = await client.fetchHomes();
-        AppSettings.hasBundle = home.hasBundle;
+        // Network always wins over the cached first paint, and is persisted
+        // immediately (not only at the full saveHome() below, which a later
+        // failure in this try-block can skip).
+        AppSettings.setHasBundleFromServer(home.hasBundle);
         _hasWeightRecord =
             home.weightCard?.weight != null && home.weightCard?.weight != 0.0;
         home.inlineMeasurements = _castInlineMeasurements(home);

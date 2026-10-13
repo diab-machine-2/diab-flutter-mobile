@@ -14,6 +14,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/shimmer_box.dart';
+import 'benefit_availability_guard.dart';
 import 'benefit_introduce_bundle_cubit.dart';
 
 class BenefitIntroduceBundlePage extends StatefulWidget {
@@ -69,10 +70,12 @@ class _BenefitIntroduceBundlePageState
         child: BlocConsumer<BenefitIntroduceBundleCubit,
             BenefitIntroduceBundleState>(
           listener: (context, state) {
-            if (state is BenefitIntroduceBundleFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+            // Failure's message is already shown by `_buildEmpty` below.
+            if (state is BenefitIntroduceBundleUnavailable) {
+              // As the program-tab root there's nothing to pop — just refresh
+              // Home (it switches the tab) and keep the empty state below.
+              BenefitAvailabilityGuard.handleUnavailable(
+                  silent: widget.hideBackButton);
             }
           },
           builder: (context, state) {
@@ -82,9 +85,19 @@ class _BenefitIntroduceBundlePageState
             if (state is BenefitIntroduceBundleSuccess) {
               final data = state.data;
               if (data == null) {
-                return Center(child: Text(R.string.no_data.tr()));
+                return _buildEmpty(context, R.string.no_data.tr());
               }
               return _buildPage(context, data);
+            }
+            if (state is BenefitIntroduceBundleFailure) {
+              // e.g. the bundle was deleted server-side while Home still
+              // showed it — keep the app bar (back button) + pull-to-retry
+              // instead of a blank, dead-end screen.
+              return _buildEmpty(context, state.message);
+            }
+            if (state is BenefitIntroduceBundleUnavailable) {
+              return _buildEmpty(
+                  context, R.string.benefit_no_longer_available.tr());
             }
             return const SizedBox();
           },
@@ -239,6 +252,36 @@ class _BenefitIntroduceBundlePageState
                   sectionCard(2),
                   const SizedBox(height: 100),
                 ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmpty(BuildContext context, String message) {
+    return Scaffold(
+      backgroundColor: R.color.backgroundColorNew,
+      body: Column(
+        children: [
+          _buildAppBar(context),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => _cubit.refreshMyBenefit(),
+              child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: constraints.maxHeight,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(message, textAlign: TextAlign.center),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
