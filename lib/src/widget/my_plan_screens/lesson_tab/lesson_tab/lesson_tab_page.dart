@@ -78,13 +78,20 @@ class _LessonTabPageState extends State<LessonTabPage>
       // own NAVIGATE_TO_LESSON_DETAIL notification fires before this widget
       // even exists, so update() below never sees it for this first build —
       // this is the only place that can catch it in time.
-      _checkExistLessonId();
+      final bool navigatedToLesson = _checkExistLessonId();
 
-      // Ensure the first navigation always shows bot loading.
+      // Ensure the first navigation always shows bot loading — except when a
+      // deep-linked lesson was just pushed above this tab: BotToast's loading
+      // is a global overlay, so it would dim the lesson page (which already
+      // shows its own skeleton) until this tab's list load finishes.
+      // _didShowInitialBotToast is still set so the LessonTabLoading listener
+      // below doesn't show it either.
       if (!_didShowInitialBotToast) {
         _didShowInitialBotToast = true;
-        _setBotToastLessonLoadingVisible(true);
-        BotToast.showLoading();
+        if (!navigatedToLesson) {
+          _setBotToastLessonLoadingVisible(true);
+          BotToast.showLoading();
+        }
       }
       // Await main list first so getRecommendationLessons cannot emit Initial/Success
       // while lessons are still loading (which briefly showed the empty placeholder).
@@ -145,24 +152,26 @@ class _LessonTabPageState extends State<LessonTabPage>
     setState(() => _botToastLessonLoadingVisible = visible);
   }
 
-  _checkExistLessonId() async {
+  /// Pushes the pending deep-linked lesson, if any. Returns true when it
+  /// navigated.
+  bool _checkExistLessonId() {
     final String? lessonId = BranchioLinkConfig.instance.lessonId;
-    if (lessonId != null) {
-      Navigator.pushNamed(context, NavigatorName.lesson_detail, arguments: {
-        'lessonId': lessonId,
-        'lessonType': PlanType.lesson.planTypeIndex,
-      });
-      BranchioLinkConfig.instance.removeLessonId();
-      // TabbarV2's own NAVIGATE_TO_LESSON_DETAIL handler only jumps the
-      // bottom tab bar to Library when it runs before this page consumes
-      // the id (observer order is LIFO — see Observable.notifyObservers).
-      // When this page was already mounted/kept-alive from an earlier visit,
-      // it runs first and clears the id before TabbarV2's turn, so the tab
-      // indicator is left stale. Re-broadcast the dedicated tab-switch event
-      // here so the indicator stays in sync regardless of observer order.
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
-    }
+    if (lessonId == null) return false;
+    Navigator.pushNamed(context, NavigatorName.lesson_detail, arguments: {
+      'lessonId': lessonId,
+      'lessonType': PlanType.lesson.planTypeIndex,
+    });
+    BranchioLinkConfig.instance.removeLessonId();
+    // TabbarV2's own NAVIGATE_TO_LESSON_DETAIL handler only jumps the
+    // bottom tab bar to Library when it runs before this page consumes
+    // the id (observer order is LIFO — see Observable.notifyObservers).
+    // When this page was already mounted/kept-alive from an earlier visit,
+    // it runs first and clears the id before TabbarV2's turn, so the tab
+    // indicator is left stale. Re-broadcast the dedicated tab-switch event
+    // here so the indicator stays in sync regardless of observer order.
+    Observable.instance
+        .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+    return true;
   }
 
   void _scrollToWidget(GlobalKey key) {
