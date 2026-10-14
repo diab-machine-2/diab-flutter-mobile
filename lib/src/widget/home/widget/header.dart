@@ -1,22 +1,17 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/components/HomeButton/main.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
-import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 
 import '../../../modal/user/user_model.dart';
@@ -26,21 +21,31 @@ class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode, this.homeModel});
   final String? sharedCode;
   final HomeModel? homeModel;
+
+  /// Text of the unread badge on the bell: "1"–"9", "9+" above that, null
+  /// (no badge) when there is nothing unread.
+  static String? badgeLabel(int? count) {
+    if (count == null || count <= 0) return null;
+    return count > 9 ? '9+' : '$count';
+  }
+
   @override
   _HomeHeaderState createState() => _HomeHeaderState();
 }
 
-class _HomeHeaderState extends State<HomeHeader> with Observer {
-  bool isChoose = false;
+class _HomeHeaderState extends State<HomeHeader>
+    with Observer, WidgetsBindingObserver {
+  static const double _avatarSize = 44;
 
   int? notificationCount = 0;
-  MotivationModel? motivation;
+  int _countRequestSeq = 0;
   late UserModel? user;
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
       final String? meetingId = BranchioLinkConfig.instance.meetingId;
       if (code?.isNotEmpty == true && meetingId == null) {
@@ -62,23 +67,23 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
         notifyName == 'read_notification_success') {
       loadNotification();
     }
-    if (notifyName == 'motivation_change') {
-      loadMotivation();
-    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) loadNotification();
   }
 
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   Future<void> initData() async {
     user = AppSettings.userInfo;
-    await Future.wait([
-      loadNotification(),
-      loadMotivation(),
-    ]);
+    await loadNotification();
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
     if (widget.sharedCode?.isNotEmpty == true && meetingId == null) {
       ShareProfilePopup.instance.onHasSharedCode(
@@ -86,298 +91,195 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     }
     if (AppSettings.isGetUser == false) {
       user = await UserClient().fetchUser(skipNotifiUI: true);
-      setState(() {});
+      if (mounted) setState(() {});
     }
   }
 
   Future<void> loadNotification() async {
-    notificationCount = await NotificationClient().fetchNotificationCount();
-    setState(() {});
+    // Several triggers can fire together; only the latest request may write.
+    final seq = ++_countRequestSeq;
+    try {
+      final count = await NotificationClient().fetchNotificationCount();
+      if (!mounted || seq != _countRequestSeq) return;
+      setState(() => notificationCount = count);
+    } catch (e, s) {
+      // Keep the last known badge; the next reload trigger retries.
+      TrackingManager.recordError(e, s);
+    }
   }
 
-  Future<void> loadMotivation() async {
-    final result = await UserClient().fetchMotivationDiary(1);
-    motivation = result.models.isEmpty ? null : result.models.first;
-    setState(() {});
+  String get _subtitle {
+    final programName = widget.homeModel?.tranServicePackageName;
+    if (programName?.isNotEmpty == true) return programName!;
+    if (user?.packageName?.isNotEmpty == true) return user!.packageName!;
+    return R.string.home_header_tagline.tr();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        bottom: false,
-        child: Container(
-            padding:
-                const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, NavigatorName.profile);
-                        },
-                        child: Container(
-                          color: R.color.transparent,
-                          child: Row(children: [
-                            Stack(
-                                clipBehavior: Clip.none,
-                                alignment: AlignmentDirectional.bottomEnd,
-                                children: [
-                                  Padding(
-                                    padding: AppSettings.isOwnPackage
-                                        ? const EdgeInsets.all(0)
-                                        : const EdgeInsets.only(
-                                            right: 4, bottom: 4),
-                                    child: Container(
-                                        clipBehavior: Clip.hardEdge,
-                                        decoration: BoxDecoration(
-                                            color: R.color.white,
-                                            borderRadius:
-                                                BorderRadius.circular(21)),
-                                        child: user?.imageUrl!.url == null
-                                            ? Icon(Icons.person,
-                                                size: 42,
-                                                color: R.color.mainColor)
-                                            : Image.network(
-                                                user?.imageUrl!.url ?? '',
-                                                width: 42,
-                                                height: 42,
-                                                errorBuilder: (BuildContext
-                                                        context,
-                                                    Object error,
-                                                    StackTrace? stackTrace) {
-                                                  return Icon(Icons.person,
-                                                      size: 42,
-                                                      color: R.color.mainColor);
-                                                },
-                                              )),
-                                  ),
-                                  if (AppSettings.isOwnPackage)
-                                    Positioned(
-                                      bottom: -8,
-                                      child: Container(
-                                        width: 40,
-                                        height: 40,
-                                        alignment: Alignment.bottomCenter,
-                                        child: Image.network(
-                                          user?.ownPackage?.logo ?? "",
-                                        ),
-                                      ),
-                                    )
-                                  // Container(
-                                  //     width: 40,
-                                  //     height: 40,
-                                  //     alignment: Alignment.bottomCenter,
-                                  //     child: Image.network(
-                                  //       user?.ownPackage?.logo ?? "",
-                                  //     ))
-                                  else
-                                    Container(
-                                      width: 20,
-                                      height: 20,
-                                      padding: const EdgeInsets.all(4),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: R.color.white,
-                                      ),
-                                      child: Image.asset(
-                                          R.drawable.ic_crown_green),
-                                    )
-                                ]),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        user?.fullName?.trim() ?? '',
-                                        style: TextStyle(
-                                          color: R.color.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                        (widget.homeModel
-                                                        ?.tranServicePackageName !=
-                                                    null &&
-                                                widget
-                                                        .homeModel
-                                                        ?.tranServicePackageName
-                                                        ?.isNotEmpty ==
-                                                    true)
-                                            ? widget.homeModel
-                                                    ?.tranServicePackageName ??
-                                                ''
-                                            : (user?.packageName != null &&
-                                                    user?.packageName
-                                                            ?.isNotEmpty ==
-                                                        true)
-                                                ? user?.packageName ?? ''
-                                                : R.string.thanh_vien_co_ban
-                                                    .tr(),
-                                        style: TextStyle(
-                                            color: R.color.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400))
-                                  ]),
-                            ),
-                          ]),
-                        ),
-                      ),
-                    ),
-                    Row(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  Navigator.pushNamed(context, NavigatorName.profile);
+                },
+                child: Row(children: [
+                  _buildAvatar(),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // InkWell(
-                        //   onTap: () async {
-                        //     if (user?.isUserHasRoadmap == true) {
-                        //       showChatMenu();
-                        //     } else {
-                        //       NavigationUtil.showUpdateRequirePopup(
-                        //           context: context,
-                        //           title: R.string.chat_with_coach.tr());
-                        //     }
-                        //   },
-                        //   child: Container(
-                        //     padding: EdgeInsets.only(
-                        //         bottom: 4, top: 4, right: 4, left: 16),
-                        //     color: R.color.transparent,
-                        //     child: Image.asset(R.drawable.ic_direct_chat,
-                        //         color: R.color.white, width: 24, height: 24),
-                        //   ),
-                        // ),
-                        // const SizedBox(width: 10),
-                        InkWell(
-                          onTap: () async {
-                            // final scanedResult =
-                            //     await NavigationUtil.navigatePage(
-                            //   context,
-                            //   const QRScanWidget(),
-                            // );
-                            // if (scanedResult is String) {
-                            //   ShareProfilePopup.instance.onHasSharedCode(
-                            //       context: context, code: scanedResult);
-                            // }
-                            HomeSupportFunctions.showModalAddData(context);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            color: R.color.transparent,
-                            child: Image.asset(R.drawable.ic_chat_new,
-                                color: R.color.white, width: 24, height: 24),
+                        Text(
+                          user?.fullName?.trim() ?? '',
+                          style: TextStyle(
+                            color: R.color.white,
+                            fontSize: 15,
+                            height: 1.46,
+                            fontWeight: FontWeight.w700,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(width: 10),
-                        InkWell(
-                          onTap: () async {
-                            Navigator.pushNamed(
-                                context, NavigatorName.notification);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            color: R.color.transparent,
-                            child: Image.asset(R.drawable.ic_bell,
-                                width: 24, height: 24),
+                        Text(
+                          _subtitle,
+                          style: TextStyle(
+                            color: R.color.white,
+                            fontSize: 13,
+                            height: 1.5,
+                            letterSpacing: 0.4,
+                            fontWeight: FontWeight.w400,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
-                    )
-                  ],
-                ),
-                // SizedBox(height: 30),
-                // if (!isChoose)
-                //   const SizedBox()
-                // else
-                (motivation != null &&
-                        motivation!.content != null &&
-                        motivation!.content!.trim().isNotEmpty)
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: Text(motivation!.content!,
-                            style: TextStyle(
-                                color: R.color.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
-                      )
-                    : Container()
-                // Column(children: [
-                //     Padding(
-                //       padding: const EdgeInsets.only(top: 16),
-                //       child: Text(R.string.share_with_diab.tr(),
-                //           style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
-                //     ),
-                //     const SizedBox(height: 8),
-                //     Center(
-                //       child: GestureDetector(
-                //         onTap: () {
-                //           _showDialogUpdateMotivation(null);
-                //         },
-                //         child: Container(
-                //             height: 32,
-                //             decoration:
-                //                 BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(16)),
-                //             padding: const EdgeInsets.only(left: 16, right: 16),
-                //             child: Row(mainAxisSize: MainAxisSize.min, children: [
-                //               Text(R.string.viet_dong_luc.tr(),
-                //                   style: TextStyle(
-                //                       color: R.color.mainColor, fontSize: 15, fontWeight: FontWeight.w600)),
-                //               const SizedBox(width: 4),
-                //               Image.asset(R.drawable.ic_arrow_right, width: 24, height: 24)
-                //             ])),
-                //       ),
-                //     )
-                //   ])
-              ],
-            )));
-  }
-
-  showChatMenu() {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-      useSafeArea: false,
-      context: context,
-      builder: (_) => FunkyOverlay(isCircular: false),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+            // Gaps are Figma's 16 minus the 8px tap padding around each icon.
+            const SizedBox(width: 8),
+            _buildAction(
+              icon: R.icons.ic_home_phone,
+              // Hotline / Zalo contact sheet.
+              onTap: () => HomeSupportFunctions.showModalAddData(context),
+            ),
+            _buildAction(
+              icon: R.icons.ic_home_bell,
+              badge: HomeHeader.badgeLabel(notificationCount),
+              onTap: () =>
+                  Navigator.pushNamed(context, NavigatorName.notification),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  _showDialogUpdateMotivation(MotivationModel? model) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              content: MotivationPopup(
-                model: model,
-                callback: (data) {
-                  if (data.id == null) {
-                    addMotivation(data);
-                  }
-                },
-              ),
-            ));
+  Widget _buildAvatar() {
+    final url = user?.imageUrl?.url;
+    final fallback =
+        Icon(Icons.person, size: _avatarSize - 2, color: R.color.mainColor);
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: AlignmentDirectional.bottomEnd,
+      children: [
+        Padding(
+          padding: AppSettings.isOwnPackage
+              ? EdgeInsets.zero
+              : const EdgeInsets.only(right: 4, bottom: 4),
+          child: Container(
+            width: _avatarSize,
+            height: _avatarSize,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              color: R.color.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: R.color.color0xffDADEDF),
+            ),
+            child: url == null
+                ? fallback
+                : Image.network(
+                    url,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => fallback,
+                  ),
+          ),
+        ),
+        if (AppSettings.isOwnPackage)
+          Positioned(
+            bottom: -8,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: _avatarSize - 4,
+              alignment: Alignment.bottomCenter,
+              child: Image.network(user?.ownPackage?.logo ?? ""),
+            ),
+          )
+        else
+          Container(
+            width: 20,
+            height: 20,
+            padding: const EdgeInsets.all(4),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: R.color.white,
+            ),
+            child: Image.asset(R.drawable.ic_crown_green),
+          ),
+      ],
+    );
   }
 
-  addMotivation(MotivationModel model) async {
-    try {
-      BotToast.showLoading();
-      await UserClient().inputMotivationDiary(model.content);
-      await loadMotivation();
-      BotToast.closeAllLoading();
-    } catch (e, _) {
-      BotToast.closeAllLoading();
-      if (e is Error) {
-        Message.showToastMessage(context, e.message);
-      } else {
-        Message.showToastMessage(context, e.toString());
-      }
-    }
+  Widget _buildAction(
+      {required String icon, required VoidCallback onTap, String? badge}) {
+    return InkWell(
+      onTap: onTap,
+      customBorder: const CircleBorder(),
+      // 40x40 tap target around the 24px icon.
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: Center(child: SvgPicture.asset(icon)),
+          ),
+          if (badge != null)
+            Positioned(
+              top: 3,
+              left: 14,
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                decoration: BoxDecoration(
+                  color: R.color.homeAlertRed,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                child: Text(
+                  badge,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 12,
+                    height: 16 / 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

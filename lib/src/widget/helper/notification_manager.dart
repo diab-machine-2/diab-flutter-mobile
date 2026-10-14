@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:html/parser.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -81,8 +82,9 @@ class NotificationManager {
             navigatorKey.currentState!.context, model.data!.surveyId!);
         return;
       }
-      // Observable.instance
-      //     .notifyObservers([], notifyName: "reload_notification");
+      // Refresh the unread badge on Home.
+      Observable.instance
+          .notifyObservers([], notifyName: "reload_notification");
 
       // if(model.body != null){
       //   model.body = parseHtmlString(model.body!);

@@ -239,6 +239,8 @@ class _HomeControllerState extends State<HomeController>
   @override
   void didPopNext() {
     if (_pendingResumeRefresh) _refreshIfStale();
+    // Back on Home: the unread badge may be stale (read on another screen).
+    Observable.instance.notifyObservers([], notifyName: "reload_notification");
     // A route above this one was popped, and home is visible again
     // Check phone validation when returning to home screen (defer to ensure we're really at home)
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -916,7 +918,10 @@ class _HomeControllerState extends State<HomeController>
                   DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xff116459), Color(0xff22cab4)],
+                        colors: [
+                          R.color.homeHeaderGradientBottom,
+                          R.color.homeHeaderGradientTop
+                        ],
                         stops: [0.01, 0.99],
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,

@@ -7,12 +7,12 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/notification/notification_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/notification/notification_type.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/notification/notification_mark_read.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -332,15 +332,7 @@ class NotificationUnreadControllerState
 
   void _onTapNotify(NotificationListModel notificationModel) {
     if ((widget.isRemovealbe != true) && !notificationModel.isRead!) {
-      Observable.instance.notifyObservers([],
-          notifyName: "read_notification",
-          map: {'notification': notificationModel});
-      NotificationClient().readNotification(
-          notificationModel.id,
-          notificationModel.notificationId,
-          AppSettings.userInfo!.id,
-          notificationModel.notificationType.toString(),
-          true);
+      markNotificationRead(notificationModel);
     }
     if (notificationModel.calendarId == null) {
       switch (notificationModel.actionType) {

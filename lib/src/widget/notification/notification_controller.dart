@@ -13,6 +13,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/notification/notification_type.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/notification/notification_mark_read.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -339,10 +340,7 @@ class NotificationControllerState extends State<NotificationController>
 
   void _onTapNotify(NotificationListModel model) {
     if ((widget.isRemovealbe != true) && !model.isRead!) {
-      Observable.instance.notifyObservers([],
-          notifyName: "read_notification", map: {'notification': model});
-      NotificationClient().readNotification(model.id, model.notificationId,
-          AppSettings.userInfo!.id, model.notificationType.toString(), true);
+      markNotificationRead(model);
     }
 
     if (model.calendarId == null) {
