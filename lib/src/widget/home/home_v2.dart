@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -40,7 +39,6 @@ import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
-import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/medicine/widgets/medicine_session_bottom_sheet.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
@@ -114,8 +112,6 @@ class _HomeControllerState extends State<HomeController>
   bool _haveInputBloodpressureAlready = false;
   bool _haveInputFoodAlready = false;
 
-  bool _isActivityExpanded = false;
-  bool _isReminderExpanded = false;
   bool _isActivityReminerExpanded = false;
 
   // trigger reload when complete lesson
@@ -160,8 +156,10 @@ class _HomeControllerState extends State<HomeController>
     initTarget();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       log('[HOME_DEBUG] postFrame init check started - will call checkMedicineSchedule');
+      // Exam results drive the "Hồ sơ" button; don't make them wait for the
+      // medicine check.
+      _fetchExamResults();
       await checkMedicineSchedule();
-      await _fetchExamResults();
     });
 
     SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
@@ -312,10 +310,14 @@ class _HomeControllerState extends State<HomeController>
     AppSettings.weightGoal = model.goalWeight ?? 0;
   }
 
+  int _examResultsRequestSeq = 0;
+
   Future<void> _fetchExamResults() async {
+    // Refreshes can overlap; only the latest response may write.
+    final seq = ++_examResultsRequestSeq;
     try {
       final results = await BcbCampaignClient().fetchExamResult();
-      if (!mounted) return;
+      if (!mounted || seq != _examResultsRequestSeq) return;
       setState(() {
         _examResults = results;
       });
@@ -674,6 +676,7 @@ class _HomeControllerState extends State<HomeController>
   Future<bool> _refresh() async {
     page = 1;
     _homeBloc.add(FetchHome());
+    _fetchExamResults();
 
     return true;
   }
@@ -682,6 +685,7 @@ class _HomeControllerState extends State<HomeController>
     _courseSuggestKey.currentState?.loadData();
     page = 1;
     _homeBloc.add(FetchHome());
+    _fetchExamResults();
     user = await UserClient().fetchUser(skipNotifiUI: true);
     AppSettings.isReloadCurrentUserInfo = true;
 
@@ -794,52 +798,26 @@ class _HomeControllerState extends State<HomeController>
 
           Widget activitiesW = HomeActivity(
             activities: stateLoaded?.activities ?? [],
-            hasReminder: (stateLoaded?.reminders ?? []).isNotEmpty,
+            reminders: stateLoaded?.reminders ?? [],
+            hasProgram: _viewFlags.hasProgram,
             expanded: _isActivityReminerExpanded,
-            loading: stateLoaded?.activityLoading ?? false,
-            onExpand: () {
-              setState(() {
-                _isActivityExpanded = true;
-              });
-            },
-            onCollapse: () {
-              setState(() {
-                _isActivityExpanded = false;
-              });
-            },
+            loading: (stateLoaded?.activityLoading ?? false) ||
+                (stateLoaded?.reminderLoading ?? false),
+            onToggleExpanded: () => setState(
+                () => _isActivityReminerExpanded = !_isActivityReminerExpanded),
+            onViewProgram: _viewMoreActivity,
             onAddActivity: () {
               Navigator.pushNamed(context, NavigatorName.add_goal);
             },
-            onViewMore: _viewMoreActivity,
             onActivityTap: (activity) => _onSelectGoal(activity.type,
                 smartGoal: activity.smartGoal, title: activity.title),
-          );
-
-          Widget reminderW = HomeReminder(
-            reminders: stateLoaded?.reminders ?? [],
-            loading: stateLoaded?.reminderLoading ?? false,
-            onAdd: () {
-              Navigator.pushNamed(context, NavigatorName.add_reminder,
-                  arguments: {'type': 'input'});
-            },
-            onItemTap: (reminder) async {
+            onReminderTap: (reminder) {
               final String eventName = "home_select_activity";
               TrackingManager.trackEvent(eventName, _screenName, params: {
                 "object_title": reminder.title,
               });
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'update', 'id': reminder.id});
-            },
-            expanded: _isActivityReminerExpanded,
-            onExpand: () {
-              setState(() {
-                _isReminderExpanded = true;
-              });
-            },
-            onCollapse: () {
-              setState(() {
-                _isReminderExpanded = false;
-              });
             },
           );
 
@@ -897,19 +875,6 @@ class _HomeControllerState extends State<HomeController>
           //     stateLoaded?.activityLoading == false &&
           //         !(stateLoaded?.reminders?.isNotEmpty == true);
 
-          bool isActivityReminderEmpty =
-              (stateLoaded?.activities ?? []).isEmpty &&
-                  (stateLoaded?.reminders ?? []).isEmpty;
-
-          bool isActivityReminderHaveMore =
-              // Expand more when have more than 5 items (included activities + reminders)
-              (stateLoaded?.activities ?? []).length +
-                          (stateLoaded?.reminders ?? []).length >
-                      5 ||
-                  // Also expand when have more than 3 activities or 2 reminders
-                  (stateLoaded?.activities ?? []).length > 3 ||
-                  (stateLoaded?.reminders ?? []).length > 2;
-
           final allBanners = (stateLoaded?.banners ?? [])
               .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
               .toList();
@@ -945,107 +910,114 @@ class _HomeControllerState extends State<HomeController>
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          // Summary (KPI / empty card)
-                          Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-                              child: MeasurementSummary(
-                                inlineMeasurements:
-                                    model?.inlineMeasurements ?? [],
-                                measurements: model?.measurements ?? [],
-                                flags: _viewFlags,
-                                onAddMeasurement: () =>
-                                    _showAddMeasurement(context),
-                                onConnectDevice: () => Navigator.pushNamed(
-                                    context, NavigatorName.connect_device_app),
-                                // Only shown when there is a record (no bundle
-                                // requirement any more).
-                                onHealthProfile: () => Navigator.pushNamed(
-                                    context, NavigatorName.view_test_result),
-                                onHbA1cTap:
-                                    MeasurementSummary.createHbA1cCallback(
-                                        context),
-                                onMeasurement: (routeName, args, title) async {
-                                  // track event
-                                  final String eventName = "home_select_kpi";
-                                  TrackingManager.trackEvent(
-                                      eventName, _screenName,
-                                      params: {
-                                        "object_title": title,
-                                      });
-                                  // case require weight input
-                                  if (_checkWeightInputDialog(routeName,
-                                          args: args) ==
-                                      false) {
-                                    return;
-                                  }
-                                  // case input glucose
-                                  if (await _showGlucoseAddBottomSheet(
-                                          routeName) ==
-                                      false) {
-                                    return;
-                                  }
-                                  // check first time open blood pressure intro
-                                  if (routeName ==
-                                          NavigatorName.add_blood_pressure &&
-                                      !_haveInputBloodpressureAlready) {
-                                    Navigator.of(context).pushNamed(
-                                        NavigatorName
-                                            .blood_pressure_intro_1st_page);
-                                    return;
-                                  }
-                                  // Nutrition: same source as KPI ("dinh dưỡng" row)
-                                  if (routeName == NavigatorName.add_food ||
-                                      routeName == NavigatorName.detail_food ||
-                                      routeName ==
-                                          NavigatorName
-                                              .nutrient_intro_1st_page) {
-                                    _pushNutritionEntry(context);
-                                    return;
-                                  }
-                                  // case input exercise
-                                  if (await _showExercriseAddBottomSheet(
-                                          routeName) ==
-                                      false) {
-                                    return;
-                                  }
-
-                                  // case HbA1C navigation with data checking
-                                  if (routeName == NavigatorName.detail_hba1c ||
-                                      (title != null &&
-                                          title
-                                              .toLowerCase()
-                                              .contains('hba1c'))) {
-                                    await HbA1cNavigationHelper.navigateToHbA1C(
-                                        context);
-                                    return;
-                                  }
-
-                                  if (routeName == NavigatorName.add_bmi) {
-                                    BmiBloc _bmiBloc = context.read();
-                                    var additionalArg = {
-                                      AddBmiPage.bmiBlocKey: _bmiBloc,
-                                    };
-                                    var newArgs = (args
-                                          ?..addAll(additionalArg)) ??
-                                        additionalArg;
-                                    Navigator.pushNamed(
+                          // Summary (KPI / empty card). Hidden until the first
+                          // HomeModel arrives so the empty card never flashes.
+                          if (model != null || state is HomeError)
+                            Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                                child: MeasurementSummary(
+                                  inlineMeasurements:
+                                      model?.inlineMeasurements ?? [],
+                                  measurements: model?.measurements ?? [],
+                                  flags: _viewFlags,
+                                  onAddMeasurement: () =>
+                                      _showAddMeasurement(context),
+                                  onConnectDevice: () => Navigator.pushNamed(
                                       context,
-                                      routeName!,
-                                      arguments: newArgs,
-                                    ).then((value) {
-                                      if (_bmiBloc.hasModifiedData)
-                                        _homeBloc.add(FetchHome());
-                                      _bmiBloc.hasModifiedData = false;
-                                    });
-                                    return;
-                                  }
-                                  // others
-                                  if (routeName != null) {
-                                    Navigator.pushNamed(context, routeName,
-                                        arguments: args);
-                                  }
-                                },
-                              )),
+                                      NavigatorName.connect_device_app),
+                                  // Only shown when there is a record (no bundle
+                                  // requirement any more).
+                                  onHealthProfile: () => Navigator.pushNamed(
+                                      context, NavigatorName.view_test_result),
+                                  onHbA1cTap:
+                                      MeasurementSummary.createHbA1cCallback(
+                                          context),
+                                  onMeasurement:
+                                      (routeName, args, title) async {
+                                    // track event
+                                    final String eventName = "home_select_kpi";
+                                    TrackingManager.trackEvent(
+                                        eventName, _screenName,
+                                        params: {
+                                          "object_title": title,
+                                        });
+                                    // case require weight input
+                                    if (_checkWeightInputDialog(routeName,
+                                            args: args) ==
+                                        false) {
+                                      return;
+                                    }
+                                    // case input glucose
+                                    if (await _showGlucoseAddBottomSheet(
+                                            routeName) ==
+                                        false) {
+                                      return;
+                                    }
+                                    // check first time open blood pressure intro
+                                    if (routeName ==
+                                            NavigatorName.add_blood_pressure &&
+                                        !_haveInputBloodpressureAlready) {
+                                      Navigator.of(context).pushNamed(
+                                          NavigatorName
+                                              .blood_pressure_intro_1st_page);
+                                      return;
+                                    }
+                                    // Nutrition: same source as KPI ("dinh dưỡng" row)
+                                    if (routeName == NavigatorName.add_food ||
+                                        routeName ==
+                                            NavigatorName.detail_food ||
+                                        routeName ==
+                                            NavigatorName
+                                                .nutrient_intro_1st_page) {
+                                      _pushNutritionEntry(context);
+                                      return;
+                                    }
+                                    // case input exercise
+                                    if (await _showExercriseAddBottomSheet(
+                                            routeName) ==
+                                        false) {
+                                      return;
+                                    }
+
+                                    // case HbA1C navigation with data checking
+                                    if (routeName ==
+                                            NavigatorName.detail_hba1c ||
+                                        (title != null &&
+                                            title
+                                                .toLowerCase()
+                                                .contains('hba1c'))) {
+                                      await HbA1cNavigationHelper
+                                          .navigateToHbA1C(context);
+                                      return;
+                                    }
+
+                                    if (routeName == NavigatorName.add_bmi) {
+                                      BmiBloc _bmiBloc = context.read();
+                                      var additionalArg = {
+                                        AddBmiPage.bmiBlocKey: _bmiBloc,
+                                      };
+                                      var newArgs = (args
+                                            ?..addAll(additionalArg)) ??
+                                          additionalArg;
+                                      Navigator.pushNamed(
+                                        context,
+                                        routeName!,
+                                        arguments: newArgs,
+                                      ).then((value) {
+                                        if (_bmiBloc.hasModifiedData)
+                                          _homeBloc.add(FetchHome());
+                                        _bmiBloc.hasModifiedData = false;
+                                      });
+                                      return;
+                                    }
+                                    // others
+                                    if (routeName != null) {
+                                      Navigator.pushNamed(context, routeName,
+                                          arguments: args);
+                                    }
+                                  },
+                                )),
 
                           const SizedBox(height: 12.0),
 
@@ -1186,136 +1158,11 @@ class _HomeControllerState extends State<HomeController>
 
                           // const SizedBox(height: 16.0),
 
+                          // Today's activities + reminders
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: AnimatedSize(
-                              duration: const Duration(milliseconds: 300),
-                              alignment: Alignment.topCenter,
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 20, 16, 16),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(16.0)),
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      color: const Color(0xFFE4E4E7),
-                                      width: 1.0),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          R.string.goal_of_day.tr(),
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: R.color.color0xff27272A,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 24.0,
-                                          child: stateLoaded?.activityLoading ??
-                                                  false
-                                              ? Align(
-                                                  alignment:
-                                                      Alignment.centerRight,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 4.0),
-                                                    child: SizedBox(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                              strokeWidth: 2.0),
-                                                      width: 16.0,
-                                                      height: 16.0,
-                                                    ),
-                                                  ),
-                                                )
-                                              : TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    padding: EdgeInsets.zero,
-                                                    textStyle: TextStyle(
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: R.color
-                                                          .greenGradientBottom,
-                                                    ),
-                                                  ),
-                                                  onPressed: _viewMoreActivity,
-                                                  child: Text(
-                                                    R.string.more.tr(),
-                                                    style: TextStyle(
-                                                        color: R
-                                                            .color.burntOrange),
-                                                  ),
-                                                ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    // REMINDERS
-                                    reminderW,
-
-                                    // ACTIVITIES
-                                    activitiesW,
-
-                                    Builder(builder: (context) {
-                                      if (isActivityReminderEmpty ||
-                                          !isActivityReminderHaveMore)
-                                        return const SizedBox.shrink();
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 4.0),
-                                        child: InkWell(
-                                          onTap: _isActivityReminerExpanded
-                                              ? () => setState(() {
-                                                    _isActivityReminerExpanded =
-                                                        false;
-                                                  })
-                                              : () => setState(() {
-                                                    _isActivityReminerExpanded =
-                                                        true;
-                                                  }),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                _isActivityReminerExpanded
-                                                    ? "Thu gọn"
-                                                    : "Mở rộng",
-                                                style: TextStyle(
-                                                  fontSize: 14.0,
-                                                  color:
-                                                      R.color.primaryGreyColor,
-                                                  height: 20.0 / 14.0,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 6.0),
-                                              Icon(
-                                                _isActivityReminerExpanded
-                                                    ? Icons.keyboard_arrow_up
-                                                    : Icons.keyboard_arrow_down,
-                                                color: R.color.primaryGreyColor,
-                                                size: 20.0,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            child: activitiesW,
                           ),
 
                           if (model?.hasBundle == true) ...[
@@ -1553,7 +1400,7 @@ class _HomeControllerState extends State<HomeController>
       builder: (context) => dialog,
       isScrollControlled: true,
       elevation: 1,
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),

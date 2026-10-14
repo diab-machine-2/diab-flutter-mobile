@@ -261,7 +261,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// dependency the original sequential code had — so that decision (and
   /// the fallback call itself) has to happen inside the applier, not in the
   /// eager part.
-  Future<Future<HomeLoaded> Function(HomeLoaded)> _fetchActivitiesPatch() async {
+  Future<Future<HomeLoaded> Function(HomeLoaded)>
+      _fetchActivitiesPatch() async {
     final repository = AppRepository();
     // QA-only: `--dart-define=HOME_ACTIVITY_DAY_OFFSET=-1` loads yesterday's
     // activities so a test account with a full day can be inspected.
@@ -340,8 +341,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                 activityLoading: _firstLoad && stillLoading,
               );
             } else {
-              currentState = currentState
-                  .copyWith(activityLoading: false, activities: []);
+              currentState =
+                  currentState.copyWith(activityLoading: false, activities: []);
             }
           },
           failure: (error) {
@@ -402,7 +403,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<HomeLoaded Function(HomeLoaded)> _fetchRemindersPatch() async {
     try {
       final remindersResponse =
-          await UserClient().fetchScheduleRemindersForHomePage();
+          (await UserClient().fetchScheduleRemindersForHomePage())
+              .where((e) => e.isActive != false)
+              .toList();
       if (remindersResponse.isNotEmpty) {
         final reminders = remindersResponse.map((e) {
           final time = DateUtil.parseTimespanToDateTime(e.time).toLocal();
@@ -497,9 +500,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// Fires the lessons network call immediately; returns a sync applier.
   Future<HomeLoaded Function(HomeLoaded)> _fetchLessonsPatch() async {
     final learningClient = LearningClient();
-    final lessonsResponse = await learningClient
-        .fetchLesson(week: _currentWeek)
-        .catchError((e, s) {
+    final lessonsResponse =
+        await learningClient.fetchLesson(week: _currentWeek).catchError((e, s) {
       TrackingManager.recordError(e, s);
       return <LessonModel>[];
     }, test: (error) => true);
@@ -833,10 +835,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // print('  isDefaultValue: $isDefaultValue');
 
     final haveBloodPressure = systolic != null &&
-        systolic > 0 &&
-        diastolic != null &&
-        diastolic > 0 &&
-        hasValidDateTime 
+            systolic > 0 &&
+            diastolic != null &&
+            diastolic > 0 &&
+            hasValidDateTime
         // &&
         // !isDefaultValue
         ;

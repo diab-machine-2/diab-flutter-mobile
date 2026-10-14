@@ -17,6 +17,10 @@ class ScheduleReminderDataModelNew {
   final String? timeFrameName;
   final int time;
 
+  /// BE-3: inactive reminders must not show on Home. Null until the backend
+  /// sends it, so treat null as active.
+  final bool? isActive;
+
   ScheduleReminderDataModelNew({
     required this.id,
     required this.patientId,
@@ -24,6 +28,7 @@ class ScheduleReminderDataModelNew {
     this.content,
     this.timeFrameName,
     required this.time,
+    this.isActive,
   });
 
   factory ScheduleReminderDataModelNew.fromJson(Map<String, dynamic> json) {
@@ -34,6 +39,15 @@ class ScheduleReminderDataModelNew {
       content: json['content'],
       timeFrameName: json['timeFrameName'],
       time: json['time'],
+      isActive: _parseBool(json['isActive']),
     );
+  }
+
+  // Lenient: a type mismatch here would drop every reminder on Home.
+  static bool? _parseBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) return value.toLowerCase() == 'true' || value == '1';
+    return null;
   }
 }
