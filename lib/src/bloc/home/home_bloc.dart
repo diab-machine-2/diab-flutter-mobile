@@ -27,6 +27,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
+import 'package:medical/src/widget/home/home_mock.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -131,26 +132,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
         yield currentState;
 
-        // Reminders / activities / banners / news / lessons are all
-        // independent of each other and of the measurements load above —
-        // none of their handlers reads another's result. Firing all 5 here
-        // (instead of the previous yield*-per-domain chain, which made each
-        // one wait for every domain before it to fully finish) means the
-        // network calls run concurrently: total wait becomes roughly the
-        // slowest single domain instead of the sum of all 5. Each `_fetchX
-        // Patch()` call starts its network request immediately (before this
-        // line finishes), independent of when its Future is later awaited.
+        // Reminders, activities and the events & news carousel are
+        // independent of each other and of the measurements load above, so
+        // their requests run concurrently: each `_fetchXPatch()` starts its
+        // network call immediately, and the total wait is roughly the slowest
+        // one. (Home no longer shows lessons, so they aren't fetched here.)
         final remindersFuture = _fetchRemindersPatch();
         final activitiesFuture = _fetchActivitiesPatch();
         final newsAndBannersFuture = _fetchNewsAndBannersPatch();
-        final lessonsFuture = _fetchLessonsPatch();
 
-        // Apply results in the order we want the UI to update — banner and
-        // news first (previously loaded dead last, behind reminders and
-        // activities, despite appearing near the top of the screen). Banners
-        // and news now come from one merged /App/LearningPost/Active call
-        // (see _fetchNewsAndBannersPatch), so they apply in a single yield
-        // instead of two separate network round trips.
+        // Events & news (one /App/LearningPost/Active call, banner + news
+        // posts merged — see _fetchNewsAndBannersPatch) apply first.
         currentState = (await newsAndBannersFuture)(currentState);
         yield currentState;
 
@@ -174,9 +166,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         // // load customer receives user
         // yield* _fetchCustomerReceivesUser();
-
-        currentState = (await lessonsFuture)(currentState);
-        yield currentState;
 
         _firstLoad = false;
         _cached = currentState;
@@ -454,14 +443,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// that sets both fields from the one response. Used by `_fetchHomes()`.
   Future<HomeLoaded Function(HomeLoaded)> _fetchNewsAndBannersPatch() async {
     final posts = await _fetchActiveLearningPosts();
-    final banners = posts.where((p) => p.positions.contains(9)).toList();
-    final news = posts.where((p) => p.positions.contains(1)).toList();
-    return (HomeLoaded state) {
-      HomeLoaded result = state;
-      if (banners.isNotEmpty) result = result.copyWith(banners: banners);
-      if (news.isNotEmpty) result = result.copyWith(news: news);
-      return result;
-    };
+    // "Sự kiện & Tin nổi bật": banner (9) and news (1) posts in one carousel,
+    // backend order kept, each post once.
+    final seen = <String>{};
+    var news = posts
+        .where((p) => p.positions.contains(9) || p.positions.contains(1))
+        .where((p) => p.id == null || seen.add(p.id!))
+        .toList();
+    // QA: the endpoint currently answers 400 (ERR-2); show sample cards.
+    if (news.isEmpty && HomeMock.enabled) news = HomeMock.samplePosts();
+    return (HomeLoaded state) =>
+        news.isEmpty ? state : state.copyWith(news: news);
   }
 
   /// Fires the "featured news" network call immediately; returns a sync

@@ -1,16 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
@@ -35,17 +32,14 @@ import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
-import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/medicine/widgets/medicine_session_bottom_sheet.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -64,6 +58,7 @@ import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/widget/home/home_view_flags.dart';
 import 'package:medical/src/widget/home/home_daily_care.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widget/home/home_remote_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 
@@ -872,16 +867,6 @@ class _HomeControllerState extends State<HomeController>
           //     stateLoaded?.activityLoading == false &&
           //         !(stateLoaded?.reminders?.isNotEmpty == true);
 
-          final allBanners = (stateLoaded?.banners ?? [])
-              .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
-              .toList();
-
-          List<String> banners =
-              allBanners.map((banner) => banner.imageBannerUrl!.url!).toList();
-
-          List<String> bannerLinks =
-              allBanners.map((banner) => banner.link ?? '').toList();
-
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
             child: Scaffold(
@@ -1016,144 +1001,9 @@ class _HomeControllerState extends State<HomeController>
                                   },
                                 )),
 
+                          // Order (Figma §7): KPI → activities → benefits →
+                          // daily care → events & news.
                           const SizedBox(height: 12.0),
-
-                          // // Activities
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.symmetric(horizontal: 12.0),
-                          //   child: HomeActivity(
-                          //     activities: stateLoaded?.activities ?? [],
-                          //     expanded: _isActivityExpanded,
-                          //     loading: stateLoaded?.activityLoading ?? false,
-                          //     onExpand: () {
-                          //       setState(() {
-                          //         _isActivityExpanded = true;
-                          //       });
-                          //     },
-                          //     onCollapse: () {
-                          //       setState(() {
-                          //         _isActivityExpanded = false;
-                          //       });
-                          //     },
-                          //     onAddActivity: () {
-                          //       Navigator.pushNamed(
-                          //           context, NavigatorName.add_goal);
-                          //     },
-                          //     onViewMore: _viewMoreActivity,
-                          //     onActivityTap: (activity) => _onSelectGoal(
-                          //         activity.type,
-                          //         smartGoal: activity.smartGoal,
-                          //         title: activity.title),
-                          //   ),
-                          // ),
-
-                          if (banners.isNotEmpty)
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12.0),
-                              alignment: Alignment.center,
-                              child: CarouselSlider.builder(
-                                options: CarouselOptions(
-                                  autoPlay: banners.length > 1 ? true : false,
-                                  // Match BE banner size (2500x900) so the
-                                  // image fills the slot without letterboxing.
-                                  aspectRatio: 2500 / 900,
-                                  autoPlayInterval: Duration(seconds: 3),
-                                  viewportFraction: 1.0,
-                                  initialPage: 0,
-                                  padEnds: true,
-                                ),
-                                itemCount: allBanners.length,
-                                itemBuilder: (BuildContext context, int index,
-                                        int pageViewIndex) =>
-                                    ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      await TrackingManager.trackEvent(
-                                          'home_select_banner', _screenName,
-                                          params: {
-                                            "object_title": stateLoaded
-                                                    ?.banners?[index].title ??
-                                                '',
-                                            "index": index,
-                                          });
-                                      final selectedBanner = allBanners[index];
-                                      final isWebinar = (selectedBanner
-                                                  .accountId !=
-                                              null &&
-                                          selectedBanner
-                                              .accountId!.isNotEmpty &&
-                                          selectedBanner.accountId !=
-                                              '00000000-0000-0000-0000-000000000000' &&
-                                          selectedBanner.eventType != null);
-
-                                      if (isWebinar &&
-                                          selectedBanner.id != null) {
-                                        Navigator.pushNamed(
-                                          context,
-                                          NavigatorName.webinar_info,
-                                          arguments: {'id': selectedBanner.id},
-                                        );
-                                      } else {
-                                        if (bannerLinks[index].isEmpty) {
-                                          return;
-                                        }
-                                        await BranchioLinkConfig.instance
-                                            .openLink(bannerLinks[index]);
-                                      }
-                                    },
-                                    child: NetWorkImageWidget(
-                                      imageUrl: banners[index],
-                                      fit: BoxFit.cover,
-                                      width: 400.w,
-                                      // height: 110.h,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                          const SizedBox(height: 16.0),
-
-                          // TODO: View campaign test result button
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.symmetric(horizontal: 12.0),
-                          //   child: SizedBox(
-                          //     width: double.infinity,
-                          //     height: 48.0,
-                          //     child: ElevatedButton(
-                          //       style: ElevatedButton.styleFrom(
-                          //         elevation: 0,
-                          //         backgroundColor: R.color.greenGradientBottom,
-                          //         foregroundColor: Colors.white,
-                          //         shape: RoundedRectangleBorder(
-                          //           borderRadius: BorderRadius.circular(12.0),
-                          //         ),
-                          //       ),
-                          //       onPressed: () {
-                          //         Navigator.pushNamed(
-                          //           context,
-                          //           NavigatorName.view_test_result,
-                          //           arguments: {
-                          //             'campaignId':
-                          //                 '1efb9d66-aae0-4ffd-0164-08deab468abc',
-                          //           },
-                          //         );
-                          //       },
-                          //       child: const Text(
-                          //         "Kết quả xét nghiệm",
-                          //         style: TextStyle(
-                          //           fontSize: 16.0,
-                          //           fontWeight: FontWeight.w700,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-
-                          // const SizedBox(height: 16.0),
 
                           // Today's activities + reminders
                           Padding(
@@ -1163,110 +1013,36 @@ class _HomeControllerState extends State<HomeController>
                           ),
 
                           if (model?.hasBundle == true) ...[
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: 12.0),
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 12.0),
                               child: HomeBenefitSection(),
                             ),
                           ],
 
-                          const SizedBox(height: 16.0),
-
-                          // Utilities
-                          if (model != null || state is HomeError)
+                          // Daily care
+                          if (model != null || state is HomeError) ...[
+                            const SizedBox(height: 12.0),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12.0),
                               child: utilitiesW,
                             ),
+                          ],
 
-                          // // Reminder >< Utilities
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.symmetric(horizontal: 12.0),
-                          //   child: needSwapReminderAndUtilities
-                          //       ? utilitiesW
-                          //       : reminderW,
-                          // ),
-
-                          // const SizedBox(height: 16.0),
-
-                          // // Utilities >< Reminder
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.symmetric(horizontal: 12.0),
-                          //   child: needSwapReminderAndUtilities
-                          //       ? reminderW
-                          //       : utilitiesW,
-                          // ),
-
-                          const SizedBox(height: 16.0),
-
-                          // Lessons
-                          if (stateLoaded?.lessons != null &&
-                              stateLoaded!.lessons!.isNotEmpty) ...[
+                          // Events & news
+                          if ((stateLoaded?.news ?? []).isNotEmpty) ...[
+                            const SizedBox(height: 12.0),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: HomeLesson(
-                                lessons: stateLoaded.lessons!,
-                                onLessonTap: (lesson) async {
-                                  ActivityListTracking.clickLessonItem(
-                                    objectId: lesson.id,
-                                    objectIndex:
-                                        stateLoaded!.lessons!.indexOf(lesson),
-                                    objectTitle: lesson.name,
-                                  );
-
-                                  await NavigationUtil.navigatePage(
-                                    context,
-                                    LessonDetailPage(
-                                      lessonType: lesson.type,
-                                      lessonId: lesson.id,
-                                      onComplete: (_, __) {},
-                                    ),
-                                  );
-                                },
-                                onLike: (lesson) {},
-                                onComment: (lesson) {},
-                                onShare: (lesson) {
-                                  _homeBloc.shareLesson(lesson.id, context);
-                                },
+                              child: HomeNews(
+                                items: stateLoaded!.news!,
+                                onNewsTap: (post) =>
+                                    _onNewsTap(post, stateLoaded!.news!),
                               ),
                             ),
-                            const SizedBox(height: 16.0),
                           ],
-
-                          // Popular News
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: HomeNews(
-                              items: stateLoaded?.news ?? [],
-                              onViewMore: () {},
-                              onNewsTap: (news) async {
-                                await TrackingManager.trackEvent(
-                                    'home_select_news', _screenName,
-                                    params: {
-                                      "object_title": news.title,
-                                      "index": stateLoaded?.news?.indexWhere(
-                                          (element) => element.id == news.id),
-                                    });
-                                if (news.enableLink) {
-                                  _launchInBrowser(news.link!);
-                                } else {
-                                  Navigator.pushNamed(
-                                    context,
-                                    NavigatorName.news_detail,
-                                    arguments: {'id': news.id},
-                                  );
-                                }
-                              },
-                              onLike: (news) {},
-                              onComment: (news) {},
-                              onShare: (news) {},
-                            ),
-                          ),
 
                           const SizedBox(height: 32.0),
 
@@ -1674,6 +1450,39 @@ class _HomeControllerState extends State<HomeController>
         _refresh();
       },
     );
+  }
+
+  /// Keeps the rules of the old banner carousel (position 9) and news list
+  /// (position 1) now that both share one carousel:
+  /// - events → webinar screen;
+  /// - banners → their link via Branch (deep link or external), else nothing;
+  /// - news → browser when `enableLink`, else the news detail screen.
+  Future<void> _onNewsTap(
+      LearningPostModel post, List<LearningPostModel> posts) async {
+    final isBanner = post.positions.contains(9) && !post.positions.contains(1);
+    TrackingManager.trackEvent(
+        isBanner ? 'home_select_banner' : 'home_select_news', _screenName,
+        params: {
+          "object_title": post.title,
+          "index": posts.indexWhere((element) => element.id == post.id),
+        });
+    if (!mounted) return;
+    if (HomeNews.isEvent(post) && post.id != null) {
+      Navigator.pushNamed(context, NavigatorName.webinar_info,
+          arguments: {'id': post.id});
+      return;
+    }
+    final link = post.link ?? '';
+    if (isBanner) {
+      if (link.isNotEmpty) await BranchioLinkConfig.instance.openLink(link);
+      return;
+    }
+    if (post.enableLink && link.isNotEmpty) {
+      _launchInBrowser(link);
+      return;
+    }
+    Navigator.pushNamed(context, NavigatorName.news_detail,
+        arguments: {'id': post.id});
   }
 
   void _viewMoreActivity() {

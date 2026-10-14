@@ -1,247 +1,246 @@
-import 'dart:math';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/widget/home/home_mock.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 typedef OnNewsTap = void Function(LearningPostModel news);
 
+/// Home "Sự kiện & Tin nổi bật" carousel (Figma 22514:9701): event cards and
+/// news cards from `LearningPost/Active`, in backend order.
 class HomeNews extends StatelessWidget {
   const HomeNews({
     super.key,
     required this.items,
-    required this.onViewMore,
     required this.onNewsTap,
-    required this.onLike,
-    required this.onComment,
-    required this.onShare,
   });
 
-  final List<LearningPostModel> items;
+  static const double cardWidth = 303;
+  static const double imageHeight = 190;
 
-  final VoidCallback onViewMore;
+  final List<LearningPostModel> items;
   final OnNewsTap onNewsTap;
-  final OnNewsTap onLike;
-  final OnNewsTap onComment;
-  final OnNewsTap onShare;
+
+  /// A webinar/event post: a real host account plus `eventType`
+  /// (true = offline, false = online). Same rule the old banner tap used, and
+  /// shared with Home's tap handler so card look and tap target agree.
+  static bool isEvent(LearningPostModel post) {
+    final accountId = post.accountId;
+    return accountId != null &&
+        accountId.isNotEmpty &&
+        accountId != '00000000-0000-0000-0000-000000000000' &&
+        post.eventType != null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
-    final extraTitleHeight = (textScaleFactor - 1) * 38.0;
-    return DecoratedBox(
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(top: 20, bottom: 20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.0),
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: R.color.homeCardShadow,
+            offset: const Offset(1, 2),
+            blurRadius: 8,
+          ),
+        ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 20.0),
-          // Header
-          Row(
-            children: [
-              const SizedBox(width: 16.0),
-              Text(
-                R.string.featured_news.tr(),
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.color0xff27272A,
-                ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              R.string.home_news_title.tr(),
+              style: TextStyle(
+                color: R.color.color0xff111515,
+                fontSize: 18,
+                height: 1.32,
+                fontWeight: FontWeight.w700,
               ),
-              const Spacer(),
-              // SizedBox(
-              //   height: 24.0,
-              //   child: TextButton(
-              //     style: TextButton.styleFrom(
-              //       padding: EdgeInsets.zero,
-              //       textStyle: TextStyle(
-              //         fontSize: 14.0,
-              //         fontWeight: FontWeight.bold,
-              //         color: R.color.greenGradientBottom,
-              //       ),
-              //     ),
-              //     onPressed: onViewMore,
-              //     child: Text("Xem thêm"),
-              //   ),
-              // ),
-              const SizedBox(width: 16.0),
-            ],
-          ),
-
-          const SizedBox(height: 16.0),
-
-          // News
-          SizedBox(
-            height: 252.0 + extraTitleHeight,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              itemCount: items.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final lesson = items[index];
-                return _buildNewsItem(lesson, extraTitleHeight);
-              },
-              separatorBuilder: (context, index) {
-                return SizedBox(width: 12.0);
-              },
             ),
           ),
-
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = 0; i < items.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 12),
+                    _buildCard(items[i]),
+                  ],
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildNewsItem(LearningPostModel news, double extraTitleHeight) {
-    return InkWell(
-      onTap: () => onNewsTap(news),
-      borderRadius: BorderRadius.circular(12.0),
-      child: Container(
-        height: 252.0 + extraTitleHeight,
-        width: 338.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.0),
-          color: Colors.white,
-          border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
+  Widget _buildCard(LearningPostModel post) {
+    final event = isEvent(post);
+    return SizedBox(
+      width: cardWidth,
+      child: Material(
+        color: R.color.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: R.color.color0xffDADEDF),
         ),
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            // https://picsum.photos/654/348
-            ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12.0),
-                topRight: Radius.circular(12.0),
-              ),
-              child: NetWorkImageWidget(
-                imageUrl: news.imageUrl.url,
-                fit: BoxFit.cover,
-                height: 174.0,
-                width: double.infinity,
-              ),
-            ),
-
-            const SizedBox(height: 12.0),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      news.title,
-                      maxLines: 2,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 15.0,
-                        height: 24.0 / 15.0,
-                      ),
-                    ),
-                    // const SizedBox(height: 4.0),
-                    // Row(
-                    //   children: [
-                    //     Image.asset(
-                    //       R.drawable.ic_lesson_category,
-                    //       width: 16.0,
-                    //       height: 16.0,
-                    //     ),
-                    //     const SizedBox(width: 6.0),
-                    //     Text(
-                    //       "Bài học",
-                    //       style: TextStyle(
-                    //         color: R.color.color0xff666666,
-                    //         fontSize: 12.0,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                  ],
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => onNewsTap(post),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Tight box: IntrinsicHeight must not reach the image widget's
+              // LayoutBuilder (which can't report intrinsic sizes).
+              SizedBox(
+                width: cardWidth,
+                height: imageHeight,
+                child: NetWorkImageWidget(
+                  // Banner-only posts may only carry the banner image.
+                  imageUrl: post.imageUrl.url?.isNotEmpty == true
+                      ? post.imageUrl.url
+                      : post.imageBannerUrl?.url,
+                  fit: BoxFit.cover,
+                  height: imageHeight,
+                  width: cardWidth,
                 ),
               ),
-            ),
-
-            // const SizedBox(height: 12.0),
-
-            // Actions
-            // Row(
-            //   mainAxisSize: MainAxisSize.max,
-            //   children: [
-            //     const SizedBox(width: 16.0),
-
-            //     // Like
-            //     InkWell(
-            //       onTap: () => onLike(news),
-            //       child: Row(
-            //         crossAxisAlignment: CrossAxisAlignment.center,
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Image.asset(R.drawable.ic_lesson_like, width: 20.0, height: 20.0),
-            //           const SizedBox(width: 8.0),
-            //           Text(
-            //             "${news.likeCount}",
-            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-
-            //     const SizedBox(width: 16.0),
-
-            //     // Comment
-            //     InkWell(
-            //       onTap: () => onComment(news),
-            //       child: Row(
-            //         crossAxisAlignment: CrossAxisAlignment.center,
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Image.asset(R.drawable.ic_lesson_comment, width: 20.0, height: 20.0),
-            //           const SizedBox(width: 8.0),
-            //           Text(
-            //             "${news.commentCount}",
-            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-
-            //     const Spacer(),
-
-            //     // Share
-            //     InkWell(
-            //       onTap: () => onShare(news),
-            //       child: Row(
-            //         crossAxisAlignment: CrossAxisAlignment.end,
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
-            //           const SizedBox(width: 8.0),
-            //           Text(
-            //             "Chia sẻ",
-            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-
-            //     const SizedBox(width: 16.0),
-            //   ],
-            // ),
-
-            // const SizedBox(height: 16.0),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: event ? _eventLines(post) : _newsLines(post),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  List<Widget> _eventLines(LearningPostModel post) {
+    final when = _eventWhen(post);
+    final online = post.eventType == false;
+    final place = online
+        ? R.string.home_event_online.tr()
+        : (post.eventAddress?.trim() ?? '');
+    return [
+      if (when.isNotEmpty) ...[
+        Text(when, style: _metaStyle(15)),
+        const SizedBox(height: 8),
+      ],
+      _title(post.title),
+      if (place.isNotEmpty) ...[
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            online
+                ? Icon(Icons.videocam_outlined,
+                    size: 16, color: R.color.color0xff5E6566)
+                : SvgPicture.asset(R.icons.ic_home_map_pin,
+                    width: 14, height: 16),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                place,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: _metaStyle(15),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ];
+  }
+
+  List<Widget> _newsLines(LearningPostModel post) {
+    final date = _formatDate(post.createDatetime);
+    return [
+      if (date.isNotEmpty) ...[
+        Text(R.string.home_news_tag.tr(args: [date]), style: _metaStyle(15)),
+        const SizedBox(height: 8),
+      ],
+      _title(post.title),
+      // BE-4: reading time / view count aren't served yet; sample values only
+      // with HOME_MOCK.
+      if (HomeMock.enabled) ...[
+        const SizedBox(height: 8),
+        Text(
+          '${R.string.home_news_reading_time.tr(args: [
+                '${HomeMock.readingMinutes(post.id)}'
+              ])}'
+          ' · '
+          '${R.string.home_news_view_count.tr(args: [
+                NumberFormat.compact().format(HomeMock.viewCount(post.id))
+              ])}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: _metaStyle(12).copyWith(letterSpacing: 0.2, height: 1.5),
+        ),
+      ],
+    ];
+  }
+
+  Widget _title(String title) => Text(
+        title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: R.color.color0xff111515,
+          fontSize: 15,
+          height: 1.46,
+          fontWeight: FontWeight.w700,
+        ),
+      );
+
+  TextStyle _metaStyle(double size) => TextStyle(
+        color: R.color.color0xff5E6566,
+        fontSize: size,
+        height: 1.46,
+        letterSpacing: 0.4,
+      );
+
+  /// "14:54 Thứ 3, 12/04/2025" (time left out when the event has none).
+  static String _eventWhen(LearningPostModel post) {
+    final date = post.eventDate;
+    if (date == null || date == 0) return '';
+    final day = DateTime.fromMillisecondsSinceEpoch(date * 1000).toLocal();
+    final dayText =
+        '${getWeekDay(date)}, ${DateFormat('dd/MM/yyyy').format(day)}';
+    final parts = (post.eventTime ?? '').split(':');
+    if (parts.length < 2) return dayText;
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return dayText;
+    final time =
+        '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+    return '$time $dayText';
+  }
+
+  /// `createDatetime` is epoch seconds elsewhere in this API (stringified by
+  /// the model); ISO strings are accepted too. Unparseable → no date.
+  static String _formatDate(String raw) {
+    final seconds = int.tryParse(raw.trim());
+    final parsed = seconds != null
+        ? DateTime.fromMillisecondsSinceEpoch(seconds * 1000)
+        : DateTime.tryParse(raw);
+    if (parsed == null) return '';
+    return DateFormat('dd/MM/yyyy').format(parsed.toLocal());
   }
 }

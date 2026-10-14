@@ -1,3 +1,5 @@
+import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widget/home/home_view_flags.dart';
 
 /// QA-only sample data for the parts of the Home redesign the backend doesn't
@@ -48,6 +50,43 @@ class HomeMock {
 
   /// BE-4: view count of a news post. Stable per post id.
   static int viewCount(String? postId) => 300 + _seed(postId) % 2000;
+
+  /// Sample "Sự kiện & Tin" posts (texts from the Figma frame) used when
+  /// `LearningPost/Active` returns nothing — it currently answers 400
+  /// (ERR-2). Layout check only: tapping them opens nothing useful.
+  static List<LearningPostModel> samplePosts() {
+    const image = ImagesModel(id: null, url: null);
+    final date = DateTime(2025, 4, 12).millisecondsSinceEpoch ~/ 1000;
+    LearningPostModel post(String id, String title,
+            {bool? eventType, String? address, String? time}) =>
+        LearningPostModel(
+          id: id,
+          title: title,
+          link: null,
+          imageUrl: image,
+          status: 1,
+          enableLink: false,
+          createDatetime: '2025-04-12T00:00:00',
+          learningPostTagMappings: const [],
+          positions: const [1],
+          eventType: eventType,
+          eventDate: eventType == null ? null : date,
+          eventTime: time,
+          eventAddress: address,
+          accountId: eventType == null ? null : 'mock-host',
+        );
+    return [
+      post('mock-event-offline',
+          'Bí quyết nấu ăn dinh dưỡng, ngon miệng cho người đái tháo đường',
+          eventType: true,
+          time: '14:54',
+          address: 'Bệnh viện Đa khoa Nguyễn Tri Phương'),
+      post('mock-news', '5 lưu ý khi ăn sáng giúp đường huyết ổn định cả ngày'),
+      post('mock-event-online',
+          'Bí quyết nấu ăn dinh dưỡng, ngon miệng cho người đái tháo đường',
+          eventType: false, time: '11:30'),
+    ];
+  }
 
   static int _seed(String? id) =>
       (id ?? '').codeUnits.fold(0, (sum, unit) => sum + unit);
