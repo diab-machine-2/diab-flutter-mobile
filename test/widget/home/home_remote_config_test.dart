@@ -26,6 +26,18 @@ void main() {
           HomeBenefitShortcutsConfig.defaultSlugs);
     });
 
+    test('unavailable slugs are dropped before the cap so others backfill', () {
+      expect(
+          HomeBenefitShortcutsConfig.parse(
+              'kham-tai-nha,lich-hen,mua-thuoc,dat-xet-nghiem,xem-tat-ca',
+              isAvailable: (slug) => slug != 'kham-tai-nha'),
+          ['lich-hen', 'mua-thuoc', 'dat-xet-nghiem', 'xem-tat-ca']);
+      expect(
+          HomeBenefitShortcutsConfig.parse('kham-tai-nha',
+              isAvailable: (slug) => slug != 'kham-tai-nha'),
+          HomeBenefitShortcutsConfig.defaultSlugs);
+    });
+
     test('caps at maxCount', () {
       expect(
           HomeBenefitShortcutsConfig.parse(

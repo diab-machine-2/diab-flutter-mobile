@@ -93,7 +93,7 @@ Rule chọn nội dung hiển thị bên dưới phần gallery (`_buildBenefitC
 
 - `BenefitType.description` đôi khi chứa chuỗi ký tự `\n` dạng literal (dấu gạch chéo ngược + chữ n) thay vì ký tự xuống dòng thật — cần `.replaceAll('\\n', '\n')` trước khi hiển thị (đã áp dụng ở `benefit_partner_intro_page.dart`, cùng cách xử lý với `csv_asset_loader.dart`).
 - Trang "Voucher của tôi" (`benefit_my_voucher_page.dart`) chỉ lấy các item `partnerIntro`, và lọc bỏ thêm những item có `benefitType.validUntil` đã ở quá khứ (item không có `validUntil` thì luôn được giữ vì không có hạn dùng).
-- Màn "Tại nhà" ở Home (`home_benefit.dart`) không lấy từ bundle mà dựng một `MyBenefitItem` từ JSON lưu trong Firebase Remote Config, key `BENEFIT_AT_HOME_INFO` — JSON đó phải có hình dạng giống một item `partnerIntro` thật (`itemType: 2, appFeature: 3, benefitType: {...}`).
+- Màn "Khám tại nhà" mở từ Home (`HomeDailyCareNavigator.openAtHome` trong `home_daily_care.dart`, dùng cho cả shortcut Quyền lợi và Chăm sóc hằng ngày) không lấy từ bundle mà dựng một `MyBenefitItem` từ JSON lưu trong Firebase Remote Config, key `BENEFIT_AT_HOME_INFO` — JSON đó phải có hình dạng giống một item `partnerIntro` thật (`itemType: 2, appFeature: 3, benefitType: {...}`).
 
 ---
 

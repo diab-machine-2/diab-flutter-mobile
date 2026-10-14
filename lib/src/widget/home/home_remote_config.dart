@@ -212,15 +212,22 @@ class HomeBenefitShortcutsConfig {
     HomeBenefitShortcutSlug.viewAll,
   ];
 
-  static List<String> parse(String? raw) {
+  /// [isAvailable] drops shortcuts that can't open right now (e.g. Khám tại
+  /// nhà without its config) before the [maxCount] cut, so the next slug
+  /// backfills the row.
+  static List<String> parse(String? raw,
+      {bool Function(String slug)? isAvailable}) {
+    bool usable(String slug) => isAvailable?.call(slug) ?? true;
     final result = <String>[];
     for (final item in (raw ?? '').split(',')) {
       final slug = item.trim();
       if (HomeBenefitShortcutSlug.all.contains(slug) &&
-          !result.contains(slug)) {
+          !result.contains(slug) &&
+          usable(slug)) {
         result.add(slug);
       }
     }
-    return result.isEmpty ? defaultSlugs : result.take(maxCount).toList();
+    final list = result.isEmpty ? defaultSlugs.where(usable).toList() : result;
+    return list.take(maxCount).toList();
   }
 }

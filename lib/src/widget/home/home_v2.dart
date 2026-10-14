@@ -1014,9 +1014,11 @@ class _HomeControllerState extends State<HomeController>
 
                           if (model?.hasBundle == true) ...[
                             const SizedBox(height: 12.0),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 12.0),
-                              child: HomeBenefitSection(),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: HomeBenefitSection(
+                                  hasRecord: viewFlags.hasRecord),
                             ),
                           ],
 
