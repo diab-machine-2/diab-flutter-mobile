@@ -74,8 +74,12 @@ class MeasurementSummary extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Scale down rather than overflow at large text sizes.
               children: inlineMeasurements
-                  .map((data) => _buildKeyStat(context, data))
+                  .map((data) => Flexible(
+                      child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: _buildKeyStat(context, data))))
                   .toList(),
             ),
           ),
@@ -242,11 +246,13 @@ class MeasurementSummary extends StatelessWidget {
                     width: 18, height: 18),
                 const SizedBox(width: 7),
                 Flexible(
-                  child: Text(
-                    R.string.ho_so.tr(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: _buttonTextStyle(R.color.color0xff95682E),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      R.string.ho_so.tr(),
+                      maxLines: 1,
+                      style: _buttonTextStyle(R.color.color0xff95682E),
+                    ),
                   ),
                 ),
               ],
@@ -370,16 +376,19 @@ class MeasurementSummary extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                item.$2,
-                maxLines: 1,
-                overflow: TextOverflow.visible,
-                softWrap: false,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: R.color.homeCaptionText,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
+              // Long labels (English, large text) shrink instead of
+              // overlapping the neighbouring cell.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  item.$2,
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: R.color.homeCaptionText,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -421,11 +430,13 @@ class MeasurementSummary extends StatelessWidget {
                 width: 20, height: 20),
             const SizedBox(width: 7),
             Flexible(
-              child: Text(
-                R.string.connect_device_home.tr(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: _buttonTextStyle(R.color.homeAccentTeal),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  R.string.connect_device_home.tr(),
+                  maxLines: 1,
+                  style: _buttonTextStyle(R.color.homeAccentTeal),
+                ),
               ),
             ),
           ],
@@ -453,11 +464,13 @@ class MeasurementSummary extends StatelessWidget {
             SvgPicture.asset(R.icons.ic_home_plus, width: 17, height: 17),
             const SizedBox(width: 7),
             Flexible(
-              child: Text(
-                R.string.add_data.tr(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: _buttonTextStyle(R.color.white),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  R.string.add_data.tr(),
+                  maxLines: 1,
+                  style: _buttonTextStyle(R.color.white),
+                ),
               ),
             ),
           ],
