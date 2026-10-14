@@ -256,4 +256,5 @@ class Colors {
   Color get homeHeaderGradientTop => Color(0xFF22CAB4);
   Color get homeHeaderGradientBottom => Color(0xFF116459);
   Color get homeCardShadow => Color(0x14016961);
+  Color get homeKpiEmptyShadow => Color(0x2401645A);
 }

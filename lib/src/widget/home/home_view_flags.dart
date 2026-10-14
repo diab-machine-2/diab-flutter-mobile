@@ -56,12 +56,18 @@ class HomeViewFlags {
   }
 
   static bool computeHasKpi(HomeModel model) {
+    // Same "has data" rules as HomeBloc._castMeasurements, so the KPI card
+    // and its values agree. Blood pressure also needs a record date: the
+    // backend can return default values for an account that never measured.
     final glucose = model.glucoseIndex.index ?? 0;
-    final systolic = model.bloodPressureIndex.systolic ?? 0;
+    final bp = model.bloodPressureIndex;
+    final hasBloodPressure = (bp.systolic ?? 0) > 0 &&
+        (bp.diastolic ?? 0) > 0 &&
+        (bp.createDateTime ?? 0) > 0;
     final exercise = model.exercise;
     final hasExercise =
         exercise?.isDataNotEmpty == true || (exercise?.index ?? 0) > 0;
-    return glucose > 0 || systolic > 0 || hasExercise;
+    return glucose > 0 || hasBloodPressure || hasExercise;
   }
 
   static bool _notBlank(String? value) => value?.trim().isNotEmpty == true;

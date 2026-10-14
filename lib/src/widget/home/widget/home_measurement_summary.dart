@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
+import 'package:medical/src/widget/home/home_view_flags.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 typedef MeasurementCallback = void Function(
@@ -15,378 +14,254 @@ typedef MeasurementCallback = void Function(
 typedef HbA1cCallback = void Function(
     BuildContext context, String? routeName, dynamic args, String title);
 
+/// Home "Chỉ số sức khỏe" card (Figma KPI card 22514:6099 / Empty B2
+/// 22514:8615): the KPI variant when [HomeViewFlags.hasKpi], otherwise the
+/// "Theo dõi chỉ số mỗi ngày" empty card.
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({
     super.key,
     required this.inlineMeasurements,
     required this.measurements,
+    required this.flags,
     required this.onAddMeasurement,
+    required this.onConnectDevice,
     required this.onHealthProfile,
     required this.onMeasurement,
     this.onHbA1cTap,
-    this.loading = false,
-    this.hasBundle = false,
-    this.examResultCount = 0,
   });
-
-  final bool loading;
-  final bool hasBundle;
-  final int examResultCount;
 
   final List<HomeMeasurementInlineData> inlineMeasurements;
   final List<HomeMeasurementData> measurements;
+  final HomeViewFlags flags;
 
   final VoidCallback onAddMeasurement;
+  final VoidCallback onConnectDevice;
   final VoidCallback onHealthProfile;
   final MeasurementCallback onMeasurement;
 
   // Special callback for HbA1C that receives context for smart navigation
   final HbA1cCallback? onHbA1cTap;
 
+  static const String emptyValue = '---';
+
+  // Icons follow HomeBloc._castMeasurements order: glucose, blood pressure,
+  // exercise, nutrition.
+  static List<String> get _metricIcons => [
+        R.icons.ic_nv_duong_huyet,
+        R.icons.ic_nv_huyet_ap,
+        R.icons.ic_nv_van_dong,
+        R.icons.ic_nv_dinh_duong,
+      ];
+
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
+    return flags.hasKpi ? _buildKpiCard(context) : _buildEmptyCard();
+  }
+
+  // ---------------------------------------------------------------- KPI card
+
+  Widget _buildKpiCard(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(16.0),
-          bottomRight: Radius.circular(16.0),
-        ),
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: R.color.homeCardBorder),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Inline measurements
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: inlineMeasurements
-                .map((e) => _buildInlineMeasurementWidget(e))
-                .toList(),
-          ),
-
-          const SizedBox(height: 20.0),
-
-          // Measurements
-          SizedBox(
-            height: 88.0 * textScaleFactor,
-            child: ListView.separated(
-              itemBuilder: (_, index) =>
-                  _buildMeasurementWidget(measurements[index], textScaleFactor),
-              separatorBuilder: (_, index) => const SizedBox(width: 8.0),
-              itemCount: measurements.length,
-              scrollDirection: Axis.horizontal,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 14, 12, 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: inlineMeasurements
+                  .map((data) => _buildKeyStat(context, data))
+                  .toList(),
             ),
           ),
-
-          const SizedBox(height: 20.0),
-
-          // Health profile button — only when hasBundle
-          if (hasBundle == true) ...[
-            _buildHealthProfileButton(),
-            const SizedBox(height: 4.0),
-          ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 10, 8, 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < measurements.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 4),
+                  Expanded(
+                      child: _buildMetric(context, measurements[i],
+                          i < _metricIcons.length ? _metricIcons[i] : null)),
+                ],
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 2, 12, 16),
+            child: Row(
+              children: [
+                if (flags.hasRecord) ...[
+                  _buildHealthProfileButton(),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(child: _buildAddMeasurementButton()),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
+  Widget _buildKeyStat(BuildContext context, HomeMeasurementInlineData data) {
+    final hasValue = data.value.isNotEmpty && data.value != '--';
     return InkWell(
-      onTap: () {
-        // Special handling for HbA1C based on data availability
-        if (data.title?.toLowerCase() == "hba1c" && onHbA1cTap != null) {
-          // Use WidgetsBinding to access context after frame is built
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final context = _getCurrentContext();
-            if (context != null) {
-              onHbA1cTap!(
-                  context, data.navigatorName, data.args, data.title ?? "");
-            } else {
-              onMeasurement(data.navigatorName, data.args, data.title ?? "");
-            }
-          });
-        } else {
-          onMeasurement(data.navigatorName, data.args, data.title ?? "");
-        }
-      },
+      onTap: () =>
+          _onTap(context, data.title ?? '', data.navigatorName, data.args),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (data.icon != null)
-            Image.asset(
-              data.icon!,
-              width: 16.0,
-              height: 16.0,
-              color: Color(data.titleColor),
-            ),
-          if (data.icon == null && data.title != null)
+            SvgPicture.asset(R.icons.ic_nv_can_nang, width: 16, height: 16)
+          else
             Text(
-              data.title!,
+              data.title ?? '',
               style: TextStyle(
-                color: Color(data.titleColor),
-                fontWeight: FontWeight.bold,
-                fontSize: 14.0,
+                color: R.color.homeTitleText,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                height: 1.5,
               ),
             ),
-          const SizedBox(width: 4.0),
+          const SizedBox(width: 4),
           Text(
-            data.value,
+            hasValue ? data.value : emptyValue,
             style: TextStyle(
-              color: Color(data.color),
-              fontWeight: FontWeight.bold,
-              fontSize: 14.0,
+              color: hasValue ? Color(data.color) : R.color.color0xff111515,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+              height: 1.5,
             ),
           ),
-          const SizedBox(width: 2.0),
-          Text(
-            "(${data.unit})",
-            style: TextStyle(
-              color: R.color.color0xff666666,
-              fontWeight: FontWeight.normal,
-              fontSize: 12.0,
-            ),
-          ),
+          const SizedBox(width: 4),
+          Text(data.unit, style: _captionStyle),
         ],
       ),
     );
   }
 
-  Widget _buildMeasurementWidget(
-      HomeMeasurementData data, double textScaleFactor) {
-    Widget valueWidget;
-    final withUnit = data.unit.isNotEmpty;
-    double valueFontSize = withUnit ? 12.0 : 14.0;
-    double height = (valueFontSize + 4.0) / valueFontSize;
-
-    // Determine the display value
-    var value1 = data.value1 ?? "--";
-    var value2 = data.value2;
-
-    // Debug log for blood pressure
-    if (data.title.toLowerCase() == "huyết áp") {
-      print('🔍 Blood Pressure Display Check:');
-      print('  value1: $value1');
-      print('  value2: $value2');
-      print('  value1Color: ${data.value1Color}');
-      print('  value2Color: ${data.value2Color}');
-    }
-
-    // Special handling for Blood Pressure: Force empty state if value2 is null or value2Color is noValueColor
-    // Backend may return default values (120/90) even when there's no real data
-    // The key indicators are:
-    // 1. value2Color is null (when haveBloodPressure is false)
-    // 2. value1Color or value2Color equals _noValueColor (0xFF172823) - indicates no real data
-    if (data.title.toLowerCase() == "huyết áp") {
-      const int noValueColor = 0xFF172823; // _noValueColor from home_bloc.dart
-
-      // If value2Color is null, treat as no data
-      if (data.value2Color == null) {
-        value1 = "--";
-        value2 = null;
-      }
-      // If value2Color equals noValueColor, treat as no data (backend returned default values)
-      else if (data.value2Color == noValueColor) {
-        value1 = "--";
-        value2 = null;
-      }
-      // If value1Color equals noValueColor, treat as no data
-      else if (data.value1Color == noValueColor) {
-        value1 = "--";
-        value2 = null;
-      }
-      // If value2 is null, treat as no data
-      if (value2 == null) {
-        value1 = "--";
-        value2 = null;
-      }
-      // Also check if value1 is "--" - this is the explicit empty state marker
-      if (value1 == "--" || value1.isEmpty) {
-        value1 = "--";
-        value2 = null;
-      }
-    }
-
-    // Check if we should display as "value1 / value2" format
-    // Only show dual format if:
-    // 1. value2 is not null and not empty
-    // 2. value1 is not "--" (empty state)
-    // 3. value2 is not "--" (empty state)
-    // 4. value2Color is not null (indicates valid data)
-    final shouldShowDualFormat = value2 != null &&
+  Widget _buildMetric(
+      BuildContext context, HomeMeasurementData data, String? icon) {
+    final value1 = data.value1;
+    final value2 = data.value2;
+    final hasValue1 = value1 != null && value1.isNotEmpty && value1 != '--';
+    final hasValue2 = hasValue1 &&
+        value2 != null &&
         value2.isNotEmpty &&
-        value2 != "--" &&
-        value1 != "--" &&
-        value1.isNotEmpty &&
-        data.value2Color !=
-            null; // Additional check: value2Color should exist for valid data
+        value2 != '--' &&
+        data.value2Color != null;
+    final valueStyle = TextStyle(
+      fontFamily: R.font.viga,
+      fontSize: 15,
+      height: 1.46,
+      color: R.color.color0xff111515,
+    );
 
-    if (shouldShowDualFormat) {
-      // Display as "value1 / value2" with different colors
-      valueWidget = RichText(
-        textScaleFactor: textScaleFactor,
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: value1,
-              style: TextStyle(color: Color(data.value1Color)),
-            ),
-            TextSpan(
-              text: " / ",
-              style: TextStyle(color: R.color.color0xff666666),
-            ),
-            TextSpan(
-              text: value2,
-              style: TextStyle(color: Color(data.value2Color!)),
-            ),
-          ],
-          style: TextStyle(
-            color: Color(data.value1Color),
-            fontWeight: FontWeight.bold,
-            fontSize: valueFontSize,
-            height: height,
-          ),
-        ),
-      );
-    } else {
-      // Display single value (either "--" or value1)
-      // If value1 is "--", ensure we display it as empty state
-      final displayValue = (value1 == "--" || value1.isEmpty) ? "--" : value1;
-      valueWidget = Text(
-        displayValue,
-        style: TextStyle(
-            color: Color(data.value1Color),
-            fontWeight: FontWeight.bold,
-            fontSize: valueFontSize,
-            height: height),
-      );
-    }
+    final Widget value = !hasValue1
+        ? Text(emptyValue, style: valueStyle)
+        : Text.rich(
+            TextSpan(children: [
+              TextSpan(
+                  text: value1,
+                  style: TextStyle(color: Color(data.value1Color))),
+              if (hasValue2) ...[
+                const TextSpan(text: '/'),
+                TextSpan(
+                    text: value2,
+                    style: TextStyle(color: Color(data.value2Color!))),
+              ],
+            ]),
+            style: valueStyle,
+            maxLines: 1,
+          );
+
     return InkWell(
-      onTap: () {
-        // Special handling for HbA1C based on data availability
-        if (data.title.toLowerCase() == "hba1c" && onHbA1cTap != null) {
-          // Use WidgetsBinding to access context after frame is built
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final context = _getCurrentContext();
-            if (context != null) {
-              onHbA1cTap!(context, data.navigatorName, data.args, data.title);
-            } else {
-              onMeasurement(data.navigatorName, data.args, data.title);
-            }
-          });
-        } else {
-          onMeasurement(data.navigatorName, data.args, data.title);
-        }
-      },
-      child: Container(
-        width: 88.0 * textScaleFactor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              data.icon,
-              width: 32.0,
-              height: 32.0,
+      onTap: () => _onTap(context, data.title, data.navigatorName, data.args),
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: R.color.homeMetricCircleBg,
+              shape: BoxShape.circle,
+              border: Border.all(color: R.color.homeMetricCircleBorder),
             ),
-            const SizedBox(height: 8.0),
-            Text(
-              data.title,
-              style: TextStyle(
-                color: R.color.color0xff666666,
-                fontWeight: FontWeight.w600,
-                fontSize: 12.0,
-                height: 16.0 / 12.0,
-              ),
-            ),
-            valueWidget,
-            if (withUnit)
-              Text(
-                "(${data.unit})",
-                style: TextStyle(
-                  color: R.color.color0xff666666,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 12.0,
-                  height: 16.0 / 12.0,
-                ),
-              ),
-          ],
-        ),
+            child: icon == null
+                ? Image.asset(data.icon, width: 24, height: 24)
+                : SvgPicture.asset(icon, width: 24, height: 24),
+          ),
+          const SizedBox(height: 6),
+          FittedBox(fit: BoxFit.scaleDown, child: value),
+          Text(
+            data.unit,
+            style: _captionStyle.copyWith(fontFamily: R.font.viga),
+            maxLines: 1,
+          ),
+          Text(
+            data.title,
+            style: _captionStyle.copyWith(fontWeight: FontWeight.w500),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHealthProfileButton() {
-    return GestureDetector(
+    return InkWell(
       onTap: onHealthProfile,
+      borderRadius: BorderRadius.circular(14),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Main pill button
           Container(
-            width: double.infinity,
-            height: 40,
-            decoration: ShapeDecoration(
-              color: const Color(0xFF088078),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(999),
-              ),
+            width: 105,
+            height: 44,
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: R.color.color0xff95682E, width: 1.5),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  R.icons.ic_ho_so_suc_khoe,
-                  width: 18,
-                  height: 18,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  R.string.health_profile.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    height: 1.43,
+                SvgPicture.asset(R.icons.ic_home_file_text,
+                    width: 18, height: 18),
+                const SizedBox(width: 7),
+                Flexible(
+                  child: Text(
+                    R.string.ho_so.tr(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: _buttonTextStyle(R.color.color0xff95682E),
                   ),
                 ),
               ],
             ),
           ),
-          // Right: white rounded badge with count
-          if (examResultCount > 0)
+          if (flags.hasUnviewedRecord)
             Positioned(
-              right: 5,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(minWidth: 29),
-                  height: 29,
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 2, color: Colors.white),
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$examResultCount',
-                      style: const TextStyle(
-                        color: Color(0xFF01645A),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        height: 1,
-                      ),
-                    ),
-                  ),
+              top: -1.4,
+              right: -1.4,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: R.color.homeAlertRed,
+                  shape: BoxShape.circle,
                 ),
               ),
             ),
@@ -395,37 +270,162 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildAddMeasurementButton() {
-    return InkWell(
-      onTap: onAddMeasurement,
-      borderRadius: BorderRadius.circular(16.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0),
-          color: R.color.burntSienna,
-          border: Border.all(
-            width: 8,
-            color: Color(0xffD8D8D8),
-            style: BorderStyle.solid,
-            strokeAlign: BorderSide.strokeAlignOutside,
+  // -------------------------------------------------------------- Empty card
+
+  Widget _buildEmptyCard() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 16, 12, 14),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: R.color.accentColor, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: R.color.homeKpiEmptyShadow,
+            offset: const Offset(0, 6),
+            blurRadius: 16,
           ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      R.string.home_kpi_empty_eyebrow.tr(),
+                      style: TextStyle(
+                        color: R.color.color0xff95682E,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      R.string.home_kpi_empty_title.tr(),
+                      style: TextStyle(
+                        color: R.color.accentColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      R.string.home_kpi_empty_desc.tr(),
+                      style: TextStyle(
+                        color: R.color.homeCaptionText,
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              _buildEmptyIconGrid(),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(child: _buildConnectDeviceButton()),
+              const SizedBox(width: 8),
+              Expanded(child: _buildAddMeasurementButton()),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyIconGrid() {
+    final cells = [
+      (R.icons.ic_nv_duong_huyet, R.string.duong_huyet.tr()),
+      (R.icons.ic_nv_huyet_ap, R.string.huyet_ap.tr()),
+      (R.icons.ic_nv_van_dong, R.string.van_dong.tr()),
+      (R.icons.ic_nv_dinh_duong, R.string.dinh_duong.tr()),
+    ];
+    Widget cell((String, String) item) => SizedBox(
+          width: 56,
+          child: Column(
+            children: [
+              Opacity(
+                opacity: 0.5,
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: R.color.homeMetricCircleBg,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: R.color.homeMetricCircleBorder),
+                  ),
+                  child: SvgPicture.asset(item.$1, width: 16, height: 16),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                item.$2,
+                maxLines: 1,
+                overflow: TextOverflow.visible,
+                softWrap: false,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: R.color.homeCaptionText,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
+    return Column(
+      children: [
+        Row(children: [
+          cell(cells[0]),
+          const SizedBox(width: 6),
+          cell(cells[1])
+        ]),
+        const SizedBox(height: 4),
+        Row(children: [
+          cell(cells[2]),
+          const SizedBox(width: 6),
+          cell(cells[3])
+        ]),
+      ],
+    );
+  }
+
+  Widget _buildConnectDeviceButton() {
+    return InkWell(
+      onTap: onConnectDevice,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        height: 44,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: R.color.homeAccentTeal, width: 1.5),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              R.drawable.ic_home_plus,
-              width: 16.0,
-              height: 16.0,
-            ),
-            Text(
-              R.string.add_measurement.tr(),
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 13.0,
+            SvgPicture.asset(R.icons.ic_ti_ket_noi_thiet_bi,
+                width: 20, height: 20),
+            const SizedBox(width: 7),
+            Flexible(
+              child: Text(
+                R.string.connect_device_home.tr(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: _buttonTextStyle(R.color.homeAccentTeal),
               ),
             ),
           ],
@@ -434,24 +434,60 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
-  // Helper method to get current context using WidgetsBinding
-  BuildContext? _getCurrentContext() {
-    try {
-      // Try to get the current context from the navigator
-      final context = WidgetsBinding.instance.focusManager.rootScope?.context;
-      return context;
-    } catch (e) {
-      // If that fails, try to get it from the render tree
-      try {
-        final element = WidgetsBinding.instance.renderViewElement;
-        if (element != null) {
-          return element;
-        }
-      } catch (e2) {
-        // Ignore errors
-      }
+  // ------------------------------------------------------------------ shared
+
+  Widget _buildAddMeasurementButton() {
+    return InkWell(
+      onTap: onAddMeasurement,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        height: 44,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: R.color.color0xff95682E,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(R.icons.ic_home_plus, width: 17, height: 17),
+            const SizedBox(width: 7),
+            Flexible(
+              child: Text(
+                R.string.add_data.tr(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: _buttonTextStyle(R.color.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TextStyle get _captionStyle => TextStyle(
+        color: R.color.homeCaptionText,
+        fontSize: 12,
+        height: 1.5,
+        letterSpacing: 0.2,
+      );
+
+  TextStyle _buttonTextStyle(Color color) => TextStyle(
+        color: color,
+        fontWeight: FontWeight.w700,
+        fontSize: 15,
+        height: 1.46,
+        letterSpacing: 0.4,
+      );
+
+  void _onTap(BuildContext context, String title, String? routeName,
+      Map<String, dynamic>? args) {
+    if (title.toLowerCase() == 'hba1c' && onHbA1cTap != null) {
+      onHbA1cTap!(context, routeName, args, title);
+      return;
     }
-    return null;
+    onMeasurement(routeName, args, title);
   }
 
   // Static helper method to create HbA1C callback for smart navigation

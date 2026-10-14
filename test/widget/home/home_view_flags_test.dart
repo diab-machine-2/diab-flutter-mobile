@@ -7,6 +7,8 @@ import 'package:medical/src/widget/home/home_view_flags.dart';
 HomeModel _model({
   double? glucose,
   double? systolic,
+  double? diastolic,
+  int? bpDate,
   ExerciseIndexModel? exercise,
   bool hasBundle = false,
   String? programName,
@@ -24,13 +26,13 @@ HomeModel _model({
       systolic: systolic,
       colorSystolic: null,
       systolicChange: null,
-      diastolic: null,
+      diastolic: diastolic,
       colorDiastolic: null,
       diastolicChange: null,
       color: null,
       unit: null,
       icon: null,
-      createDateTime: null,
+      createDateTime: bpDate,
     ),
     exercise: exercise,
     hbA1CIndex: HbA1CIndexModel(
@@ -82,8 +84,17 @@ void main() {
       expect(HomeViewFlags.computeHasKpi(_model(glucose: 108)), isTrue);
     });
 
-    test('blood pressure only => true', () {
-      expect(HomeViewFlags.computeHasKpi(_model(systolic: 120)), isTrue);
+    test('blood pressure with a record date => true', () {
+      expect(
+          HomeViewFlags.computeHasKpi(
+              _model(systolic: 120, diastolic: 80, bpDate: 1760000000)),
+          isTrue);
+    });
+
+    test('blood pressure defaults without a record date => false', () {
+      expect(
+          HomeViewFlags.computeHasKpi(_model(systolic: 120, diastolic: 90)),
+          isFalse);
     });
 
     test('exercise isDataNotEmpty or index > 0 => true', () {

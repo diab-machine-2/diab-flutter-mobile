@@ -1923,4 +1923,5 @@ class Strings {
   String get home_news_reading_time => 'home_news_reading_time';
   String get home_news_view_count => 'home_news_view_count';
   String get home_event_online => 'home_event_online';
+  String get home_kpi_empty_eyebrow => 'home_kpi_empty_eyebrow';
 }

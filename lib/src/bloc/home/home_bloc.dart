@@ -658,25 +658,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     return [
       HomeMeasurementIndex(
         title: R.string.duong_huyet.tr(),
-        icon: R.drawable.ic_home_measurement_glucose,
+        icon: R.icons.ic_nv_duong_huyet,
         navigatorName: NavigatorName.add_blood_sugar_new,
         args: {'type': 'input'},
       ),
       HomeMeasurementIndex(
         title: R.string.huyet_ap.tr(),
-        icon: R.drawable.ic_home_measurement_blood,
+        icon: R.icons.ic_nv_huyet_ap,
         navigatorName: NavigatorName.add_blood_pressure,
         args: {'type': 'input', 'id': null},
       ),
       HomeMeasurementIndex(
         title: R.string.van_dong.tr(),
-        icon: R.drawable.ic_home_measurement_exercise,
+        icon: R.icons.ic_nv_van_dong,
         navigatorName: NavigatorName.exercrise_onboarding,
         // args: {'type': 'input'},
       ),
       HomeMeasurementIndex(
         title: R.string.dinh_duong.tr(),
-        icon: R.drawable.ic_home_measurement_nutrition,
+        icon: R.icons.ic_nv_dinh_duong,
         navigatorName: NavigatorName.add_food,
         args: {'type': 'input'},
       ),
@@ -688,13 +688,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // ),
       HomeMeasurementIndex(
         title: R.string.hba1c.tr(),
-        icon: R.drawable.ic_home_measurement_hb1ac,
+        icon: R.icons.ic_nv_hba1c,
         navigatorName: NavigatorName.add_hba1c,
         args: {'type': 'input', 'id': null},
       ),
       HomeMeasurementIndex(
         title: R.string.can_nang.tr(),
-        icon: R.drawable.ic_home_measurement_weight,
+        icon: R.icons.ic_nv_can_nang,
         navigatorName: weightNavigatorName,
         args: {'type': 'input'},
       ),

@@ -66,6 +66,8 @@ import 'widget/home_news.dart';
 import 'widget/sync_modal.dart';
 import 'widget/home_benefit.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
+import 'package:medical/src/widget/home/home_view_flags.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({super.key, this.sharedCode});
@@ -86,6 +88,7 @@ class _HomeControllerState extends State<HomeController>
   static const Duration _resumeRefreshInterval = Duration(seconds: 60);
   DateTime? _lastHomeLoadedAt;
   StreamSubscription<HomeState>? _homeLoadedSub;
+
   /// A resume happened while another route covered Home — run the resume
   /// refresh in [didPopNext] instead.
   bool _pendingResumeRefresh = false;
@@ -119,7 +122,15 @@ class _HomeControllerState extends State<HomeController>
   bool _isReloadLesson = false;
 
   bool _hasExerciseData = false;
-  int _examResultCount = 0;
+  List<BcbExamResultModel> _examResults = const [];
+
+  /// Which Home variant to render; recomputed on every build from the latest
+  /// HomeModel and exam results.
+  HomeViewFlags get _viewFlags => HomeViewFlags.from(
+        model: model,
+        userPackageName: AppSettings.userInfo?.packageName,
+        examResults: _examResults,
+      );
 
   @override
   bool get wantKeepAlive => true;
@@ -306,7 +317,7 @@ class _HomeControllerState extends State<HomeController>
       final results = await BcbCampaignClient().fetchExamResult();
       if (!mounted) return;
       setState(() {
-        _examResultCount = results.length;
+        _examResults = results;
       });
     } catch (_) {
       // Silently ignore — count stays 0
@@ -912,7 +923,7 @@ class _HomeControllerState extends State<HomeController>
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
             child: Scaffold(
-              backgroundColor: const Color(0xFFE8F3F3),
+              backgroundColor: R.color.backgroundColorNew,
               body: Column(
                 children: [
                   DecoratedBox(
@@ -934,102 +945,109 @@ class _HomeControllerState extends State<HomeController>
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          // Summary
-                          MeasurementSummary(
-                            inlineMeasurements: model?.inlineMeasurements ?? [],
-                            measurements: model?.measurements ?? [],
-                            onAddMeasurement: () =>
-                                _showAddMeasurement(context),
-                            onHealthProfile: () {
-                              if (model?.hasBundle == true) {
-                                Navigator.pushNamed(
-                                  context,
-                                  NavigatorName.view_test_result,
-                                );
-                              }
-                            },
-                            onHbA1cTap:
-                                MeasurementSummary.createHbA1cCallback(context),
-                            onMeasurement: (routeName, args, title) async {
-                              // track event
-                              final String eventName = "home_select_kpi";
-                              TrackingManager.trackEvent(eventName, _screenName,
-                                  params: {
-                                    "object_title": title,
-                                  });
-                              // case require weight input
-                              if (_checkWeightInputDialog(routeName,
-                                      args: args) ==
-                                  false) {
-                                return;
-                              }
-                              // case input glucose
-                              if (await _showGlucoseAddBottomSheet(routeName) ==
-                                  false) {
-                                return;
-                              }
-                              // check first time open blood pressure intro
-                              if (routeName ==
-                                      NavigatorName.add_blood_pressure &&
-                                  !_haveInputBloodpressureAlready) {
-                                Navigator.of(context).pushNamed(NavigatorName
-                                    .blood_pressure_intro_1st_page);
-                                return;
-                              }
-                              // Nutrition: same source as KPI ("dinh dưỡng" row)
-                              if (routeName == NavigatorName.add_food ||
-                                  routeName == NavigatorName.detail_food ||
-                                  routeName ==
-                                      NavigatorName.nutrient_intro_1st_page) {
-                                _pushNutritionEntry(context);
-                                return;
-                              }
-                              // case input exercise
-                              if (await _showExercriseAddBottomSheet(
-                                      routeName) ==
-                                  false) {
-                                return;
-                              }
+                          // Summary (KPI / empty card)
+                          Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                              child: MeasurementSummary(
+                                inlineMeasurements:
+                                    model?.inlineMeasurements ?? [],
+                                measurements: model?.measurements ?? [],
+                                flags: _viewFlags,
+                                onAddMeasurement: () =>
+                                    _showAddMeasurement(context),
+                                onConnectDevice: () => Navigator.pushNamed(
+                                    context, NavigatorName.connect_device_app),
+                                // Only shown when there is a record (no bundle
+                                // requirement any more).
+                                onHealthProfile: () => Navigator.pushNamed(
+                                    context, NavigatorName.view_test_result),
+                                onHbA1cTap:
+                                    MeasurementSummary.createHbA1cCallback(
+                                        context),
+                                onMeasurement: (routeName, args, title) async {
+                                  // track event
+                                  final String eventName = "home_select_kpi";
+                                  TrackingManager.trackEvent(
+                                      eventName, _screenName,
+                                      params: {
+                                        "object_title": title,
+                                      });
+                                  // case require weight input
+                                  if (_checkWeightInputDialog(routeName,
+                                          args: args) ==
+                                      false) {
+                                    return;
+                                  }
+                                  // case input glucose
+                                  if (await _showGlucoseAddBottomSheet(
+                                          routeName) ==
+                                      false) {
+                                    return;
+                                  }
+                                  // check first time open blood pressure intro
+                                  if (routeName ==
+                                          NavigatorName.add_blood_pressure &&
+                                      !_haveInputBloodpressureAlready) {
+                                    Navigator.of(context).pushNamed(
+                                        NavigatorName
+                                            .blood_pressure_intro_1st_page);
+                                    return;
+                                  }
+                                  // Nutrition: same source as KPI ("dinh dưỡng" row)
+                                  if (routeName == NavigatorName.add_food ||
+                                      routeName == NavigatorName.detail_food ||
+                                      routeName ==
+                                          NavigatorName
+                                              .nutrient_intro_1st_page) {
+                                    _pushNutritionEntry(context);
+                                    return;
+                                  }
+                                  // case input exercise
+                                  if (await _showExercriseAddBottomSheet(
+                                          routeName) ==
+                                      false) {
+                                    return;
+                                  }
 
-                              // case HbA1C navigation with data checking
-                              if (routeName == NavigatorName.detail_hba1c ||
-                                  (title != null &&
-                                      title.toLowerCase().contains('hba1c'))) {
-                                await HbA1cNavigationHelper.navigateToHbA1C(
-                                    context);
-                                return;
-                              }
+                                  // case HbA1C navigation with data checking
+                                  if (routeName == NavigatorName.detail_hba1c ||
+                                      (title != null &&
+                                          title
+                                              .toLowerCase()
+                                              .contains('hba1c'))) {
+                                    await HbA1cNavigationHelper.navigateToHbA1C(
+                                        context);
+                                    return;
+                                  }
 
-                              if (routeName == NavigatorName.add_bmi) {
-                                BmiBloc _bmiBloc = context.read();
-                                var additionalArg = {
-                                  AddBmiPage.bmiBlocKey: _bmiBloc,
-                                };
-                                var newArgs = (args?..addAll(additionalArg)) ??
-                                    additionalArg;
-                                Navigator.pushNamed(
-                                  context,
-                                  routeName!,
-                                  arguments: newArgs,
-                                ).then((value) {
-                                  if (_bmiBloc.hasModifiedData)
-                                    _homeBloc.add(FetchHome());
-                                  _bmiBloc.hasModifiedData = false;
-                                });
-                                return;
-                              }
-                              // others
-                              if (routeName != null) {
-                                Navigator.pushNamed(context, routeName,
-                                    arguments: args);
-                              }
-                            },
-                            loading: stateLoaded?.measurementLoading ?? true,
-                            hasBundle: model?.hasBundle ?? false,
-                            examResultCount: _examResultCount,
-                          ),
+                                  if (routeName == NavigatorName.add_bmi) {
+                                    BmiBloc _bmiBloc = context.read();
+                                    var additionalArg = {
+                                      AddBmiPage.bmiBlocKey: _bmiBloc,
+                                    };
+                                    var newArgs = (args
+                                          ?..addAll(additionalArg)) ??
+                                        additionalArg;
+                                    Navigator.pushNamed(
+                                      context,
+                                      routeName!,
+                                      arguments: newArgs,
+                                    ).then((value) {
+                                      if (_bmiBloc.hasModifiedData)
+                                        _homeBloc.add(FetchHome());
+                                      _bmiBloc.hasModifiedData = false;
+                                    });
+                                    return;
+                                  }
+                                  // others
+                                  if (routeName != null) {
+                                    Navigator.pushNamed(context, routeName,
+                                        arguments: args);
+                                  }
+                                },
+                              )),
 
-                          const SizedBox(height: 16.0),
+                          const SizedBox(height: 12.0),
 
                           // // Activities
                           // Padding(
@@ -1300,14 +1318,13 @@ class _HomeControllerState extends State<HomeController>
                             ),
                           ),
 
-                          if (model?.hasBundle == true) ...
-                            [
-                              const SizedBox(height: 16.0),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                                child: HomeBenefitSection(),
-                              ),
-                            ],
+                          if (model?.hasBundle == true) ...[
+                            const SizedBox(height: 16.0),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12.0),
+                              child: HomeBenefitSection(),
+                            ),
+                          ],
 
                           const SizedBox(height: 16.0),
 
