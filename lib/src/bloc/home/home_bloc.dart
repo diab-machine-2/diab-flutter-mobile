@@ -263,8 +263,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// eager part.
   Future<Future<HomeLoaded> Function(HomeLoaded)> _fetchActivitiesPatch() async {
     final repository = AppRepository();
-    final dateTime0 = DateTime.utc(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    // QA-only: `--dart-define=HOME_ACTIVITY_DAY_OFFSET=-1` loads yesterday's
+    // activities so a test account with a full day can be inspected.
+    // Defaults to 0, so release builds are unaffected.
+    const dayOffset = int.fromEnvironment('HOME_ACTIVITY_DAY_OFFSET');
+    final now = DateTime.now().add(const Duration(days: dayOffset));
+    final dateTime0 = DateTime.utc(now.year, now.month, now.day, 0, 0, 0);
     final currentDay = DateUtil.getDayInMillis(dateTime0);
 
     ApiResult<SmartGoalListReponse>? apiResult;

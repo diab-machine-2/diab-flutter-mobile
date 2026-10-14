@@ -48,6 +48,10 @@ class FirebaseRemoteSetting {
   String? _vnpayIntegratedInfo;
   String? _subscriptionPackageInfo;
   String? _benefitAtHomeInfo;
+  // Parsed (with in-code defaults) by HomeBenefitShortcutsConfig /
+  // HomeDailyCareConfig in lib/src/widget/home/home_remote_config.dart.
+  String _homeBenefitShortcuts = '';
+  String _homeDailyCareConfig = '';
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
@@ -66,6 +70,8 @@ class FirebaseRemoteSetting {
   String? get benefitAtHomeInfo => _benefitAtHomeInfo;
   String get excludeSpecialtyClinic => _excludeSpecialtyClinic;
   String get excludeSpecialtyTelemedicine => _excludeSpecialtyTelemedicine;
+  String get homeBenefitShortcuts => _homeBenefitShortcuts;
+  String get homeDailyCareConfig => _homeDailyCareConfig;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
@@ -106,7 +112,9 @@ class FirebaseRemoteSetting {
       "EXCLUDE_SPECIALTY_CLINIC":
           localSetting["EXCLUDE_SPECIALTY_CLINIC"] ?? '',
       "EXCLUDE_SPECIALTY_TELEMEDICINE":
-          localSetting["EXCLUDE_SPECIALTY_TELEMEDICINE"] ?? 'co-xuong-khop'
+          localSetting["EXCLUDE_SPECIALTY_TELEMEDICINE"] ?? 'co-xuong-khop',
+      "HOME_BENEFIT_SHORTCUTS": localSetting["HOME_BENEFIT_SHORTCUTS"] ?? '',
+      "HOME_DAILY_CARE_CONFIG": localSetting["HOME_DAILY_CARE_CONFIG"] ?? '',
       }).timeout(const Duration(seconds: 5));
     } catch (e, s) {
       TrackingManager.recordError(e, s);
@@ -171,6 +179,8 @@ class FirebaseRemoteSetting {
     _excludeSpecialtyClinic = remoteConfig.getString('EXCLUDE_SPECIALTY_CLINIC');
     _excludeSpecialtyTelemedicine =
         remoteConfig.getString('EXCLUDE_SPECIALTY_TELEMEDICINE');
+    _homeBenefitShortcuts = remoteConfig.getString('HOME_BENEFIT_SHORTCUTS');
+    _homeDailyCareConfig = remoteConfig.getString('HOME_DAILY_CARE_CONFIG');
   }
 
   /// Re-fetches Remote Config (throttled by `minimumFetchInterval`) and
