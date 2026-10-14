@@ -889,4 +889,19 @@ class Drawables {
   String get ic_lab_result => "lib/res/drawables/home/ic_lab_result.png";
   String get ic_error_lesson_image => "lib/res/drawables/ic_error_lesson_image.png";
   String get diab_logo => "lib/res/drawables/diab_logo.png";
+
+  // Home redesign (Figma 22514:10901)
+  String get logo_axon => "lib/res/drawables/home/logo_axon.png";
+  String get ic3d_co_xuong_khop => "lib/res/drawables/clinic_specialty/ic3d_co_xuong_khop.png";
+  String get ic3d_dai_thao_duong => "lib/res/drawables/clinic_specialty/ic3d_dai_thao_duong.png";
+  String get ic3d_dinh_duong => "lib/res/drawables/clinic_specialty/ic3d_dinh_duong.png";
+  String get ic3d_dtd_thai_ky => "lib/res/drawables/clinic_specialty/ic3d_dtd_thai_ky.png";
+  String get ic3d_roi_loan_chuyen_hoa => "lib/res/drawables/clinic_specialty/ic3d_roi_loan_chuyen_hoa.png";
+  String get ic3d_tang_huyet_ap => "lib/res/drawables/clinic_specialty/ic3d_tang_huyet_ap.png";
+  String get ic3d_than_man_tinh => "lib/res/drawables/clinic_specialty/ic3d_than_man_tinh.png";
+  String get ic3d_thua_can_beo_phi => "lib/res/drawables/clinic_specialty/ic3d_thua_can_beo_phi.png";
+  String get ic3d_tien_dai_thao_duong => "lib/res/drawables/clinic_specialty/ic3d_tien_dai_thao_duong.png";
+  String get ic3d_tim_mach => "lib/res/drawables/clinic_specialty/ic3d_tim_mach.png";
+  String get ic3d_tinh_than => "lib/res/drawables/clinic_specialty/ic3d_tinh_than.png";
+  String get ic3d_van_dong => "lib/res/drawables/clinic_specialty/ic3d_van_dong.png";
 }

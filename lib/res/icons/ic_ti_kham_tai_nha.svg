@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="glyph">
+<g id="Group">
+<path id="Vector" d="M3.78 2.96H5.42M11.98 2.96H13.62" stroke="#01645A" stroke-width="2.296" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M4.6 2.96V7.88C4.6 8.96739 5.03196 10.0102 5.80086 10.7791C6.56976 11.548 7.61261 11.98 8.7 11.98C9.78739 11.98 10.8302 11.548 11.5991 10.7791C12.368 10.0102 12.8 8.96739 12.8 7.88V2.96" stroke="#01645A" stroke-width="2.296" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M8.7 11.98V13.21C8.7 14.0799 9.04557 14.9142 9.66069 15.5293C10.2758 16.1444 11.1101 16.49 11.98 16.49" stroke="#01645A" stroke-width="2.296" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path id="Vector_4" d="M17.5 24C21.0899 24 24 21.0899 24 17.5C24 13.9101 21.0899 11 17.5 11C13.9101 11 11 13.9101 11 17.5C11 21.0899 13.9101 24 17.5 24Z" fill="white"/>
+<path id="Vector_5" d="M17.5 22.5C20.2614 22.5 22.5 20.2614 22.5 17.5C22.5 14.7386 20.2614 12.5 17.5 12.5C14.7386 12.5 12.5 14.7386 12.5 17.5C12.5 20.2614 14.7386 22.5 17.5 22.5Z" fill="#E5B542"/>
+<path id="Vector_6" d="M17.5 14.2L13.9 17.3H15V20.5H20V17.3H21.1L17.5 14.2Z" fill="white"/>
+</g>
+</svg>

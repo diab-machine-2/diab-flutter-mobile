@@ -195,4 +195,23 @@ class AppColors {
   static const color0xFF1F2937 = Color(0xFF1F2937);
   static const color0xFF6B7280 = Color(0xFF6B7280);
   static const color0xFFE5E7EB = Color(0xFFE5E7EB);
+
+  // Home redesign (Figma 22514:10901)
+  static const homeCardBorder = Color(0xFFE2ECEA);
+  static const homeTitleText = Color(0xFF12332E);
+  static const homeCaptionText = Color(0xFF5A716D);
+  static const homeWarningText = Color(0xFF9C632B);
+  static const homeAlertRed = Color(0xFFD02424);
+  static const homeMetricCircleBg = Color(0xFFF0FAF9);
+  static const homeMetricCircleBorder = Color(0xFFD7EDE8);
+  static const homeAccentTeal = Color(0xFF0D8175);
+  static const homeBenefitSecondaryBg = Color(0xFFDDF3EF);
+  static const homeBenefitSecondaryTitle = Color(0xFF0B5F55);
+  static const homeBenefitSecondaryDesc = Color(0xFF2C6B62);
+  static const homeBenefitPrimaryDesc = Color(0xFFE4F3F0);
+  static const homeShortcutCircleBorder = Color(0xFFD4ECE8);
+  static const homeDailyCareTileBg = Color(0xFFF4F8F8);
+  static const homeHeaderGradientTop = Color(0xFF22CAB4);
+  static const homeHeaderGradientBottom = Color(0xFF116459);
+  static const homeCardShadow = Color(0x14016961);
 }

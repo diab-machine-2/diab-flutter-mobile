@@ -237,4 +237,23 @@ class Colors {
   Color get color0xFF1F2937 => Color(0xFF1F2937);
   Color get color0xFF6B7280 => Color(0xFF6B7280);
   Color get color0xFFE5E7EB => Color(0xFFE5E7EB);
+
+  // Home redesign (Figma 22514:10901)
+  Color get homeCardBorder => Color(0xFFE2ECEA);
+  Color get homeTitleText => Color(0xFF12332E);
+  Color get homeCaptionText => Color(0xFF5A716D);
+  Color get homeWarningText => Color(0xFF9C632B);
+  Color get homeAlertRed => Color(0xFFD02424);
+  Color get homeMetricCircleBg => Color(0xFFF0FAF9);
+  Color get homeMetricCircleBorder => Color(0xFFD7EDE8);
+  Color get homeAccentTeal => Color(0xFF0D8175);
+  Color get homeBenefitSecondaryBg => Color(0xFFDDF3EF);
+  Color get homeBenefitSecondaryTitle => Color(0xFF0B5F55);
+  Color get homeBenefitSecondaryDesc => Color(0xFF2C6B62);
+  Color get homeBenefitPrimaryDesc => Color(0xFFE4F3F0);
+  Color get homeShortcutCircleBorder => Color(0xFFD4ECE8);
+  Color get homeDailyCareTileBg => Color(0xFFF4F8F8);
+  Color get homeHeaderGradientTop => Color(0xFF22CAB4);
+  Color get homeHeaderGradientBottom => Color(0xFF116459);
+  Color get homeCardShadow => Color(0x14016961);
 }

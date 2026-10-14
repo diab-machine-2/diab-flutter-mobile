@@ -1,0 +1,8 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="glyph">
+<path id="Vector" d="M4 3H6M14 3H16" stroke="#01645A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M5 3V9C5 10.3261 5.52678 11.5979 6.46447 12.5355C7.40215 13.4732 8.67392 14 10 14C11.3261 14 12.5979 13.4732 13.5355 12.5355C14.4732 11.5979 15 10.3261 15 9V3" stroke="#01645A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M10 14V16.5C10 17.6935 10.4741 18.8381 11.318 19.682C12.1619 20.5259 13.3065 21 14.5 21C15.6935 21 16.8381 20.5259 17.682 19.682C18.5259 18.8381 19 17.6935 19 16.5V13.5" stroke="#01645A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M19 13.7C20.7673 13.7 22.2 12.2673 22.2 10.5C22.2 8.73269 20.7673 7.3 19 7.3C17.2327 7.3 15.8 8.73269 15.8 10.5C15.8 12.2673 17.2327 13.7 19 13.7Z" fill="#E5B542"/>
+</g>
+</svg>
