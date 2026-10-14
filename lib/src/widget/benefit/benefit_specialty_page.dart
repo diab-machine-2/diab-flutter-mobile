@@ -1,5 +1,4 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widgets/specialty_grid.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -55,8 +55,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
   bool get _isTelemedicine =>
       widget.bookingType == Const.BENEFIT_BOOKING_TELEMEDICINE;
 
-  bool get _isClinic =>
-      widget.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC;
+  bool get _isClinic => widget.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC;
 
   /// True when the caller already supplied enough info (specialty + clinic
   /// for at-clinic, or specialty for telemedicine) that [_initData] will try
@@ -109,8 +108,8 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
         widget.specialtyName != null &&
         widget.specialtyName!.isNotEmpty) {
       final target = widget.specialtyName!.toLowerCase().trim();
-      matched = ordered.firstWhereOrNull(
-          (s) => s.name.toLowerCase().trim() == target);
+      matched = ordered
+          .firstWhereOrNull((s) => s.name.toLowerCase().trim() == target);
     }
     if (matched == null) {
       if (_hasAutoResolveIntent) setState(() => _autoResolveFailed = true);
@@ -209,35 +208,6 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
         .replaceAll(RegExp(r'^-|-$'), '');
   }
 
-  /// Maps a banner slug from the API to a local drawable asset path.
-  String _getBannerAsset(String banner) {
-    final slug = _toBannerSlug(banner);
-    switch (slug) {
-      case 'tien-dai-thao-duong':
-        return R.drawable.banner_tien_dai_thao_duong;
-      case 'dai-thao-duong':
-        return R.drawable.banner_dai_thao_duong;
-      case 'dinh-duong':
-        return R.drawable.banner_dinh_duong;
-      case 'tang-huyet-ap':
-        return R.drawable.banner_tang_huyet_ap;
-      case 'thua-can-beo-phi':
-        return R.drawable.banner_thua_can_beo_phi;
-      case 'dai-thao-duong-thai-ky':
-        return R.drawable.banner_dai_thao_duong_thai_ky;
-      case 'tim-mach':
-        return R.drawable.banner_tim_mach;
-      case 'roi-loan-chuyen-hoa':
-        return R.drawable.banner_roi_loan_chuyen_hoa;
-      case 'than-man-tinh':
-        return R.drawable.banner_than_man_tinh;
-      case 'tinh-than':
-        return R.drawable.banner_tinh_than;
-      default:
-        return R.drawable.banner_benh_khac;
-    }
-  }
-
   void _onSelectSpecialty(ClinicSpecialty specialty) {
     if (_isSelectingSpecialty) return;
     _isSelectingSpecialty = true;
@@ -272,9 +242,8 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
     ClinicSpecialty specialty, {
     bool isAutoResolve = false,
   }) async {
-    final clinicIds = specialty.telemedicine_clinic_ids
-        .map((e) => e.toString())
-        .toList();
+    final clinicIds =
+        specialty.telemedicine_clinic_ids.map((e) => e.toString()).toList();
 
     // No backend-configured telemedicine clinic for this specialty — nothing
     // to resolve on the schedule screen, so stop here (and reveal the grid
@@ -448,8 +417,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
               Expanded(
                 child: (_hasAutoResolveIntent && !_autoResolveFailed)
                     ? _buildSpecialtyGridSkeleton()
-                    : BlocBuilder<DsmesAppointmentCubit,
-                        DsmesAppointmentState>(
+                    : BlocBuilder<DsmesAppointmentCubit, DsmesAppointmentState>(
                         builder: (context, state) {
                           if (state is DsmesAppointmentLoading &&
                               _cubit.listSpecialty.isEmpty) {
@@ -479,8 +447,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
   Widget _buildSpecialtyGridSkeleton() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isTablet = constraints.maxWidth > 600;
-        final crossAxisCount = isTablet ? 3 : 2;
+        const crossAxisCount = SpecialtyGrid.columns;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -492,7 +459,8 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 170 / 238,
+              // Roughly one icon + 2-line label of SpecialtyGrid.
+              childAspectRatio: 106 / 134,
             ),
             itemCount: crossAxisCount * 3,
             itemBuilder: (context, index) {
@@ -507,111 +475,25 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage>
     );
   }
 
+  /// Figma "Chọn nhu cầu khám" grid. Same data, order and tap handling as
+  /// before; only the look changed. Icons: local 3D icon by the API image
+  /// code (or name), else the API image.
   Widget _buildSpecialtyGrid() {
     final specialties = _getOrderedSpecialties();
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isTablet = constraints.maxWidth > 600;
-        final crossAxisCount = isTablet ? 3 : 2;
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: GridView.builder(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 170 / 238,
+    return SingleChildScrollView(
+      child: SpecialtyGrid(
+        items: [
+          for (final specialty in specialties)
+            SpecialtyGridItem(
+              name: specialty.name,
+              assetIcon: SpecialtyIcons.forImageCode(specialty.image) ??
+                  SpecialtyIcons.forNameSlug(_nameToSlug(specialty.name)),
+              networkIcon: specialty.image?.isNotEmpty == true
+                  ? "${Utils.getHostDocosanUrl()}${specialty.image}"
+                  : null,
+              onTap: () => _onSelectSpecialty(specialty),
             ),
-            itemCount: specialties.length,
-            itemBuilder: (context, index) {
-              final specialty = specialties[index];
-              return _buildSpecialtyCard(specialty);
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSpecialtyCard(ClinicSpecialty specialty) {
-    final bannerAsset = _getBannerAsset(specialty.image ?? '');
-
-    return GestureDetector(
-      onTap: () => _onSelectSpecialty(specialty),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: CachedNetworkImage(
-                imageUrl: "${Utils.getHostDocosanUrl()}${specialty.image}",
-                errorWidget: (context, url, error) {
-                  return Image.asset(
-                    R.drawable.banner_tien_dai_thao_duong,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  );
-                },
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 111,
-                padding: const EdgeInsets.fromLTRB(12, 16, 8, 0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      R.color.color0xffFAF0D2,
-                      R.color.color0xffFAF0D2.withOpacity(0),
-                    ],
-                    stops: const [0.0, 1],
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        specialty.name,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.color0xff111515,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: R.color.color0xff111515,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

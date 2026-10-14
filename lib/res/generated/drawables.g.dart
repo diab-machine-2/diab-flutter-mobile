@@ -904,4 +904,5 @@ class Drawables {
   String get ic3d_tim_mach => "lib/res/drawables/clinic_specialty/ic3d_tim_mach.png";
   String get ic3d_tinh_than => "lib/res/drawables/clinic_specialty/ic3d_tinh_than.png";
   String get ic3d_van_dong => "lib/res/drawables/clinic_specialty/ic3d_van_dong.png";
+  String get ic3d_chung => "lib/res/drawables/clinic_specialty/ic3d_chung.png";
 }

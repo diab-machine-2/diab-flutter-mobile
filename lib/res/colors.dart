@@ -215,4 +215,6 @@ class AppColors {
   static const homeHeaderGradientBottom = Color(0xFF116459);
   static const homeCardShadow = Color(0x14016961);
   static const homeKpiEmptyShadow = Color(0x2401645A);
+  static const specialtyCircleTop = Color(0xFFF6FCFA);
+  static const specialtyCircleBottom = Color(0xFFE0F3EF);
 }

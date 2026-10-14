@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widgets/specialty_grid.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -471,31 +472,35 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
       'cao-huyet-ap': ClinicSpecialty(
         id: 29,
         name: 'Cao huyết áp',
-        banner: R.drawable.banner_cao_huyet_ap,
+        banner: R.drawable.ic3d_tang_huyet_ap,
       ),
       'tieu-duong': ClinicSpecialty(
         id: 17,
         name: 'Tiểu đường',
-        banner: R.drawable.banner_tieu_duong,
+        banner: R.drawable.ic3d_dai_thao_duong,
       ),
       'suy-than-man': ClinicSpecialty(
         id: 42,
         name: 'Suy thận mạn',
-        banner: R.drawable.banner_suy_than_man,
+        banner: R.drawable.ic3d_than_man_tinh,
       ),
       'suc-khoe-tim-mach': ClinicSpecialty(
         id: 29,
         name: 'Sức khỏe tim mạch',
-        banner: R.drawable.banner_suc_khoe_tim_mach,
+        banner: R.drawable.ic3d_tim_mach,
       ),
       'benh-khac': ClinicSpecialty(
         id: 0,
         name: 'Bệnh khác',
-        banner: R.drawable.banner_benh_khac,
+        banner: R.drawable.ic3d_chung,
       ),
     };
 
-    return slugs.map((slug) => specialtyMap[slug]!).toList();
+    // Unknown slugs (e.g. a newer Remote Config) are skipped, not a crash.
+    return [
+      for (final slug in slugs.map((s) => s.trim()))
+        if (specialtyMap[slug] case final specialty?) specialty,
+    ];
   }
 
   Widget _buildPage(BuildContext context, DsmesAppointmentState state) {
@@ -660,112 +665,41 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
   }
 
   _buildDiabSpecialty() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isTablet = constraints.maxWidth > 600;
-        final crossAxisCount = isTablet ? 3 : 2;
-
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 170 / 238,
+    // Figma "Chọn nhu cầu khám" grid; data and tap handling unchanged.
+    return SpecialtyGrid(
+      // The page already pads 12px around the content.
+      padding: const EdgeInsets.only(top: 12, left: 4, right: 4),
+      items: [
+        for (final specialty in getDiabSpecialties())
+          SpecialtyGridItem(
+            name: specialty.name,
+            assetIcon: specialty.banner,
+            onTap: () => _onTapDiabSpecialty(specialty),
           ),
-          itemCount: getDiabSpecialties().length,
-          itemBuilder: (context, index) {
-            final specialty = getDiabSpecialties()[index];
-            return GestureDetector(
-              onTap: () async {
-                if (specialty.name == "Bệnh khác") {
-                  final specialties = await _cubit.getCLinicSpecialtyList();
-                  DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.pushNamed(NavigatorName.other_diseases, arguments: {
-                    "specialties": specialties,
-                    "bookingType": Const.BOOKING_TYPE_DOCTOR,
-                  });
-                } else {
-                  _cubit.clearClinicProviders();
-                  final position = await AppSettings.getPositionPreferences();
-                  print('POSITION: $position');
-                  DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.pushNamed(NavigatorName.doctor_providers, arguments: {
-                    "specialtyId": specialty.id,
-                    "bookingType": Const.BOOKING_TYPE_DOCTOR,
-                  });
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        specialty.banner ?? '',
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        height: 111,
-                        padding: EdgeInsets.fromLTRB(12, 16, 8, 0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          gradient: LinearGradient(
-                            begin: Alignment.center,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              R.color.color0xffFAF0D2,
-                              R.color.color0xffFAF0D2.withOpacity(0),
-                            ],
-                            stops: [0.0, 1],
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                specialty.name,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: R.color.color0xff111515,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                              color: R.color.color0xff111515,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+      ],
     );
+  }
+
+  Future<void> _onTapDiabSpecialty(ClinicSpecialty specialty) async {
+    if (specialty.name == "Bệnh khác") {
+      final specialties = await _cubit.getCLinicSpecialtyList();
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
+          ?.pushNamed(NavigatorName.other_diseases, arguments: {
+        "specialties": specialties,
+        "bookingType": Const.BOOKING_TYPE_DOCTOR,
+      });
+    } else {
+      _cubit.clearClinicProviders();
+      final position = await AppSettings.getPositionPreferences();
+      print('POSITION: $position');
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
+          ?.pushNamed(NavigatorName.doctor_providers, arguments: {
+        "specialtyId": specialty.id,
+        "bookingType": Const.BOOKING_TYPE_DOCTOR,
+      });
+    }
   }
 
   PageRoute _buildRoute(
