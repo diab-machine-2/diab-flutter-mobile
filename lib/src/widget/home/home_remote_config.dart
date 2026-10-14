@@ -129,15 +129,33 @@ class HomeDailyCareConfig {
 
   /// Up to [gridSize] slugs for the Home grid ("Xem tất cả" not included).
   List<String> gridFor(HomeViewFlags flags) {
-    final source = !flags.hasBundle
-        ? gridNoBundle
-        : (flags.hasKpi ? gridBundleKpi : gridBundleNoKpi);
-    return source.where((slug) => isVisible(slug, flags)).take(gridSize).toList();
+    final List<String> source;
+    final List<String> fallback;
+    if (!flags.hasBundle) {
+      source = gridNoBundle;
+      fallback = defaultGridNoBundle;
+    } else if (flags.hasKpi) {
+      source = gridBundleKpi;
+      fallback = defaultGridBundleKpi;
+    } else {
+      source = gridBundleNoKpi;
+      fallback = defaultGridBundleNoKpi;
+    }
+    return _visible(source, fallback, flags).take(gridSize).toList();
   }
 
   /// Every slug for the "Xem tất cả" screen.
-  List<String> allFor(HomeViewFlags flags) =>
-      all.where((slug) => isVisible(slug, flags)).toList();
+  List<String> allFor(HomeViewFlags flags) => _visible(all, defaultAll, flags);
+
+  /// [source] filtered by [isVisible]; a config list that ends up empty
+  /// (e.g. only "ho-so-suc-khoe" for a KPI user) falls back to the default.
+  static List<String> _visible(
+      List<String> source, List<String> fallback, HomeViewFlags flags) {
+    final visible = source.where((slug) => isVisible(slug, flags)).toList();
+    return visible.isNotEmpty
+        ? visible
+        : fallback.where((slug) => isVisible(slug, flags)).toList();
+  }
 
   /// "Hồ sơ sức khoẻ" only earns a tile when the KPI card (which carries its
   /// own "Hồ sơ" button) isn't shown and there is a record to open.
@@ -198,7 +216,8 @@ class HomeBenefitShortcutsConfig {
     final result = <String>[];
     for (final item in (raw ?? '').split(',')) {
       final slug = item.trim();
-      if (HomeBenefitShortcutSlug.all.contains(slug) && !result.contains(slug)) {
+      if (HomeBenefitShortcutSlug.all.contains(slug) &&
+          !result.contains(slug)) {
         result.add(slug);
       }
     }

@@ -1,135 +1,156 @@
-import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_sharing.dart';
-import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/utils/debouncer.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/home/home_daily_care.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
+/// "Chăm sóc hàng ngày – Xem tất cả" (Figma 22514:8801 / 22514:8917).
 class UtilitiesPage extends StatelessWidget {
   UtilitiesPage({super.key, required this.utilities});
 
   final List<HomeUtilityData> utilities;
-  final _debouncer = Debouncer(milliseconds: 500);
+  // Ignores a repeat tap within 500ms (acts on the first tap immediately).
+  final _tapGuard = _TapGuard();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              R.color.color0xFFFDC798.withOpacity(0.3),
-              R.color.greenbg.withOpacity(0.9),
-            ],
-            begin: const FractionalOffset(1, 1),
-            end: const FractionalOffset(0.9, 0.5),
-            stops: const [0.0, 1.0],
-          ),
-        ),
-        child: Column(
-          children: [
-            CustomAppBar(
-              backgroundColor: R.color.transparent,
-              title: Text(
-                "Tất cả tiện ích",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: R.color.textDark,
+      backgroundColor: R.color.backgroundColorNew,
+      body: Column(
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  R.color.homeHeaderGradientTop,
+                  R.color.homeHeaderGradientBottom,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: SizedBox(
+                height: 44,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: R.color.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    Expanded(
+                      child: Text(
+                        R.string.home_daily_care_title.tr(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 18,
+                          height: 1.32,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              leadingIcon: IconButton(
-                splashColor: R.color.transparent,
-                highlightColor: R.color.transparent,
-                icon: Icon(Icons.arrow_back, color: R.color.textDark),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    for (var i = 0; i < utilities.length; i++) ...[
+                      if (i > 0)
+                        Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: R.color.homeCardBorder),
+                      _buildItem(context, utilities[i]),
+                    ],
+                  ],
+                ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItem(BuildContext context, HomeUtilityData utility) {
+    return InkWell(
+      onTap: () =>
+          _tapGuard.run(() => HomeDailyCareNavigator.open(context, utility)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: R.color.color0xffF4F7F7,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: SvgPicture.asset(utility.icon, width: 24, height: 24),
+            ),
+            const SizedBox(width: 12),
             Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.all(12.0),
-                physics: const ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final utility = utilities[index];
-                  return Builder(
-                    builder: (context) {
-                      return InkWell(
-                        onTap: () {
-                          _debouncer.run(() {
-                            final routeName = utility.navigatorName;
-                            if (routeName.startsWith("/")) {
-                              Navigator.of(context).pushNamed(routeName);
-                              return;
-                            }
-                            // special case for utilities
-                            switch (routeName) {
-                              case "share":
-                                String? shareLink =
-                                    BranchioLinkConfig.instance.shareLink;
-                                if (shareLink != null) {
-                                  AppShare.instance
-                                      .userReferralCode(context, shareLink);
-                                }
-                                return;
-                              default:
-                                break;
-                            }
-                            Console.log(
-                                "missing handler for routeName: $routeName");
-                            BotToast.showText(
-                                text: "Chức năng đang được phát triển");
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                utility.icon,
-                                width: 30.0,
-                                height: 30.0,
-                              ),
-                              const SizedBox(width: 12.0),
-                              Expanded(
-                                child: Text(
-                                  utility.title,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF27272A),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12.0),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                size: 24.0,
-                                color: Color(0xFF666666),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-                separatorBuilder: (_, __) => const SizedBox(height: 12.0),
-                itemCount: utilities.length,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    utility.title,
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 15,
+                      height: 1.46,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (utility.subtitle?.isNotEmpty == true)
+                    Text(
+                      utility.subtitle!,
+                      style: TextStyle(
+                        color: R.color.color0xff5E6566,
+                        fontSize: 13,
+                        height: 1.5,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                ],
               ),
             ),
+            const SizedBox(width: 12),
+            Icon(Icons.chevron_right, size: 20, color: R.color.color0xffDADEDF),
           ],
         ),
       ),
     );
+  }
+}
+
+class _TapGuard {
+  DateTime? _lastTapAt;
+
+  void run(VoidCallback action) {
+    final now = DateTime.now();
+    if (_lastTapAt != null &&
+        now.difference(_lastTapAt!) < const Duration(milliseconds: 500)) {
+      return;
+    }
+    _lastTapAt = now;
+    action();
   }
 }

@@ -40,8 +40,8 @@ void main() {
       for (final raw in [null, '', 'not json', '[1,2]']) {
         final config = HomeDailyCareConfig.parse(raw);
         expect(config.gridNoBundle, HomeDailyCareConfig.defaultGridNoBundle);
-        expect(config.gridBundleNoKpi,
-            HomeDailyCareConfig.defaultGridBundleNoKpi);
+        expect(
+            config.gridBundleNoKpi, HomeDailyCareConfig.defaultGridBundleNoKpi);
         expect(config.gridBundleKpi, HomeDailyCareConfig.defaultGridBundleKpi);
         expect(config.all, HomeDailyCareConfig.defaultAll);
       }
@@ -70,14 +70,22 @@ void main() {
     test('picks the list matching bundle / KPI state', () {
       expect(config.gridFor(const HomeViewFlags()).first,
           HomeDailyCareSlug.atClinic);
-      expect(config.gridFor(const HomeViewFlags(hasBundle: true, hasKpi: true)),
-          [
-            HomeDailyCareSlug.medicineReminder,
-            HomeDailyCareSlug.connectDevice,
-            HomeDailyCareSlug.sampleMenu,
-            HomeDailyCareSlug.glucoseSchedule,
-            HomeDailyCareSlug.goalSetting,
-          ]);
+      expect(
+          config.gridFor(const HomeViewFlags(hasBundle: true, hasKpi: true)), [
+        HomeDailyCareSlug.medicineReminder,
+        HomeDailyCareSlug.connectDevice,
+        HomeDailyCareSlug.sampleMenu,
+        HomeDailyCareSlug.glucoseSchedule,
+        HomeDailyCareSlug.goalSetting,
+      ]);
+    });
+
+    test('a list emptied by visibility falls back to the default', () {
+      final custom = HomeDailyCareConfig.parse(
+          '{"grid_bundle_kpi":["ho-so-suc-khoe"],"all":["ho-so-suc-khoe"]}');
+      const kpi = HomeViewFlags(hasBundle: true, hasKpi: true);
+      expect(custom.gridFor(kpi), config.gridFor(kpi));
+      expect(custom.allFor(kpi), config.allFor(kpi));
     });
 
     test('health profile only when no KPI and a record exists', () {

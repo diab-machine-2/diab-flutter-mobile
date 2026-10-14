@@ -1,115 +1,127 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/home/home_remote_config.dart';
 
 import '../schema/home_schema.dart';
 
+/// Home "Chăm sóc hằng ngày" grid (Figma 22514:9678): rows of 3 tiles, the
+/// last one being "Xem tất cả".
 class HomeUtilities extends StatelessWidget {
   const HomeUtilities({
     super.key,
     required this.utilities,
     required this.onTap,
+    this.showHealthProfileDot = false,
   });
 
+  static const int columns = 3;
+
   final List<HomeUtilityData> utilities;
-  final Function(HomeUtilityData) onTap;
+  final ValueChanged<HomeUtilityData> onTap;
+
+  /// Red dot on the "Hồ sơ sức khoẻ" tile (unviewed exam result).
+  final bool showHealthProfileDot;
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
-    final isLargeFont = textScaleFactor > 1.25;
-
-    List<HomeUtilityData> renderingUtilities = utilities;
-    if (isLargeFont && utilities.length > 5) {
-      renderingUtilities = utilities.take(5).toList()
-        ..add(utilities[utilities.length - 1]);
-    }
-
+    final rows = <List<HomeUtilityData>>[
+      for (var i = 0; i < utilities.length; i += columns)
+        utilities.sublist(i, (i + columns).clamp(0, utilities.length)),
+    ];
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(16.0)),
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: R.color.homeCardBorder),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                R.string.utilities.tr(),
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.color0xff27272A,
-                ),
+          Text(
+            R.string.home_daily_care_title.tr(),
+            style: TextStyle(
+              color: R.color.homeTitleText,
+              fontSize: 18,
+              height: 1.32,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          for (final row in rows) ...[
+            const SizedBox(height: 14),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = 0; i < columns; i++) ...[
+                    if (i > 0) const SizedBox(width: 10),
+                    Expanded(
+                      child: i < row.length
+                          ? _buildTile(row[i])
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ],
               ),
-              // ! Later
-              const SizedBox(),
-            ],
-          ),
-
-          const SizedBox(height: 16.0),
-
-          // use two rows to keep fixed height
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: renderingUtilities
-                .getRange(0, renderingUtilities.length ~/ 2)
-                .map((utility) => Expanded(child: _buildActivityItem(utility, context)))
-                .toList(),
-          ),
-          const SizedBox(height: 16.0),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: renderingUtilities
-                .getRange(
-                    renderingUtilities.length ~/ 2, renderingUtilities.length)
-                .map((utility) => Expanded(child: _buildActivityItem(utility, context)))
-                .toList(),
-          ),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildActivityItem(HomeUtilityData utility, BuildContext context) {
-    return InkWell(
-      onTap: () => onTap(utility),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset(
-            utility.icon,
-            width: 28.0,
-            height: 28.0,
-          ),
-          const SizedBox(height: 12.0),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 2.0),
-            alignment: Alignment.center,
-            width: double.infinity,
-            child: MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                  textScaler: MediaQuery.of(context)
-                      .textScaler
-                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
-              child: Text(
-                utility.title,
+  Widget _buildTile(HomeUtilityData utility) {
+    final showDot =
+        showHealthProfileDot && utility.slug == HomeDailyCareSlug.healthProfile;
+    return Material(
+      color: R.color.homeDailyCareTileBg,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: () => onTap(utility),
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(6, 14, 6, 12),
+          child: Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  SvgPicture.asset(utility.icon, width: 24, height: 24),
+                  if (showDot)
+                    Positioned(
+                      top: 0,
+                      right: 1,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: R.color.homeAlertRed,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                utility.gridTitle ?? utility.title,
                 textAlign: TextAlign.center,
                 maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 15.0,
-                  color: R.color.textDark,
+                  color: R.color.homeTitleText,
+                  fontSize: 12,
+                  height: 1.5,
+                  letterSpacing: 0.2,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

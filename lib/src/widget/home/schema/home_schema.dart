@@ -139,8 +139,8 @@ class HomeActivityData {
       icon: map['icon'],
       title: map['title'],
       description: map['description'],
-      type: ScheduleType.values
-          .firstWhere((e) => e.toString() == map['type'], orElse: () => ScheduleType.completed),
+      type: ScheduleType.values.firstWhere((e) => e.toString() == map['type'],
+          orElse: () => ScheduleType.completed),
       smartGoal: SmartGoalList.fromJson(map['smartGoal']),
     );
   }
@@ -199,10 +199,18 @@ class HomeUtilityData {
   final String navigatorName;
   final String slug;
 
+  /// Second line on the "Xem tất cả" list.
+  final String? subtitle;
+
+  /// Shorter label for the Home grid tile; falls back to [title].
+  final String? gridTitle;
+
   HomeUtilityData({
     required this.icon,
     required this.title,
     required this.navigatorName,
     required this.slug,
+    this.subtitle,
+    this.gridTitle,
   });
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
@@ -21,7 +19,6 @@ import 'package:medical/src/modal/medicine/prescription_schedule_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -66,6 +63,9 @@ import 'widget/home_benefit.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/widget/home/home_view_flags.dart';
+import 'package:medical/src/widget/home/home_daily_care.dart';
+import 'package:medical/src/widget/home/home_remote_config.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({super.key, this.sharedCode});
@@ -122,6 +122,19 @@ class _HomeControllerState extends State<HomeController>
 
   /// Which Home variant to render; recomputed on every build from the latest
   /// HomeModel and exam results.
+  String? _dailyCareConfigRaw;
+  HomeDailyCareConfig _dailyCareConfigParsed = const HomeDailyCareConfig();
+
+  /// Remote Config `HOME_DAILY_CARE_CONFIG`, parsed only when it changes.
+  HomeDailyCareConfig get _dailyCareConfig {
+    final raw = FirebaseRemoteSetting.instance.homeDailyCareConfig;
+    if (raw != _dailyCareConfigRaw) {
+      _dailyCareConfigRaw = raw;
+      _dailyCareConfigParsed = HomeDailyCareConfig.parse(raw);
+    }
+    return _dailyCareConfigParsed;
+  }
+
   HomeViewFlags get _viewFlags => HomeViewFlags.from(
         model: model,
         userPackageName: AppSettings.userInfo?.packageName,
@@ -796,10 +809,12 @@ class _HomeControllerState extends State<HomeController>
                 state.model.activities?.isNotEmpty == true;
           }
 
+          final viewFlags = _viewFlags;
+          final dailyCareConfig = _dailyCareConfig;
           Widget activitiesW = HomeActivity(
             activities: stateLoaded?.activities ?? [],
             reminders: stateLoaded?.reminders ?? [],
-            hasProgram: _viewFlags.hasProgram,
+            hasProgram: viewFlags.hasProgram,
             expanded: _isActivityReminerExpanded,
             loading: (stateLoaded?.activityLoading ?? false) ||
                 (stateLoaded?.reminderLoading ?? false),
@@ -822,7 +837,11 @@ class _HomeControllerState extends State<HomeController>
           );
 
           Widget utilitiesW = HomeUtilities(
-            utilities: stateLoaded?.utilities ?? [],
+            utilities: [
+              ...HomeDailyCareCatalog.items(dailyCareConfig.gridFor(viewFlags)),
+              HomeDailyCareCatalog.viewAll,
+            ],
+            showHealthProfileDot: viewFlags.hasUnviewedRecord,
             onTap: (utility) {
               final now = DateTime.now();
               if (_lastUtilityTapAt != null &&
@@ -836,38 +855,16 @@ class _HomeControllerState extends State<HomeController>
               final String eventName = "home_select_utility";
               TrackingManager.trackEvent(eventName, _screenName, params: {
                 "object_title": utility.title,
+                "slug": utility.slug,
               });
 
-              final routeName = utility.navigatorName;
-              // case show all utilities
-              if (routeName == NavigatorName.utilities) {
-                final utilities = BlocProvider.of<HomeBloc>(context)
-                    .getAllUtilities(
-                        full: true,
-                        bcbStatus: stateLoaded?.model.bcbStatus ?? false);
-                Navigator.pushNamed(context, routeName, arguments: utilities);
+              if (utility.slug == HomeDailyCareSlug.viewAll) {
+                Navigator.pushNamed(context, NavigatorName.utilities,
+                    arguments: HomeDailyCareCatalog.items(
+                        dailyCareConfig.allFor(viewFlags)));
                 return;
               }
-
-              // other navigate case
-              if (routeName.startsWith("/")) {
-                Navigator.pushNamed(context, routeName);
-                return;
-              }
-
-              // special case for utilities
-              switch (routeName) {
-                case "share":
-                  String? shareLink = BranchioLinkConfig.instance.shareLink;
-                  if (shareLink != null) {
-                    AppShare.instance.userReferralCode(context, shareLink);
-                  }
-                  return;
-                default:
-                  break;
-              }
-              Console.log("missing handler for routeName: $routeName");
-              BotToast.showText(text: "Chức năng đang được phát triển");
+              HomeDailyCareNavigator.open(context, utility);
             },
           );
 
@@ -920,7 +917,7 @@ class _HomeControllerState extends State<HomeController>
                                   inlineMeasurements:
                                       model?.inlineMeasurements ?? [],
                                   measurements: model?.measurements ?? [],
-                                  flags: _viewFlags,
+                                  flags: viewFlags,
                                   onAddMeasurement: () =>
                                       _showAddMeasurement(context),
                                   onConnectDevice: () => Navigator.pushNamed(
@@ -1176,11 +1173,12 @@ class _HomeControllerState extends State<HomeController>
                           const SizedBox(height: 16.0),
 
                           // Utilities
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: utilitiesW,
-                          ),
+                          if (model != null || state is HomeError)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: utilitiesW,
+                            ),
 
                           // // Reminder >< Utilities
                           // Padding(

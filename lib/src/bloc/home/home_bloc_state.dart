@@ -29,7 +29,6 @@ class HomeLoaded extends HomeState {
 
   final List<HomeActivityData>? activities;
   final List<HomeReminderData>? reminders;
-  final List<HomeUtilityData>? utilities;
   final List<LearningPostModel>? news;
   final List<LessonModel>? lessons;
   final List<LearningPostModel>? banners;
@@ -44,7 +43,6 @@ class HomeLoaded extends HomeState {
     required this.model,
     this.activities,
     this.reminders,
-    this.utilities,
     this.news,
     this.lessons,
     this.banners,
@@ -62,7 +60,6 @@ class HomeLoaded extends HomeState {
         model,
         if (activities != null) activities!,
         if (reminders != null) reminders!,
-        if (utilities != null) utilities!,
         if (news != null) news!,
         if (lessons != null) lessons!,
         if (banners != null) banners!,
@@ -76,7 +73,6 @@ class HomeLoaded extends HomeState {
     List<HomeMeasurementData>? measurements,
     List<HomeActivityData>? activities,
     List<HomeReminderData>? reminders,
-    List<HomeUtilityData>? utilities,
     List<LearningPostModel>? news,
     List<LearningPostModel>? banners,
     List<LessonModel>? lessons,
@@ -89,7 +85,6 @@ class HomeLoaded extends HomeState {
       model: model ?? this.model,
       activities: activities ?? this.activities,
       reminders: reminders ?? this.reminders,
-      utilities: utilities ?? this.utilities,
       news: news ?? this.news,
       lessons: lessons ?? this.lessons,
       banners: banners ?? this.banners,

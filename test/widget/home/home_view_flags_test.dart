@@ -75,8 +75,8 @@ void main() {
 
     test('zero values count as no data', () {
       expect(
-          HomeViewFlags.computeHasKpi(_model(
-              glucose: 0, systolic: 0, exercise: _exercise(index: 0))),
+          HomeViewFlags.computeHasKpi(
+              _model(glucose: 0, systolic: 0, exercise: _exercise(index: 0))),
           isFalse);
     });
 
@@ -92,8 +92,7 @@ void main() {
     });
 
     test('blood pressure defaults without a record date => false', () {
-      expect(
-          HomeViewFlags.computeHasKpi(_model(systolic: 120, diastolic: 90)),
+      expect(HomeViewFlags.computeHasKpi(_model(systolic: 120, diastolic: 90)),
           isFalse);
     });
 
@@ -114,8 +113,8 @@ void main() {
     });
 
     test('bundle and program come from the model / user package', () {
-      expect(HomeViewFlags.from(model: _model(hasBundle: true)).hasBundle,
-          isTrue);
+      expect(
+          HomeViewFlags.from(model: _model(hasBundle: true)).hasBundle, isTrue);
       expect(
           HomeViewFlags.from(model: _model(programName: 'Health Foundation'))
               .hasProgram,
@@ -125,8 +124,8 @@ void main() {
               .hasProgram,
           isTrue);
       expect(
-          HomeViewFlags.from(model: _model(programName: '  '),
-                  userPackageName: '')
+          HomeViewFlags.from(
+                  model: _model(programName: '  '), userPackageName: '')
               .hasProgram,
           isFalse);
     });
@@ -155,11 +154,12 @@ void main() {
           isTrue);
       expect(
           HomeViewFlags.from(
-              model: _model(),
-              examResults: [
-                BcbExamResultModel(id: '1', viewedAt: DateTime(2026, 10, 1))
-              ],
-              viewedAtSupported: true).hasUnviewedRecord,
+                  model: _model(),
+                  examResults: [
+                    BcbExamResultModel(id: '1', viewedAt: DateTime(2026, 10, 1))
+                  ],
+                  viewedAtSupported: true)
+              .hasUnviewedRecord,
           isFalse);
     });
   });
@@ -168,8 +168,8 @@ void main() {
     const flags = HomeViewFlags(hasKpi: true, hasRecord: true);
 
     test('disabled => flags unchanged', () {
-      expect(HomeMock.applyFlags(flags, enabled: false, override: 'kpi=0'),
-          flags);
+      expect(
+          HomeMock.applyFlags(flags, enabled: false, override: 'kpi=0'), flags);
     });
 
     test('enabled => overrides apply and records show as unviewed', () {

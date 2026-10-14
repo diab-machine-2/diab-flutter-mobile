@@ -10,7 +10,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
@@ -87,10 +86,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           // if have cache
           _cached = HomeLoaded(
             model: model,
-            utilities: this.getAllUtilities(
-                full: false,
-                bcbStatus: model.bcbStatus,
-                hasBundle: model.hasBundle),
             activities: model.activities,
             reminders: model.reminders,
             activityLoading: false,
@@ -130,10 +125,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         HomeLoaded currentState =
             (_cached?.copyWith(model: home) ?? HomeLoaded(model: home))
                 .copyWith(
-          utilities: this.getAllUtilities(
-              full: false,
-              bcbStatus: home.bcbStatus,
-              hasBundle: home.hasBundle),
           measurementLoading: false,
           activityLoading: _firstLoad,
           reminderLoading: _firstLoad,
@@ -547,111 +538,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   // Stream<HomeState> _syncHealthApp() async* {}
-
-  List<HomeUtilityData> getAllUtilities(
-      {bool full = false, bool bcbStatus = false, bool hasBundle = false}) {
-    String? preOrder = FirebaseRemoteSetting.instance.utilitiesOrder;
-    final moreItem = HomeUtilityData(
-      icon: R.drawable.ic_home_more,
-      title: R.string.more.tr(),
-      slug: "xem-them",
-      navigatorName: NavigatorName.utilities,
-    );
-    final all = [
-      HomeUtilityData(
-        icon: R.drawable.ic_home_glucose_calendar,
-        title: R.string.blood_sugar_schedule_single_line.tr(),
-        slug: "lich-do-duong-huyet",
-        navigatorName: NavigatorName.schedule_glucose,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_sample_menu,
-        title: R.string.food_menu.tr(),
-        slug: "thuc-don-mau",
-        navigatorName: NavigatorName.food_menu,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_goal,
-        title: R.string.goal_setting.tr(),
-        slug: "thiet-lap-muc-tieu",
-        navigatorName: NavigatorName.goal_setting,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_peripheral,
-        title: R.string.connect_device_home.tr(),
-        slug: "ket-noi-thiet-bi",
-        navigatorName: NavigatorName.connect_device_app,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_referral,
-        title: R.string.diab_refferal.tr(),
-        slug: "moi-ban-be",
-        navigatorName: "share",
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_medicine,
-        title: R.string.schedule_medicine.tr(),
-        slug: "lich-uong-thuoc",
-        navigatorName: NavigatorName.medicine_check,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_reminder,
-        title: R.string.reminder_calendar.tr(),
-        slug: "lich-nhac-nho",
-        navigatorName: NavigatorName.reminder,
-      ),
-      // HomeUtilityData(
-      //   icon: R.drawable.ic_home_reminder,
-      //   title: "Book lịch tại cơ sở y tế",
-      //   slug: "book-lich-tai-co-so-y-te",
-      //   navigatorName: NavigatorName.reminder,
-      // ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_doctor_consult,
-        title: R.string.healthy_lifestyle_consulting.tr(),
-        slug: "tu-van-song-khoe",
-        navigatorName: NavigatorName.dsmes_booking,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_booking_clinic,
-        title: R.string.book_medical_appointment.tr(),
-        slug: "dat-lich-kham-benh",
-        navigatorName: NavigatorName.booking_clinic,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_booking_doctor,
-        title: R.string.kham_tu_xa.tr(),
-        slug: "kham-tu-xa",
-        navigatorName: NavigatorName.booking_doctor,
-      ),
-      if (bcbStatus && hasBundle == true)
-        HomeUtilityData(
-          icon: R.drawable.ic_lab_result,
-          title: R.string.bcb_medical_examination_result.tr(),
-          slug: "ket-qua-kham",
-          navigatorName: NavigatorName.view_test_result,
-        ),
-    ];
-
-    if (preOrder?.isNotEmpty == true) {
-      final preOrderSlug =
-          preOrder!.split(",").where((e) => e.trim().isNotEmpty).toList();
-      // Filter to only include items that exist in preOrderSlug
-      final filteredAll =
-          all.where((item) => preOrderSlug.contains(item.slug)).toList();
-      filteredAll.sort((a, b) {
-        final aIndex = preOrderSlug.indexOf(a.slug);
-        final bIndex = preOrderSlug.indexOf(b.slug);
-        if (aIndex == -1) return 1;
-        if (bIndex == -1) return -1;
-        return aIndex - bIndex;
-      });
-
-      return full ? filteredAll : [...filteredAll.take(7), moreItem];
-    }
-
-    return full ? all : [...all.take(7), moreItem];
-  }
 
   List<HomeMeasurementIndex> getAllMeasurements() {
     String weightNavigatorName =
