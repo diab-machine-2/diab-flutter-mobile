@@ -2,20 +2,13 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_observer/Observable.dart';
-import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widgets/specialty_grid.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
+import 'package:medical/src/widget/booking_clinic/specialty_list_cubit.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_select_service.dart';
@@ -31,11 +24,9 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_clinic_detail_p
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_information_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_page.dart';
-import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:medical/src/widgets/shimmer_box.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:medical/src/widgets/specialty_catalog.dart';
+import 'package:medical/src/widgets/specialty_select_view.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 class BookingClinicPage extends StatefulWidget {
@@ -58,41 +49,26 @@ class BookingClinicPage extends StatefulWidget {
   _BookingClinicPageState createState() => _BookingClinicPageState();
 }
 
-class _BookingClinicPageState extends State<BookingClinicPage>
-    with Observer, SingleTickerProviderStateMixin {
-  final RefreshController _controller = RefreshController();
+class _BookingClinicPageState extends State<BookingClinicPage> {
   late DsmesAppointmentCubit _cubit;
+  late final SpecialtyListCubit _specialtyCubit;
   String _currentRoute = '/';
-  Map<String, bool> isProcessing = {
-    'chooseService': false,
-    'onlineConsulting': false,
-    'offlineConsulting': false,
-  };
-
-  /// True until the appointment list's first fetch (triggered by
-  /// [_cubit.initDsmesBooking] in [initState]) resolves. Gates the
-  /// appointment-list section to a shimmer instead of relying on the ambient
-  /// page-wide BotToast, which also fires for unrelated cubit actions (e.g.
-  /// choosing an appointment) and would otherwise flash twice.
-  bool _isFirstAppointmentLoad = true;
-
-  late final AnimationController _shimmerController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1200),
-  )..repeat();
 
   final _navigatorKey = DsmesNavigationMixin.createNavigatorKey();
 
   @override
   void initState() {
     super.initState();
-    Observable.instance.addObserver(this);
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
+    _specialtyCubit = SpecialtyListCubit(repository, isTelemedicine: false);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
     _warmupLocation();
-    // Initialize Docosan user & location
-    _cubit.initDsmesBooking(isLoadAppointments: !widget.isExamination);
+    // Initialize Docosan user & location. Booked appointments are no longer
+    // listed here; they live behind the "Lịch hẹn" button.
+    _cubit.initDsmesBooking(isLoadAppointments: false);
+    // Also in the examination flow: backing out of it lands on this grid.
+    _specialtyCubit.load();
 
     if (widget.isExamination) {
       // Delay navigation to ensure nested navigator is ready.
@@ -123,22 +99,8 @@ class _BookingClinicPageState extends State<BookingClinicPage>
   @override
   void dispose() {
     BotToast.closeAllLoading();
-    Observable.instance.removeObserver(this);
-    _controller.dispose();
-    _shimmerController.dispose();
+    _specialtyCubit.close();
     super.dispose();
-  }
-
-  @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'refresh_booking_clinic') {
-      _refresh();
-    }
-  }
-
-  void _refresh() async {
-    await _cubit.getDsmesAppointmentList(isRefresh: true, page: 1);
   }
 
   @override
@@ -174,8 +136,6 @@ class _BookingClinicPageState extends State<BookingClinicPage>
                 DsmesNavigationMixin.getNavigationKey()
                     .currentState
                     ?.popUntil((route) => route.isFirst);
-                Observable.instance
-                    .notifyObservers([], notifyName: "refresh_booking_clinic");
                 return false;
               }
 
@@ -404,20 +364,14 @@ class _BookingClinicPageState extends State<BookingClinicPage>
     return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
       listener: (context, state) {
         print('Current state: $state');
-        if (_isFirstAppointmentLoad &&
-            (state is DsmesAppointmentLoaded ||
-                state is DsmesAppointmentFailure)) {
-          setState(() => _isFirstAppointmentLoad = false);
-        }
         // For examination flow, we manage loading manually so that it stays
         // visible until the datetime page has finished loading.
-        if (!widget.isExamination && !_isFirstAppointmentLoad) {
+        if (!widget.isExamination) {
           if (state is DsmesAppointmentFailure) {
             BotToast.closeAllLoading();
             Message.showToastMessage(context, state.error);
           } else {
             BotToast.closeAllLoading();
-            _controller.refreshCompleted();
           }
         }
       },
@@ -426,177 +380,51 @@ class _BookingClinicPageState extends State<BookingClinicPage>
         DsmesAppointmentState state,
       ) {
         print('Building with state: $state');
-        if (!widget.isExamination && !_isFirstAppointmentLoad) {
+        if (!widget.isExamination) {
           if (state is DsmesAppointmentLoading) {
             BotToast.showLoading(allowClick: false);
-          } else {
+          } else if (state is! InitialDsmesAppointmentState) {
+            // Not on the first build: that would close _warmupLocation's
+            // loading while the location permission prompt is still open.
             BotToast.closeAllLoading();
-            _controller.refreshCompleted();
           }
         }
-        return _buildPage(context, state);
+        return _buildPage(context);
       },
     );
   }
 
-  List<ClinicSpecialty> getDiabSpecialties() {
-    final specialtyOrder = FirebaseRemoteSetting.instance.specialtyOrder ?? '';
-    if (specialtyOrder.isEmpty) {
-      return [];
-    }
+  Widget _buildPage(BuildContext context) {
+    return BlocBuilder<SpecialtyListCubit, SpecialtyListState>(
+      bloc: _specialtyCubit,
+      builder: (context, state) => SpecialtySelectView(
+        status: switch (state) {
+          SpecialtyListSuccess() => SpecialtySelectStatus.ready,
+          SpecialtyListError() => SpecialtySelectStatus.error,
+          _ => SpecialtySelectStatus.loading,
+        },
+        items: [
+          if (state is SpecialtyListSuccess)
+            for (final specialty in state.specialties)
+              SpecialtyCatalog.gridItem(specialty,
+                  onTap: () => _onTapDiabSpecialty(specialty)),
+        ],
+        onRetry: _specialtyCubit.load,
+        onBack: () => Navigator.of(context, rootNavigator: true).pop(),
+        actions: [
+          SpecialtyHistoryButton(
+            onTap: () {
+              _cubit.clearAppointments();
 
-    final slugs = specialtyOrder.split(',');
-
-    final Map<String, ClinicSpecialty> specialtyMap = {
-      'cao-huyet-ap': ClinicSpecialty(
-        id: 29,
-        name: 'Cao huyết áp',
-        banner: R.drawable.ic3d_tang_huyet_ap,
-      ),
-      'tieu-duong': ClinicSpecialty(
-        id: 17,
-        name: 'Tiểu đường',
-        banner: R.drawable.ic3d_dai_thao_duong,
-      ),
-      'suy-than-man': ClinicSpecialty(
-        id: 42,
-        name: 'Suy thận mạn',
-        banner: R.drawable.ic3d_than_man_tinh,
-      ),
-      'suc-khoe-tim-mach': ClinicSpecialty(
-        id: 29,
-        name: 'Sức khỏe tim mạch',
-        banner: R.drawable.ic3d_tim_mach,
-      ),
-      'benh-khac': ClinicSpecialty(
-        id: 0,
-        name: 'Bệnh khác',
-        banner: R.drawable.ic3d_chung,
-      ),
-    };
-
-    // Unknown slugs (e.g. a newer Remote Config) are skipped, not a crash.
-    return [
-      for (final slug in slugs.map((s) => s.trim()))
-        if (specialtyMap[slug] case final specialty?) specialty,
-    ];
-  }
-
-  Widget _buildPage(BuildContext context, DsmesAppointmentState state) {
-    return Column(
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [R.color.greenGradientTop02, R.color.greenGradientBottom],
-              stops: [0.01, 0.99],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-            ),
-          ),
-          child: CustomAppBar(
-            backgroundColor: Colors.transparent,
-            title: Text(
-              R.string.chon_nhu_cau_kham.tr(),
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  // fontFamily: 'sfpro',
-                  color: R.color.white),
-            ),
-            actions: [
-              GestureDetector(
-                onTap: () async {
-                  _cubit.clearAppointments();
-
-                  DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.pushNamed(NavigatorName.dsmes_booking_history,
-                          arguments: {
-                        'bookingType': Const.BOOKING_TYPE_CLINIC,
-                      });
-                },
-                child: Container(
-                  width: 90,
-                  height: 33,
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                  margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: R.color.color0xffECFFFD,
-                    border: Border.all(
-                      color: R.color.color0xffA4E3DD,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        R.icons.ic_clock,
-                        width: 16,
-                        height: 16,
-                        color: R.color.color0xff239A90,
-                        fit: BoxFit.scaleDown,
-                      ),
-                      GapW(4),
-                      Text(
-                        R.string.consulting_history.tr(),
-                        style: TextStyle(
-                          fontSize: 13,
-                          // fontFamily: 'sfpro',
-                          fontWeight: FontWeight.w700,
-                          color: R.color.color0xff239A90,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            leadingIcon: IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              icon: Icon(
-                Icons.arrow_back,
-                color: R.color.white,
-              ),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-            ),
-          ),
-        ),
-        Expanded(
-          child: SmartRefresher(
-            controller: _controller,
-            onRefresh: () async {
-              final docosanToken = await AppSettings.getDocosanToken();
-              if (docosanToken.isEmpty) {
-                BotToast.closeAllLoading();
-                _controller.refreshCompleted();
-                return;
-              }
-              await _cubit.getDsmesAppointmentList(
-                  isRefresh: true, page: 1, showLoading: false);
-              _controller.refreshCompleted();
+              DsmesNavigationMixin.getNavigationKey()
+                  .currentState
+                  ?.pushNamed(NavigatorName.dsmes_booking_history, arguments: {
+                'bookingType': Const.BOOKING_TYPE_CLINIC,
+              });
             },
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
-                child: Column(
-                  children: [
-                    _isFirstAppointmentLoad
-                        ? _buildAppointmentListSkeleton()
-                        : _buildAppointmentList(),
-                    _buildDiabSpecialty(),
-                  ],
-                ),
-              ),
-            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -664,136 +492,22 @@ class _BookingClinicPageState extends State<BookingClinicPage>
     );
   }
 
-  Widget _buildAppointmentList() {
-    return ListView.separated(
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      itemCount: _cubit.listFilteredData.length,
-      separatorBuilder: (context, index) => GapH(16),
-      itemBuilder: (context, index) {
-        final data = _cubit.listFilteredData[index];
-        return DsmesAppointmentItem(
-          data: data,
-          onChooseService: () async {
-            if (isProcessing['chooseService']!) return;
-            isProcessing['chooseService'] = true;
-            try {
-              // Navigate immediately — the booking detail page fetches the
-              // clinic + appointment detail itself (on its own cubit, see
-              // the dsmes_booking_detail route below) and shows its own
-              // shimmer skeleton, instead of blocking this transition on
-              // two sequential network round-trips whose loading states
-              // would otherwise flash on this still-mounted list page too.
-              await DsmesNavigationMixin.getNavigationKey()
-                  .currentState
-                  ?.pushNamed(
-                NavigatorName.dsmes_booking_detail,
-                arguments: {
-                  'serviceType': data.mode,
-                  'appointmentId': data.id,
-                  'branchId': data.clinicId,
-                  'bookingType': Const.BOOKING_TYPE_CLINIC,
-                },
-              );
-            } finally {
-              isProcessing['chooseService'] = false;
-            }
-          },
-          cubit: _cubit,
-        );
-      },
-    );
-  }
-
-  Widget _buildAppointmentListSkeleton() {
-    Widget box({double? width, double height = 14, BorderRadius? radius}) {
-      return ShimmerBox(
-        animation: _shimmerController,
-        width: width,
-        height: height,
-        borderRadius: radius ?? const BorderRadius.all(Radius.circular(6)),
-      );
-    }
-
-    Widget card() {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: R.color.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [Utils.getBoxShadowDropCard()],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-                width: 24,
-                height: 24,
-                child: box(radius: BorderRadius.circular(6))),
-            const GapW(12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  box(width: 140, height: 15),
-                  const SizedBox(height: 10),
-                  box(width: 200, height: 13),
-                  const SizedBox(height: 8),
-                  box(width: 120, height: 13),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        card(),
-        const GapH(16),
-        card(),
-      ],
-    );
-  }
-
-  _buildDiabSpecialty() {
-    // Figma "Chọn nhu cầu khám" grid; data and tap handling unchanged.
-    return SpecialtyGrid(
-      // The page already pads 12px around the content.
-      padding: const EdgeInsets.only(top: 12, left: 4, right: 4),
-      items: [
-        for (final specialty in getDiabSpecialties())
-          SpecialtyGridItem(
-            name: specialty.name,
-            assetIcon: specialty.banner,
-            onTap: () => _onTapDiabSpecialty(specialty),
-          ),
-      ],
-    );
-  }
-
   Future<void> _onTapDiabSpecialty(ClinicSpecialty specialty) async {
-    if (specialty.name == "Bệnh khác") {
-      final specialties = await _cubit.getCLinicSpecialtyList();
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.pushNamed(NavigatorName.other_diseases, arguments: {
-        "specialties": specialties,
-        "bookingType": Const.BOOKING_TYPE_CLINIC,
-      });
-    } else {
-      _cubit.clearClinicProviders();
-      final position = await AppSettings.getPositionPreferences();
-      print('POSITION: $position');
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.pushNamed(NavigatorName.clinic_providers, arguments: {
-        "specialtyId": specialty.id,
-        "bookingType": Const.BOOKING_TYPE_CLINIC,
-      });
+    // Docosan id 0 = backend hasn't mapped this specialty yet (BE-5). The
+    // provider search treats 0 as "no specialty" and would list unrelated
+    // clinics, so stop here.
+    if (specialty.id == 0) {
+      BotToast.showSimpleNotification(
+          title: R.string.empty_clinic_content.tr());
+      return;
     }
+    _cubit.clearClinicProviders();
+    DsmesNavigationMixin.getNavigationKey()
+        .currentState
+        ?.pushNamed(NavigatorName.clinic_providers, arguments: {
+      "specialtyId": specialty.id,
+      "bookingType": Const.BOOKING_TYPE_CLINIC,
+    });
   }
 
   PageRoute _buildRoute(

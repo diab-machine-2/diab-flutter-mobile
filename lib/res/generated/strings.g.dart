@@ -1251,6 +1251,7 @@ class Strings {
   String get kham_tu_xa => 'kham_tu_xa';
   String get clinic_map => 'clinic_map';
   String get chon_nhu_cau_kham => 'chon_nhu_cau_kham';
+  String get chon_nhu_cau_kham_title => 'chon_nhu_cau_kham_title';
   String get chon_noi_kham => 'chon_noi_kham';
   String get benh_khac => 'benh_khac';
   String get view_information => 'view_information';
