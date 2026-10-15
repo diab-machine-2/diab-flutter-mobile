@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -79,10 +80,11 @@ class SmartGoalItem extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    type.icon,
-                    width: 24,
-                    height: 24,
+                  // Same icon set as the Home "Hoạt động hôm nay" card.
+                  SvgPicture.asset(
+                    type.activityIcon,
+                    width: 32,
+                    height: 32,
                   ),
                   const SizedBox(height: 4),
                   MediaQuery(

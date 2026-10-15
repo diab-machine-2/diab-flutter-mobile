@@ -121,6 +121,67 @@ extension ScheduleTypeExtend on ScheduleType {
     }
   }
 
+  /// "Nhiệm vụ" SVG icon (Figma icon system), shared by the Home
+  /// "Hoạt động hôm nay" card and the program activity tab.
+  String get activityIcon {
+    switch (this) {
+      case ScheduleType.blood_sugar:
+      case ScheduleType.blood_sugar_recommend:
+      case ScheduleType.schedule_glucose_recommend:
+        return R.icons.ic_nv_duong_huyet;
+      case ScheduleType.blood_pressure:
+      case ScheduleType.blood_pressure_recommend:
+        return R.icons.ic_nv_huyet_ap;
+      case ScheduleType.weight:
+      case ScheduleType.weight_recommend:
+      case ScheduleType.height_recommend:
+        return R.icons.ic_nv_can_nang;
+      case ScheduleType.emotion:
+        return R.icons.ic_nv_cam_xuc;
+      case ScheduleType.food:
+      case ScheduleType.food_recommend:
+      case ScheduleType.food_menu:
+        return R.icons.ic_nv_dinh_duong;
+      case ScheduleType.exercise:
+      case ScheduleType.exercise_movement:
+      case ScheduleType.exercise_recommend:
+        return R.icons.ic_nv_van_dong;
+      case ScheduleType.book_1_1:
+      case ScheduleType.screening_interview:
+      case ScheduleType.evaluate_interview:
+      case ScheduleType.booking_solo:
+        return R.icons.ic_ti_kham_tu_xa;
+      case ScheduleType.book_1_n:
+        return R.icons.ic_nv_su_kien;
+      case ScheduleType.survey:
+      case ScheduleType.io_evaluate:
+      case ScheduleType.output_assessment:
+        return R.icons.ic_nv_khao_sat;
+      case ScheduleType.lesson:
+      case ScheduleType.lesson_recommend:
+        return R.icons.ic_nv_bai_hoc;
+      case ScheduleType.infographic:
+        return R.icons.ic_nv_kien_thuc;
+      case ScheduleType.quiz:
+        return R.icons.ic_nv_cau_hoi;
+      case ScheduleType.update_profile:
+      case ScheduleType.update_profile_recommend:
+        return R.icons.ic_ti_ho_so_suc_khoe;
+      case ScheduleType.hba1c_recommend:
+        return R.icons.ic_nv_hba1c;
+      case ScheduleType.schedule_recommend:
+        return R.icons.ic_nv_nhac_nho;
+      case ScheduleType.peripheral_recommend:
+        return R.icons.ic_nv_ket_noi;
+      case ScheduleType.examination:
+        return R.icons.ic_ti_dat_lich_kham;
+      case ScheduleType.goal_setting_recommend:
+      case ScheduleType.custom:
+      case ScheduleType.completed:
+        return R.icons.ic_nv_muc_tieu;
+    }
+  }
+
   String get title {
     switch (this) {
       case ScheduleType.blood_sugar:

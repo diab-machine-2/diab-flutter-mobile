@@ -72,15 +72,23 @@ class MeasurementSummary extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // Scale down rather than overflow at large text sizes.
-              children: inlineMeasurements
-                  .map((data) => Flexible(
-                      child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: _buildKeyStat(context, data))))
-                  .toList(),
+            // Large system font: grow at most 1.2x, and each stat scales down
+            // into its third of the row (also on large display size) instead
+            // of overflowing.
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.textScalerOf(context)
+                    .clamp(maxScaleFactor: _keyStatMaxTextScale),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: inlineMeasurements
+                    .map((data) => Flexible(
+                        child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: _buildKeyStat(context, data))))
+                    .toList(),
+              ),
             ),
           ),
           Padding(
@@ -114,8 +122,12 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
+  static const double _keyStatMaxTextScale = 1.2;
+
   Widget _buildKeyStat(BuildContext context, HomeMeasurementInlineData data) {
     final hasValue = data.value.isNotEmpty && data.value != '--';
+    // Weight icon follows the text size, so it grows with the font too.
+    final iconSize = MediaQuery.textScalerOf(context).scale(22);
     return InkWell(
       onTap: () =>
           _onTap(context, data.title ?? '', data.navigatorName, data.args),
@@ -124,29 +136,33 @@ class MeasurementSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (data.icon != null)
-            SvgPicture.asset(R.icons.ic_nv_can_nang, width: 16, height: 16)
+            SvgPicture.asset(R.icons.ic_nv_can_nang,
+                width: iconSize, height: iconSize)
           else
             Text(
               data.title ?? '',
+              maxLines: 1,
               style: TextStyle(
                 color: R.color.homeTitleText,
                 fontWeight: FontWeight.w700,
-                fontSize: 13,
-                height: 1.5,
+                fontSize: 16,
+                height: 1.4,
               ),
             ),
           const SizedBox(width: 4),
           Text(
             hasValue ? data.value : emptyValue,
+            maxLines: 1,
             style: TextStyle(
               color: hasValue ? Color(data.color) : R.color.color0xff111515,
               fontWeight: FontWeight.w700,
-              fontSize: 13,
-              height: 1.5,
+              fontSize: 16,
+              height: 1.4,
             ),
           ),
-          const SizedBox(width: 4),
-          Text(data.unit, style: _captionStyle),
+          const SizedBox(width: 3),
+          Text(data.unit,
+              maxLines: 1, style: _captionStyle.copyWith(fontSize: 13)),
         ],
       ),
     );
