@@ -12,8 +12,8 @@ class _FakeRepo implements AppRepository {
   int calls = 0;
 
   @override
-  Future<ApiResult<ClinicSpecialtyListResponse>>
-      getCLinicSpecialtyListDiab() async {
+  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyListDiab(
+      {String? language}) async {
     calls++;
     return result;
   }

@@ -64,6 +64,31 @@ void main() {
     });
   });
 
+  group('English names (language=en)', () {
+    final en = [
+      _s(2, 'Musculoskeletal', image: 'images/specialty_icons/diab/cxk.png'),
+      _s(0, 'Diabetes', image: 'images/specialty_icons/diab/dtd.png'),
+    ];
+
+    test('exclusions still match by code', () {
+      expect(
+          SpecialtyCatalog.ordered(en, excludeSlugs: ['co-xuong-khop'])
+              .map((s) => s.name),
+          ['Diabetes']);
+    });
+
+    test('a Vietnamese name matches the English item', () {
+      expect(SpecialtyCatalog.matchesName(en[1], 'Đái tháo đường'), isTrue);
+      expect(SpecialtyCatalog.matchesName(en[1], 'Diabetes'), isTrue);
+      expect(SpecialtyCatalog.matchesName(en[0], 'Đái tháo đường'), isFalse);
+    });
+
+    test('3D icon by code', () {
+      expect(SpecialtyCatalog.gridItem(en[0], onTap: () {}).assetIcon,
+          R.drawable.ic3d_co_xuong_khop);
+    });
+  });
+
   group('SpecialtyCatalog.gridItem', () {
     test('icon by image code, then name slug, else network image', () {
       var tapped = 0;

@@ -39,7 +39,7 @@ class SpecialtyCatalog {
     final kept = exclude.isEmpty
         ? specialties
         : specialties
-            .where((s) => !exclude.contains(nameToSlug(s.name)))
+            .where((s) => !exclude.contains(canonicalSlug(s)))
             .toList();
     if (order.isEmpty) return kept;
 
@@ -55,6 +55,39 @@ class SpecialtyCatalog {
       if (!result.contains(s)) result.add(s);
     }
     return result;
+  }
+
+  /// Docosan image code → slug of the Vietnamese name, so exclusions and
+  /// matching keep working when the API returns English names.
+  static const Map<String, String> _slugByCode = {
+    'cxk': 'co-xuong-khop',
+    'tcbp': 'thua-can-beo-phi',
+    'dd': 'da-day-tieu-hoa',
+    'tha': 'tang-huyet-ap',
+    'tdtd': 'tien-dai-thao-duong',
+    'dtd': 'dai-thao-duong',
+    'tm': 'tim-mach',
+    'rlch': 'roi-loan-chuyen-hoa',
+    'tmt': 'than-man-tinh',
+    'tt': 'tinh-than',
+    'dtdtk': 'dai-thao-duong-thai-ky',
+  };
+
+  /// Language-independent slug of a specialty: from its image code when
+  /// known, else from its (Vietnamese) name.
+  static String canonicalSlug(ClinicSpecialty specialty) =>
+      _slugByCode[imageCode(specialty.image)] ?? nameToSlug(specialty.name);
+
+  /// "images/specialty_icons/diab/tha.png" → "tha" (lowercase).
+  static String imageCode(String? image) =>
+      bannerSlug(image ?? '').toLowerCase();
+
+  /// Whether [name] (e.g. a Vietnamese name from my-benefit) refers to
+  /// [specialty], whatever language the list was loaded in.
+  static bool matchesName(ClinicSpecialty specialty, String name) {
+    final target = name.toLowerCase().trim();
+    return specialty.name.toLowerCase().trim() == target ||
+        canonicalSlug(specialty) == nameToSlug(name);
   }
 
   /// Comma-separated Remote Config value → trimmed, non-empty slugs.
@@ -110,7 +143,7 @@ class SpecialtyCatalog {
     return SpecialtyGridItem(
       name: specialty.name,
       assetIcon: SpecialtyIcons.forImageCode(image) ??
-          SpecialtyIcons.forNameSlug(nameToSlug(specialty.name)),
+          SpecialtyIcons.forNameSlug(canonicalSlug(specialty)),
       networkIcon: image?.isNotEmpty == true
           ? "${Utils.getHostDocosanUrl()}$image"
           : null,

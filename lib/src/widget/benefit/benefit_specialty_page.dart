@@ -92,9 +92,9 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
     if (matched == null &&
         widget.specialtyName != null &&
         widget.specialtyName!.isNotEmpty) {
-      final target = widget.specialtyName!.toLowerCase().trim();
-      matched = ordered
-          .firstWhereOrNull((s) => s.name.toLowerCase().trim() == target);
+      // The name may be Vietnamese while the list is in English.
+      matched = ordered.firstWhereOrNull(
+          (s) => SpecialtyCatalog.matchesName(s, widget.specialtyName!));
     }
     if (matched == null) {
       if (_hasAutoResolveIntent) setState(() => _autoResolveFailed = true);

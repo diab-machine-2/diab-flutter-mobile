@@ -102,6 +102,8 @@ import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -1268,10 +1270,14 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyListDiab() async {
+  /// Names come back in [language] ("vi" / "en"); defaults to the app's
+  /// current language so the list follows the in-app language switch.
+  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyListDiab(
+      {String? language}) async {
     try {
-      final response =
-          await docosanClient.getCLinicSpecialtyListDiab(language: "vi");
+      final response = await docosanClient.getCLinicSpecialtyListDiab(
+          language: language ??
+              (appPreference.appLanguage == Const.EN ? Const.EN : Const.VI));
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
