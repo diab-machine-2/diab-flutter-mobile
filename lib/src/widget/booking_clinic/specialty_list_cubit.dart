@@ -40,8 +40,8 @@ class SpecialtyListCubit extends Cubit<SpecialtyListState> {
         try {
           specialties = arrange(response.data, isTelemedicine: isTelemedicine);
         } catch (_) {
-          // Remote Config not ready (late fields): show the API order rather
-          // than a skeleton stuck forever.
+          // Safety net: never leave the skeleton stuck; show the API order
+          // instead.
           specialties = response.data;
         }
         emit(SpecialtyListSuccess(specialties));

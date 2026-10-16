@@ -4,6 +4,9 @@ class ClinicSpecialty {
   final int id;
   final String? banner;
   final String? image;
+
+  /// Stable Docosan specialty code (e.g. "tha"), when the API provides it.
+  final String? code;
   final List<int> clinic_ids;
   final List<int> telemedicine_clinic_ids;
 
@@ -13,6 +16,7 @@ class ClinicSpecialty {
     required this.id,
     this.banner,
     this.image,
+    this.code,
     this.clinic_ids = const [],
     this.telemedicine_clinic_ids = const [],
   });
@@ -24,6 +28,7 @@ class ClinicSpecialty {
       id: json['id'],
       banner: json['banner'],
       image: json['image'],
+      code: json['code']?.toString(),
       clinic_ids: (json['clinic_ids'] as List?)?.map((e) => e as int).toList() ?? [],
       telemedicine_clinic_ids: (json['telemedicine_clinic_ids'] as List?)?.map((e) => e as int).toList() ?? [],
     );

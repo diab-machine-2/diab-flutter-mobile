@@ -110,7 +110,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
     }
   }
 
-  /// Remote Config exclusions and order, shared with the Home daily-care
+  /// Remote Config BOOKING_SPECIALTY_LIST selection, shared with the Home daily-care
   /// booking flows.
   List<ClinicSpecialty> _getOrderedSpecialties() =>
       SpecialtyCatalog.forBooking(_cubit.listSpecialty,

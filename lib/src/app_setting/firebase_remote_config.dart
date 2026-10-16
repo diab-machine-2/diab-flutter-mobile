@@ -26,9 +26,12 @@ class FirebaseRemoteSetting {
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
   String? _utilitiesOrder;
-  String? _specialtyOrder;
-  late String _excludeSpecialtyClinic;
-  late String _excludeSpecialtyTelemedicine;
+  // Specialty codes per booking flow, read by SpecialtyCatalog.forBooking.
+  // "dd" (Dạ dày/Tiêu hoá) is left out on purpose.
+  static const String defaultBookingSpecialtyList =
+      '{"at_clinic":["dinh-duong","van-dong","tcbp","tt","tdtd","dtd","dtdtk","rlch","tha","tm","tmt","cxk"],'
+      '"telemedicine":["dinh-duong","van-dong","tcbp","tt","tdtd","dtd","dtdtk","rlch","tha","tm","tmt"]}';
+  String _bookingSpecialtyList = defaultBookingSpecialtyList;
   List<GlucoseFaq> _glucoseFaqs = [
     GlucoseFaq(
       title: 'Máy đo của bạn không thuộc danh sách thiết bị hỗ trợ?',
@@ -64,12 +67,10 @@ class FirebaseRemoteSetting {
   bool get appDeveloperMode => _appDeveloperMode ?? false;
   String? get utilitiesOrder => _utilitiesOrder;
   List<GlucoseFaq> get glucoseFaqs => _glucoseFaqs;
-  String? get specialtyOrder => _specialtyOrder;
   String? get vnpayIntegratedInfo => _vnpayIntegratedInfo;
   String? get subscriptionPackageInfo => _subscriptionPackageInfo;
   String? get benefitAtHomeInfo => _benefitAtHomeInfo;
-  String get excludeSpecialtyClinic => _excludeSpecialtyClinic;
-  String get excludeSpecialtyTelemedicine => _excludeSpecialtyTelemedicine;
+  String get bookingSpecialtyList => _bookingSpecialtyList;
   String get homeBenefitShortcuts => _homeBenefitShortcuts;
   String get homeDailyCareConfig => _homeDailyCareConfig;
 
@@ -101,18 +102,14 @@ class FirebaseRemoteSetting {
           "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-uong-thuoc,ket-noi-thiet-bi,kham-tu-xa,tu-van-song-khoe,dat-lich-kham-benh,thuc-don-mau,lich-nhac-nho",
       "GLUCOSE_FAQS":
           jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
-      "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ??
-          "cao-huyet-ap,tieu-duong,suy-than-man,suc-khoe-tim-mach,benh-khac",
       "VNPAY_INTEGRATED_INFO": localSetting["VNPAY_INTEGRATED_INFO"] ?? '',
       "VNPAY_INTEGRATED_INFO_DEV":
           localSetting["VNPAY_INTEGRATED_INFO_DEV"] ?? '',
       "SUBSCRIPTION_PACKAGE_INFO":
           localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? '',
       "BENEFIT_AT_HOME_INFO": localSetting["BENEFIT_AT_HOME_INFO"] ?? '',
-      "EXCLUDE_SPECIALTY_CLINIC":
-          localSetting["EXCLUDE_SPECIALTY_CLINIC"] ?? '',
-      "EXCLUDE_SPECIALTY_TELEMEDICINE":
-          localSetting["EXCLUDE_SPECIALTY_TELEMEDICINE"] ?? 'co-xuong-khop',
+      // Always the in-code list: a cached copy would outlive future defaults.
+      "BOOKING_SPECIALTY_LIST": defaultBookingSpecialtyList,
       "HOME_BENEFIT_SHORTCUTS": localSetting["HOME_BENEFIT_SHORTCUTS"] ?? '',
       "HOME_DAILY_CARE_CONFIG": localSetting["HOME_DAILY_CARE_CONFIG"] ?? '',
       }).timeout(const Duration(seconds: 5));
@@ -163,22 +160,25 @@ class FirebaseRemoteSetting {
     _linkStoreNavigation = remoteConfig.getString('LINKSTORE_NAVIGATION_URL');
     _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
     _utilitiesOrder = remoteConfig.getString('UTILITIES_ORDER');
+    // Read before GLUCOSE_FAQS, whose parsing can throw. Empty (setDefaults
+    // failed and no fetch) keeps the in-code default, which hides "dd".
+    final bookingSpecialtyList =
+        remoteConfig.getString('BOOKING_SPECIALTY_LIST');
+    if (bookingSpecialtyList.isNotEmpty) {
+      _bookingSpecialtyList = bookingSpecialtyList;
+    }
     if (remoteConfig.getString('GLUCOSE_FAQS').isNotEmpty == true) {
       _glucoseFaqs =
           (jsonDecode(remoteConfig.getString('GLUCOSE_FAQS')) as List<dynamic>)
               .map((item) => GlucoseFaq.fromJson(item as Map<String, dynamic>))
               .toList();
     }
-    _specialtyOrder = remoteConfig.getString('SPECIALTIES_ORDER');
     _vnpayIntegratedInfo = AppSettings.environment == "product"
         ? remoteConfig.getString('VNPAY_INTEGRATED_INFO')
         : remoteConfig.getString('VNPAY_INTEGRATED_INFO_DEV');
     _subscriptionPackageInfo =
         remoteConfig.getString('SUBSCRIPTION_PACKAGE_INFO');
     _benefitAtHomeInfo = remoteConfig.getString('BENEFIT_AT_HOME_INFO');
-    _excludeSpecialtyClinic = remoteConfig.getString('EXCLUDE_SPECIALTY_CLINIC');
-    _excludeSpecialtyTelemedicine =
-        remoteConfig.getString('EXCLUDE_SPECIALTY_TELEMEDICINE');
     _homeBenefitShortcuts = remoteConfig.getString('HOME_BENEFIT_SHORTCUTS');
     _homeDailyCareConfig = remoteConfig.getString('HOME_DAILY_CARE_CONFIG');
   }
