@@ -454,10 +454,12 @@ class _BenefitServiceIntroView extends StatelessWidget {
 
   Future<void> _navigateToCapture(BuildContext context) async {
     final cubit = context.read<BenefitServiceRequestCubit>();
-    BotToast.showLoading(allowClick: false);
-    final available = await BenefitAvailabilityGuard.ensureAvailable();
-    BotToast.closeAllLoading();
-    if (!available || !context.mounted) return;
+    if (cubit.fromBundle) {
+      BotToast.showLoading(allowClick: false);
+      final available = await BenefitAvailabilityGuard.ensureAvailable();
+      BotToast.closeAllLoading();
+      if (!available || !context.mounted) return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(

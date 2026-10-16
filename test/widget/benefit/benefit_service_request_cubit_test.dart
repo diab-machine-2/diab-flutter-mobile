@@ -117,6 +117,22 @@ void main() {
       expect(states.whereType<BenefitServiceRequestSubmitSuccess>(), isEmpty);
       await cubit.close();
     });
+
+    test('user without a bundle still submits, my-benefit not called',
+        () async {
+      var benefitCalls = 0;
+      BenefitAvailabilityGuard.fetchMyBenefit = () async {
+        benefitCalls++;
+        return ApiResult.success(
+            data: MyBenefitResponse.fromJson(<String, dynamic>{'data': null}));
+      };
+      final cubit = BenefitServiceRequestCubit(repo);
+      expect(cubit.fromBundle, isFalse);
+      final states = await _record(cubit, () => submitLabTest(cubit));
+      expect(states.last, isA<BenefitServiceRequestSubmitSuccess>());
+      expect(benefitCalls, 0);
+      await cubit.close();
+    });
   });
 
   group('from bundle item', () {

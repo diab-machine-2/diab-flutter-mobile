@@ -32,6 +32,11 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
   BenefitServiceRequestCubit(this._repository, {this.itemId, this.itemType})
       : super(const BenefitServiceRequestInitial());
 
+  /// Whether this request consumes a bundle item. Only then is the bundle
+  /// re-checked — anyone, incl. users without a bundle, may order medicine
+  /// or a lab test from Home.
+  bool get fromBundle => itemId != null && itemType != null;
+
   // ── Scan prescription (medicine) ──────────────────────────────────────────
 
   Future<void> scanPrescription({required File image}) async {
@@ -147,7 +152,6 @@ class BenefitServiceRequestCubit extends Cubit<BenefitServiceRequestState> {
   /// [BenefitServiceRequestError] / [BenefitServiceRequestUnavailable], so
   /// the UI never shows a fake success.
   Future<bool> _submit(Map<String, dynamic> body) async {
-    final bool fromBundle = itemId != null && itemType != null;
     // Don't submit against a bundle removed server-side since the flow began
     // (the guard shows the dialog and pops back to root).
     if (fromBundle && !await BenefitAvailabilityGuard.ensureAvailable()) {

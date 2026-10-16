@@ -53,7 +53,7 @@ class _BenefitLabTestScanResultPageState
           BotToast.closeAllLoading();
           if (state is BenefitServiceRequestSubmitSuccess) {
             final fromBenefitBundle =
-                context.read<BenefitServiceRequestCubit>().itemId != null;
+                context.read<BenefitServiceRequestCubit>().fromBundle;
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (_) => BenefitServiceRequestSuccessPage(
