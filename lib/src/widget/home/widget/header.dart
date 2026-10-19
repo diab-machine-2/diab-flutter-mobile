@@ -29,6 +29,20 @@ class HomeHeader extends StatefulWidget {
     return count > 9 ? '9+' : '$count';
   }
 
+  static final RegExp _hasProgramWord = RegExp(
+      r'chương trình|\bprogram(me|s)?\b',
+      caseSensitive: false,
+      unicode: true);
+
+  /// Subtitle for a program name: "Health Foundation" → "Chương trình Health
+  /// Foundation" (Figma). Names that already say "Chương trình" / "program"
+  /// are kept as is.
+  static String programLine(String name) {
+    final trimmed = name.trim();
+    if (_hasProgramWord.hasMatch(trimmed)) return trimmed;
+    return R.string.home_header_program.tr(args: [trimmed]);
+  }
+
   @override
   _HomeHeaderState createState() => _HomeHeaderState();
 }
@@ -110,8 +124,12 @@ class _HomeHeaderState extends State<HomeHeader>
 
   String get _subtitle {
     final programName = widget.homeModel?.tranServicePackageName;
-    if (programName?.isNotEmpty == true) return programName!;
-    if (user?.packageName?.isNotEmpty == true) return user!.packageName!;
+    if (programName?.isNotEmpty == true) {
+      return HomeHeader.programLine(programName!);
+    }
+    if (user?.packageName?.isNotEmpty == true) {
+      return HomeHeader.programLine(user!.packageName!);
+    }
     return R.string.home_header_tagline.tr();
   }
 

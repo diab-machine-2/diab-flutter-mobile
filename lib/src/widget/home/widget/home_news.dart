@@ -170,7 +170,7 @@ class HomeNews extends StatelessWidget {
   }
 
   List<Widget> _newsLines(LearningPostModel post) {
-    final date = _formatDate(post.createDatetime);
+    final date = formatDate(post.createDatetime);
     return [
       if (date.isNotEmpty) ...[
         Text(R.string.home_news_tag.tr(args: [date]), style: _metaStyle(15)),
@@ -233,14 +233,28 @@ class HomeNews extends StatelessWidget {
     return '$time $dayText';
   }
 
-  /// `createDatetime` is epoch seconds elsewhere in this API (stringified by
-  /// the model); ISO strings are accepted too. Unparseable → no date.
-  static String _formatDate(String raw) {
-    final seconds = int.tryParse(raw.trim());
+  /// `createDatetime` comes as "04/03/2026 14:10:44" from
+  /// `LearningPost?Position=`; epoch seconds and ISO strings are accepted
+  /// too. Unparseable → no date.
+  @visibleForTesting
+  static String formatDate(String raw) {
+    final value = raw.trim();
+    final seconds = int.tryParse(value);
     final parsed = seconds != null
-        ? DateTime.fromMillisecondsSinceEpoch(seconds * 1000)
-        : DateTime.tryParse(raw);
+        ? DateTime.fromMillisecondsSinceEpoch(seconds * 1000).toLocal()
+        : DateTime.tryParse(value)?.toLocal() ?? _parseDayFirst(value);
     if (parsed == null) return '';
-    return DateFormat('dd/MM/yyyy').format(parsed.toLocal());
+    return DateFormat('dd/MM/yyyy').format(parsed);
+  }
+
+  static DateTime? _parseDayFirst(String value) {
+    for (final pattern in const ['dd/MM/yyyy HH:mm:ss', 'dd/MM/yyyy']) {
+      try {
+        return DateFormat(pattern).parseStrict(value);
+      } on FormatException {
+        // Try the next pattern.
+      }
+    }
+    return null;
   }
 }

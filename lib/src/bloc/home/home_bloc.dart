@@ -18,6 +18,7 @@ import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -35,6 +36,11 @@ part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  /// Set once `LearningPost/Active` answers 400/404, so later Home loads go
+  /// straight to the legacy per-position calls. Per bloc, so a 401 from an
+  /// expired session (also mapped to UnauthorizedRequest) doesn't outlive it.
+  bool _activePostsUnsupported = false;
+
   HomeBloc() : super(HomeInitial()) {
     add(FetchHome());
   }
@@ -422,7 +428,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// and news posts from the same /App/LearningPost/Active call, each
   /// tagged with the slot(s) it belongs to via `positions`) — replaces the
   /// old pair of position=1 (news) / position=9 (banner) requests.
-  Future<List<LearningPostModel>> _fetchActiveLearningPosts() async {
+  /// Null when the call fails (or answers without `data`). An empty list
+  /// means the endpoint works but has no posts — no fallback then.
+  Future<List<LearningPostModel>?> _fetchActiveLearningPosts() async {
+    if (_activePostsUnsupported) return null;
     try {
       final ApiResult<LearningPostListResponse> apiResult =
           await AppRepository().getActiveLearningPosts();
@@ -430,27 +439,72 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       apiResult.when(success: (LearningPostListResponse response) {
         posts = response.data;
       }, failure: (error) {
-        TrackingManager.recordError(error, null);
+        // 400 (mapped to UnauthorizedRequest) / 404: not deployed on this
+        // backend. Expected, so not reported; skip it for the session.
+        if (error is UnauthorizedRequest || error is NotFound) {
+          _activePostsUnsupported = true;
+        } else {
+          TrackingManager.recordError(error, null);
+        }
       });
-      return posts ?? [];
+      return posts;
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+      return null;
+    }
+  }
+
+  /// Legacy per-position call (`App/LearningPost?Position=`); empty on error.
+  Future<List<LearningPostModel>> _fetchPostsAt(int position) async {
+    try {
+      final apiResult = await AppRepository().getBanners(position: position);
+      return apiResult.when(
+        success: (LearningPostListResponse response) => response.data ?? [],
+        failure: (error) {
+          TrackingManager.recordError(error, null);
+          return <LearningPostModel>[];
+        },
+      );
     } catch (e, s) {
       TrackingManager.recordError(e, s);
       return [];
     }
   }
 
+  /// Posts of one [position], from `LearningPost/Active` or, when it fails,
+  /// the legacy per-position call.
+  Future<List<LearningPostModel>> _fetchPostsFor(int position) async {
+    final active = await _fetchActiveLearningPosts();
+    if (active == null) return _fetchPostsAt(position);
+    return active.where((p) => p.positions.contains(position)).toList();
+  }
+
+  /// Banner (9) and news (1) posts for "Sự kiện & Tin nổi bật". Falls back to
+  /// the two legacy per-position calls (banners first) when
+  /// `LearningPost/Active` fails — it isn't deployed on every backend yet
+  /// (prod answers 400, ERR-2). Legacy items may lack `positions`, so they
+  /// aren't filtered by it.
+  Future<List<LearningPostModel>> _fetchHomePosts() async {
+    final active = await _fetchActiveLearningPosts();
+    if (active != null) {
+      return active
+          .where((p) => p.positions.contains(9) || p.positions.contains(1))
+          .toList();
+    }
+    final results = await Future.wait([_fetchPostsAt(9), _fetchPostsAt(1)]);
+    return [...results[0], ...results[1]];
+  }
+
   /// Fires the merged banners+news call immediately; returns a sync applier
   /// that sets both fields from the one response. Used by `_fetchHomes()`.
   Future<HomeLoaded Function(HomeLoaded)> _fetchNewsAndBannersPatch() async {
-    final posts = await _fetchActiveLearningPosts();
+    final posts = await _fetchHomePosts();
     // "Sự kiện & Tin nổi bật": banner (9) and news (1) posts in one carousel,
     // backend order kept, each post once.
     final seen = <String>{};
-    var news = posts
-        .where((p) => p.positions.contains(9) || p.positions.contains(1))
-        .where((p) => p.id == null || seen.add(p.id!))
-        .toList();
-    // QA: the endpoint currently answers 400 (ERR-2); show sample cards.
+    var news =
+        posts.where((p) => p.id == null || seen.add(p.id!)).toList();
+    // QA: no posts at all (e.g. both calls fail); show sample cards.
     if (news.isEmpty && HomeMock.enabled) news = HomeMock.samplePosts();
     return (HomeLoaded state) =>
         news.isEmpty ? state : state.copyWith(news: news);
@@ -460,8 +514,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// applier. Only reachable via the currently-unused HomeFetchNewsEvent —
   /// `_fetchHomes()` uses the merged `_fetchNewsAndBannersPatch()` above.
   Future<HomeLoaded Function(HomeLoaded)> _fetchNewsPatch() async {
-    final posts = await _fetchActiveLearningPosts();
-    final news = posts.where((p) => p.positions.contains(1)).toList();
+    final news = await _fetchPostsFor(1);
     if (news.isNotEmpty) {
       return (HomeLoaded state) => state.copyWith(news: news);
     }
@@ -472,8 +525,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// Only reachable via the currently-unused HomeFetchBannersEvent —
   /// `_fetchHomes()` uses the merged `_fetchNewsAndBannersPatch()` above.
   Future<HomeLoaded Function(HomeLoaded)> _fetchBannersPatch() async {
-    final posts = await _fetchActiveLearningPosts();
-    final banners = posts.where((p) => p.positions.contains(9)).toList();
+    final banners = await _fetchPostsFor(9);
     if (banners.isNotEmpty) {
       return (HomeLoaded state) => state.copyWith(banners: banners);
     }

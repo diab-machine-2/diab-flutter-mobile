@@ -46,7 +46,6 @@ class HomeDailyCareCatalog {
         return HomeUtilityData(
           icon: R.icons.ic_ti_dat_lich_kham,
           title: R.string.kham_tai_phong_kham.tr(),
-          gridTitle: R.string.home_book_clinic_short.tr(),
           subtitle: R.string.home_benefit_at_clinic_desc.tr(),
           slug: slug,
           navigatorName: NavigatorName.booking_clinic,
@@ -63,7 +62,6 @@ class HomeDailyCareCatalog {
         return HomeUtilityData(
           icon: R.icons.ic_ti_xet_nghiem,
           title: R.string.benefit_lab_testing.tr(),
-          gridTitle: R.string.examination.tr(),
           subtitle: R.string.home_daily_care_desc_lab_test.tr(),
           slug: slug,
           navigatorName: NavigatorName.benefit_lab_test_intro,

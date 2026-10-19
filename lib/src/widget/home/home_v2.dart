@@ -1012,7 +1012,7 @@ class _HomeControllerState extends State<HomeController>
                             child: activitiesW,
                           ),
 
-                          if (model?.hasBundle == true) ...[
+                          if (viewFlags.hasBundle) ...[
                             const SizedBox(height: 12.0),
                             Padding(
                               padding:

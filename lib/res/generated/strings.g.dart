@@ -1896,6 +1896,7 @@ class Strings {
   String get mes_force_update_required => 'mes_force_update_required';
   String get benefit_no_longer_available => 'benefit_no_longer_available';
   String get home_header_tagline => 'home_header_tagline';
+  String get home_header_program => 'home_header_program';
   String get home_kpi_empty_title => 'home_kpi_empty_title';
   String get home_kpi_empty_desc => 'home_kpi_empty_desc';
   String get view_all => 'view_all';
@@ -1906,7 +1907,6 @@ class Strings {
   String get home_daily_care_title => 'home_daily_care_title';
   String get home_medicine_reminder => 'home_medicine_reminder';
   String get home_medicine_reminder_short => 'home_medicine_reminder_short';
-  String get home_book_clinic_short => 'home_book_clinic_short';
   String get home_daily_care_desc_medicine_reminder => 'home_daily_care_desc_medicine_reminder';
   String get home_daily_care_desc_connect_device => 'home_daily_care_desc_connect_device';
   String get home_daily_care_desc_sample_menu => 'home_daily_care_desc_sample_menu';
