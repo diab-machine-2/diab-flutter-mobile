@@ -1896,7 +1896,6 @@ class Strings {
   String get mes_force_update_required => 'mes_force_update_required';
   String get benefit_no_longer_available => 'benefit_no_longer_available';
   String get home_header_tagline => 'home_header_tagline';
-  String get home_header_program => 'home_header_program';
   String get home_kpi_empty_title => 'home_kpi_empty_title';
   String get home_kpi_empty_desc => 'home_kpi_empty_desc';
   String get view_all => 'view_all';
