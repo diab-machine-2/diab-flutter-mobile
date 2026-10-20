@@ -18,6 +18,7 @@ import 'package:medical/src/widgets/shimmer_box.dart';
 class _FakeRepo implements AppRepository {
   final lessons = <Completer<ApiResult<MyLessonResponse>>>[];
   final forYou = <Completer<ApiResult<List<LessonSectionListResponseData>>>>[];
+  final moduleTypeArgs = <int>[];
   final moduleType =
       <Completer<ApiResult<List<LessonSectionListResponseData>>>>[];
 
@@ -41,6 +42,7 @@ class _FakeRepo implements AppRepository {
   Future<ApiResult<List<LessonSectionListResponseData>>> getLessonModuleType(
       int type) {
     final c = Completer<ApiResult<List<LessonSectionListResponseData>>>();
+    moduleTypeArgs.add(type);
     moduleType.add(c);
     return c.future;
   }
@@ -56,10 +58,11 @@ ApiResult<MyLessonResponse> _lessons(int count) => ApiResult.success(
         MyLessonResponseData(id: 'l$i', name: 'Lesson $i', module: 'M'),
     ]));
 
-ApiResult<List<LessonSectionListResponseData>> _sections(int count) =>
+ApiResult<List<LessonSectionListResponseData>> _sections(int count,
+        [String prefix = 's']) =>
     ApiResult.success(data: [
       for (var i = 0; i < count; i++)
-        LessonSectionListResponseData(id: 's$i', name: 'Section $i'),
+        LessonSectionListResponseData(id: '$prefix$i', name: 'Section $i'),
     ]);
 
 void main() {
@@ -159,6 +162,180 @@ void main() {
     repo.moduleType.last.complete(_sections(1));
     await Future.wait([first, refresh]);
     expect(cubit.lessonsList, hasLength(3));
+  });
+
+  group('"Đề xuất" chips', () {
+    const timeout =
+        ApiResult<List<LessonSectionListResponseData>>.failure(
+            error: NetworkExceptions.requestTimeout());
+
+    Future<void> loadChip0() async {
+      final first = cubit.getRecommendationLessons(type: 0);
+      await pumpEventQueue();
+      repo.moduleType.last.complete(_sections(2, 'all'));
+      await first;
+    }
+
+    test('switching chip shows the skeleton, not the previous chip rows',
+        () async {
+      await loadChip0();
+
+      final tap = cubit.getRecommendationLessons(type: 4);
+      await pumpEventQueue();
+      expect(repo.moduleTypeArgs.last, 4);
+      expect(cubit.recommendationType, 4);
+      expect(cubit.isRecommendationLoading, isTrue);
+      expect(cubit.recommendationLessons, isNull);
+
+      repo.moduleType.last.complete(_sections(3, 'food'));
+      await tap;
+      expect(cubit.isRecommendationLoading, isFalse);
+      expect(cubit.recommendationLessons!.first!.id, 'food0');
+    });
+
+    test('a slower earlier chip cannot overwrite the chip tapped last',
+        () async {
+      await loadChip0();
+
+      final a = cubit.getRecommendationLessons(type: 4);
+      final b = cubit.getRecommendationLessons(type: 6);
+      await pumpEventQueue();
+      final reqA = repo.moduleType[repo.moduleType.length - 2];
+      final reqB = repo.moduleType.last;
+
+      reqB.complete(_sections(1, 'move'));
+      reqA.complete(_sections(1, 'food'));
+      await Future.wait([a, b]);
+      expect(cubit.recommendationType, 6);
+      expect(cubit.recommendationLessons!.single!.id, 'move0');
+      expect(cubit.isRecommendationLoading, isFalse);
+    });
+
+    test('a chip that fails with nothing to show offers an inline retry',
+        () async {
+      await loadChip0();
+
+      final states = <LessonTabState>[];
+      final sub = cubit.stream.listen(states.add);
+      addTearDown(sub.cancel);
+
+      final tap = cubit.getRecommendationLessons(type: 4);
+      await pumpEventQueue();
+      repo.moduleType.last.complete(timeout);
+      await tap;
+      await pumpEventQueue();
+      expect(cubit.hasRecommendationError, isTrue);
+      expect(cubit.isRecommendationLoading, isFalse);
+      expect(states, isNot(contains(isA<LessonTabFailure>())),
+          reason: 'inline error instead of a toast');
+
+      final retry = cubit.getRecommendationLessons();
+      await pumpEventQueue();
+      expect(repo.moduleTypeArgs.last, 4);
+      expect(cubit.hasRecommendationError, isFalse);
+      expect(cubit.isRecommendationLoading, isTrue);
+      repo.moduleType.last.complete(_sections(2, 'food'));
+      await retry;
+      expect(cubit.recommendationLessons, hasLength(2));
+    });
+
+    test('a failed refresh keeps the rows already on screen', () async {
+      await loadChip0();
+
+      final refresh = cubit.getRecommendationLessons(emitState: false);
+      await pumpEventQueue();
+      expect(cubit.isRecommendationLoading, isFalse);
+      repo.moduleType.last.complete(timeout);
+      await refresh;
+      expect(cubit.hasRecommendationError, isFalse);
+      expect(cubit.recommendationLessons, hasLength(2));
+    });
+
+    test('going back to a chip shows its earlier list at once', () async {
+      await loadChip0();
+      final food = cubit.getRecommendationLessons(type: 4);
+      await pumpEventQueue();
+      repo.moduleType.last.complete(_sections(3, 'food'));
+      await food;
+
+      final back = cubit.getRecommendationLessons(type: 0);
+      await pumpEventQueue();
+      expect(cubit.isRecommendationLoading, isFalse);
+      expect(cubit.recommendationLessons!.first!.id, 'all0');
+
+      // Revalidated in the background.
+      repo.moduleType.last.complete(_sections(5, 'all'));
+      await back;
+      expect(cubit.recommendationLessons, hasLength(5));
+    });
+
+    test('an overtaken answer still fills its own chip for later', () async {
+      final all = cubit.getRecommendationLessons(type: 0);
+      final food = cubit.getRecommendationLessons(type: 4);
+      await pumpEventQueue();
+      repo.moduleType.first.complete(_sections(2, 'all'));
+      repo.moduleType.last.complete(_sections(1, 'food'));
+      await Future.wait([all, food]);
+      expect(cubit.recommendationLessons!.single!.id, 'food0');
+
+      final back = cubit.getRecommendationLessons(type: 0);
+      await pumpEventQueue();
+      expect(cubit.isRecommendationLoading, isFalse);
+      expect(cubit.recommendationLessons!.first!.id, 'all0');
+      repo.moduleType.last.complete(_sections(2, 'all'));
+      await back;
+    });
+
+    test('a refresh taking over a chip tap drops the skeleton when it answers',
+        () async {
+      final first = cubit.getInitData();
+      await pumpEventQueue();
+      repo.lessons.single.complete(_lessons(2));
+      await first;
+      await loadChip0();
+
+      final tap = cubit.getRecommendationLessons(type: 4);
+      final refresh = cubit.silentRefreshAll();
+      await pumpEventQueue();
+      final states = <LessonTabState>[];
+      final sub = cubit.stream.listen(states.add);
+      addTearDown(sub.cancel);
+
+      // The tap's own request was overtaken; only the refresh's answer
+      // counts. The main list is still pending.
+      final overtaken = repo.moduleType[repo.moduleType.length - 2];
+      repo.moduleType.last.complete(_sections(3, 'food'));
+      await pumpEventQueue();
+      overtaken.complete(_sections(3, 'food'));
+      await tap;
+      await pumpEventQueue();
+      expect(cubit.isRecommendationLoading, isFalse);
+      expect(cubit.recommendationLessons, hasLength(3));
+      expect(states, contains(isA<LessonTabSuccess>()),
+          reason: 'screen updates without waiting for the main list');
+
+      repo.lessons.last.complete(_lessons(2));
+      repo.forYou.last.complete(_sections(1));
+      await refresh;
+    });
+
+    test('finishing a lesson updates it in every chip fetched', () async {
+      await loadChip0();
+      final food = cubit.getRecommendationLessons(type: 4);
+      await pumpEventQueue();
+      repo.moduleType.last.complete(ApiResult.success(data: [
+        LessonSectionListResponseData(id: 'all0', name: 'shared'),
+      ]));
+      await food;
+
+      await cubit.updateStatusLesson(lessonId: 'all0', percentComplete: 100);
+
+      final back = cubit.getRecommendationLessons(type: 0);
+      await pumpEventQueue();
+      expect(cubit.recommendationLessons!.first!.percentComplete, 100);
+      repo.moduleType.last.complete(_sections(1, 'all'));
+      await back;
+    });
   });
 
   testWidgets('skeletons lay out at phone width without overflow',

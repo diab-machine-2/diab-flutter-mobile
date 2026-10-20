@@ -1723,6 +1723,7 @@ class Strings {
   String get recommendation_behavioral_psychology =>
       'recommendation_behavioral_psychology';
   String get recommendation_pathology => 'recommendation_pathology';
+  String get recommendation_load_failed => 'recommendation_load_failed';
   String get gallery_permission_denied_title =>
       'gallery_permission_denied_title';
   String get gallery_permission_denied_body => 'gallery_permission_denied_body';

@@ -656,6 +656,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
+                      if (isActive && !_cubit.hasRecommendationError) return;
                       _cubit.getRecommendationLessons(type: index);
                     },
                     borderRadius: BorderRadius.circular(200),
@@ -696,6 +697,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                 child: LessonRecommendationSkeleton(),
               ),
             )
+          else if (_cubit.hasRecommendationError)
+            _buildRecommendationError()
           else
             ...List.generate(
               lessons.length,
@@ -727,6 +730,38 @@ class _LessonTabPageState extends State<LessonTabPage>
                 },
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  /// Selected chip failed with nothing to show — retry in place.
+  Widget _buildRecommendationError() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      child: Column(
+        children: [
+          Text(
+            R.string.recommendation_load_failed.tr(),
+            style: TextStyle(
+              color: R.color.captionColorGray,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          TextButton(
+            onPressed: () => _cubit.getRecommendationLessons(),
+            child: Text(
+              R.string.retry.tr(),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: R.color.color0xff239A90,
+              ),
+            ),
+          ),
         ],
       ),
     );

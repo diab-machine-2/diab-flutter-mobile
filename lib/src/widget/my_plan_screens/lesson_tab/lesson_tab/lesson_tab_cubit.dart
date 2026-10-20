@@ -32,8 +32,27 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   /// 4: Dinh dưỡng, 5: Bệnh lý, 6: Vận động.
   int recommendationType = 0;
   List<LessonSectionListResponseData?>? recommendationLessons;
+
+  /// Skeleton in place of the list — only while the selected chip has
+  /// nothing to show yet; refreshes keep the current rows.
   bool isRecommendationLoading = false;
-  bool _hasLoadedRecommendationOnce = false;
+
+  /// The selected chip failed with nothing to show: the section shows an
+  /// inline "Thử lại" instead of the rows.
+  bool hasRecommendationError = false;
+
+  /// Lists already fetched this session, per chip, so switching back shows
+  /// them at once (then revalidates in the background).
+  final Map<int, List<LessonSectionListResponseData?>> _recommendationByType =
+      {};
+
+  /// Bumped on every request; a response from an older one is dropped so
+  /// tapping chips quickly can't leave another chip's list on screen.
+  int _recommendationRequestId = 0;
+
+  /// Newest request id per chip, so an older answer for the same chip can't
+  /// overwrite a newer one in [_recommendationByType].
+  final Map<int, int> _latestRecommendationIdByType = {};
   List<LessonSectionListResponseData?>? forYouLessons;
   bool isForYouLoading = false;
 
@@ -131,9 +150,12 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       }
     }
 
-    // Update "Recommendations" list.
-    if (recommendationLessons != null) {
-      for (final lesson in recommendationLessons!) {
+    // Update "Recommendations" lists (every chip fetched this session).
+    for (final list in {
+      recommendationLessons,
+      ..._recommendationByType.values,
+    }) {
+      for (final lesson in list ?? const <LessonSectionListResponseData?>[]) {
         if (lesson?.id == lessonId) {
           lesson?.percentComplete = percentComplete;
           lesson?.learningStatus = learningStatus;
@@ -297,37 +319,53 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   }
 
   /// Load recommendation lessons for Library \"Đề xuất\" section.
+  ///
+  /// A [type] different from the current chip switches it: that chip's list
+  /// from earlier this session shows at once, otherwise a skeleton until the
+  /// request answers. Re-requesting the current chip (refreshes) keeps its
+  /// rows on screen. A failure with nothing to show becomes an inline retry
+  /// rather than a toast; a failed refresh keeps the rows it had.
   Future<void> getRecommendationLessons({int? type, bool emitState = true}) async {
     final int requestType = type ?? recommendationType;
-    recommendationType = requestType;
-    // Only show inline loading spinner for the very first load;
-    // subsequent refreshes (e.g. after completing a lesson) update silently.
-    final bool shouldShowLoading = _hasLoadedRecommendationOnce;
-    if (shouldShowLoading) {
-      isRecommendationLoading = false;
-    } else {
-      isRecommendationLoading = true;
+    if (requestType != recommendationType) {
+      // Another chip's rows must never sit under the newly selected chip.
+      recommendationLessons = _recommendationByType[requestType];
     }
+    recommendationType = requestType;
+    final int requestId = ++_recommendationRequestId;
+    _latestRecommendationIdByType[requestType] = requestId;
+    isRecommendationLoading = recommendationLessons == null;
+    hasRecommendationError = false;
+    // A placeholder going away is never a silent change, so a refresh that
+    // took over a chip tap still updates the screen as soon as it answers.
+    final bool replacesPlaceholder = isRecommendationLoading;
     if (emitState) {
       emit(const LessonTabSuccess());
+      emit(const LessonTabInitial());
     }
+
     final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getLessonModuleType(requestType);
-    apiResult.when(success: (List<LessonSectionListResponseData> response) {
-      // API now returns a list of LessonSectionListResponseData.
-      recommendationLessons = response;
-      _hasLoadedRecommendationOnce = true;
-      isRecommendationLoading = false;
-      if (emitState) {
-        emit(const LessonTabSuccess());
-      }
-    }, failure: (NetworkExceptions error) {
-      isRecommendationLoading = false;
-      if (emitState) {
-        emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
-      }
-    });
-    if (emitState) {
+    if (isClosed) return;
+
+    // Overtaken by a later tap: the rows are still right for their own
+    // chip, so keep them for when the user goes back to it.
+    final List<LessonSectionListResponseData>? data =
+        apiResult.whenOrNull(success: (response) => response);
+    if (data != null &&
+        _latestRecommendationIdByType[requestType] == requestId) {
+      _recommendationByType[requestType] = data;
+    }
+    if (requestId != _recommendationRequestId) return;
+
+    if (data != null) {
+      recommendationLessons = data;
+    } else {
+      hasRecommendationError = recommendationLessons == null;
+    }
+    isRecommendationLoading = false;
+    if (emitState || replacesPlaceholder) {
+      emit(const LessonTabSuccess());
       emit(const LessonTabInitial());
     }
   }
