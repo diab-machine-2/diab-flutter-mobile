@@ -1067,7 +1067,7 @@ class _HomeControllerState extends State<HomeController>
 
     print('[ONBOARDING] _showWelcomeDialog with zaloGroup: $zaloGroup');
 
-    final result = await NavigationUtil.navigatePage(
+    await NavigationUtil.navigatePage(
       context,
       WelcomePackageScreenPage(
         icon: isRoadmap
@@ -1084,11 +1084,10 @@ class _HomeControllerState extends State<HomeController>
         zaloGroup: zaloGroup,
       ),
     );
-    if (result == false && mounted) {
-      setState(() {
-        _isDisplayedWelcome = false;
-      });
-    }
+    // Closed with back: not marked as seen on the server,
+    // so it comes back on pull-to-refresh or the next launch. Resetting
+    // _isDisplayedWelcome here reopened it on the very next build — an
+    // endless loop the user could only leave via Zalo or "Đặt lịch tư vấn".
   }
 
   // Button "Thêm chỉ số"
