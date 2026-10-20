@@ -36,7 +36,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   bool _hasLoadedRecommendationOnce = false;
   List<LessonSectionListResponseData?>? forYouLessons;
   bool isForYouLoading = false;
-  bool _hasLoadedForYouOnce = false;
 
   final List<LessonType> lessonTypeList = [
     LessonType.route,
@@ -46,6 +45,10 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   FilterData filterData = FilterData();
 
   LessonType currentLessonType = LessonType.route;
+
+  /// True while the main lesson list is being fetched with nothing to show
+  /// yet — the page shows its skeleton instead of the empty placeholder.
+  bool isLessonsLoading = false;
 
   List<MyLessonResponseData?>? lessonsListRoadmap;
   List<MyLessonResponseData?>? lessonsListSuggest;
@@ -150,6 +153,11 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       int currentPage = 1}) async {
     // Emit a loading state immediately so the UI doesn't render an empty
     // placeholder while async user info + API calls are still in progress.
+    // Set here too (not only in getLessonsList) so the skeleton covers the
+    // user-info step before the list request starts.
+    if (currentPage == 1 && lessonsList?.isNotEmpty != true) {
+      isLessonsLoading = true;
+    }
     if (!isRefresh) {
       if (currentPage == 1) {
         emit(LessonTabLoading());
@@ -249,26 +257,30 @@ class LessonTabCubit extends Cubit<LessonTabState> {
         emit(const LessonTabLoadMore());
     }
 
+    if (iPagingPage == 1 && lessonsList?.isNotEmpty != true) {
+      isLessonsLoading = true;
+    }
     final LessonFilterRequest request = filterData.getRequest(
         type: currentLessonTypeIndex + 1, page: iPagingPage, size: size);
     final ApiResult<MyLessonResponse> apiResult =
         await repository.getLessonsList(request);
+    isLessonsLoading = false;
     apiResult.when(success: (MyLessonResponse response) {
+      // Page 1 replaces the list: appending doubled every lesson when a
+      // refresh (silentRefreshAll after finishing a lesson, or a pull during
+      // the first load) answered on top of an existing list.
+      final List<MyLessonResponseData?> page = response.data ?? [];
       if (currentLessonTypeIndex == 0) {
-        if (lessonsListRoadmap == null) {
-          lessonsListRoadmap = response.data ?? [];
+        if (iPagingPage == 1 || lessonsListRoadmap == null) {
+          lessonsListRoadmap = List.of(page);
         } else {
-          response.data?.forEach((element) {
-            lessonsListRoadmap?.add(element);
-          });
+          lessonsListRoadmap!.addAll(page);
         }
       } else {
-        if (lessonsListSuggest == null) {
-          lessonsListSuggest = response.data ?? [];
+        if (iPagingPage == 1 || lessonsListSuggest == null) {
+          lessonsListSuggest = List.of(page);
         } else {
-          response.data?.forEach((element) {
-            lessonsListSuggest?.add(element);
-          });
+          lessonsListSuggest!.addAll(page);
         }
       }
       // Cache for search page so it can reuse loaded data.
@@ -322,20 +334,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   /// Load personalized lessons for "Dành cho bạn" section.
   Future<void> getForYouLessons({bool emitState = true}) async {
-    // Don't show inline loading spinner for the very first load
-    // because global BotToast loading is already visible then.
-    final bool shouldShowLoading = _hasLoadedForYouOnce;
-    if (shouldShowLoading) {
-      isForYouLoading = true;
-      if (emitState) {
-        emit(const LessonTabSuccess());
-      }
+    // Skeleton only while there is nothing to show yet; refreshes keep the
+    // current cards until the new ones arrive.
+    isForYouLoading = forYouLessons == null;
+    if (emitState) {
+      emit(const LessonTabSuccess());
     }
     final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getRecommendedLessons();
     apiResult.when(success: (List<LessonSectionListResponseData> response) {
       forYouLessons = response;
-      _hasLoadedForYouOnce = true;
       isForYouLoading = false;
       if (emitState) {
         emit(const LessonTabSuccess());

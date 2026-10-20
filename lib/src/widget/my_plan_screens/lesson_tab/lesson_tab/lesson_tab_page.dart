@@ -25,6 +25,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_detail/lesson_detail.dart';
 import 'lesson_tab.dart';
+import 'lesson_tab_skeleton.dart';
 
 /// Recommendation filter chip: type index -> localized label lambda.
 final Map<int, String Function()> _recommendationChipLabels = {
@@ -56,10 +57,7 @@ class _LessonTabPageState extends State<LessonTabPage>
   int currentPageRoad = 1;
   int currentPageSuggest = 1;
   bool isLoading = false;
-  bool _didShowInitialBotToast = false;
 
-  /// True while BotToast loading overlay is shown (kept in sync with show/close calls).
-  bool _botToastLessonLoadingVisible = false;
 
   @override
   void initState() {
@@ -78,26 +76,17 @@ class _LessonTabPageState extends State<LessonTabPage>
       // own NAVIGATE_TO_LESSON_DETAIL notification fires before this widget
       // even exists, so update() below never sees it for this first build —
       // this is the only place that can catch it in time.
-      final bool navigatedToLesson = _checkExistLessonId();
+      _checkExistLessonId();
 
-      // Ensure the first navigation always shows bot loading — except when a
-      // deep-linked lesson was just pushed above this tab: BotToast's loading
-      // is a global overlay, so it would dim the lesson page (which already
-      // shows its own skeleton) until this tab's list load finishes.
-      // _didShowInitialBotToast is still set so the LessonTabLoading listener
-      // below doesn't show it either.
-      if (!_didShowInitialBotToast) {
-        _didShowInitialBotToast = true;
-        if (!navigatedToLesson) {
-          _setBotToastLessonLoadingVisible(true);
-          BotToast.showLoading();
-        }
-      }
-      // Await main list first so getRecommendationLessons cannot emit Initial/Success
-      // while lessons are still loading (which briefly showed the empty placeholder).
-      await _cubit.getInitData();
-      await _cubit.getForYouLessons();
-      await _cubit.getRecommendationLessons(type: 0);
+      // The three sections load in parallel, each behind its own skeleton
+      // (no global loading overlay). The empty placeholder now follows
+      // isLessonsLoading rather than the last emitted state, so a section
+      // finishing first can't flash "no lessons" any more.
+      await Future.wait([
+        _cubit.getInitData(),
+        _cubit.getForYouLessons(),
+        _cubit.getRecommendationLessons(type: 0),
+      ]);
     });
 
     // Load-more paused: page 1 asks for size 1000 and already returns every
@@ -149,11 +138,6 @@ class _LessonTabPageState extends State<LessonTabPage>
       }
       _checkExistLessonId();
     }
-  }
-
-  void _setBotToastLessonLoadingVisible(bool visible) {
-    if (_botToastLessonLoadingVisible == visible) return;
-    setState(() => _botToastLessonLoadingVisible = visible);
   }
 
   /// Pushes the pending deep-linked lesson, if any. Returns true when it
@@ -216,15 +200,14 @@ class _LessonTabPageState extends State<LessonTabPage>
               _scrollToWidget(_lessonTabBottomLoadingKey);
             });
           } else if (state is LessonTabLoading) {
-            if (!_didShowInitialBotToast) {
-              _setBotToastLessonLoadingVisible(true);
+            // An empty list shows the skeleton instead; the overlay is only
+            // for reloads over content already on screen.
+            if (_cubit.lessonsList?.isNotEmpty == true) {
               BotToast.showLoading();
             }
           } else {
             if (state is! LessonTabWeekChanged) {
               BotToast.closeAllLoading();
-              _setBotToastLessonLoadingVisible(false);
-              _didShowInitialBotToast = false;
               setState(() {
                 isLoading = false;
               });
@@ -342,6 +325,10 @@ class _LessonTabPageState extends State<LessonTabPage>
                             top: false,
                             child: SmartRefresher(
                               controller: _controller,
+                              // No pull while the first load is running: the
+                              // side sections finishing would end the
+                              // indicator before the main list arrives.
+                              enablePullDown: !_cubit.isLessonsLoading,
                               scrollController: _lessonScrollController,
                               onRefresh: () {
                                 currentPageRoad = 1;
@@ -354,20 +341,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                                   children: [
                                     _buildForYouSection(),
                                     if (_cubit.lessonsList!.isEmpty)
-                                      (state is LessonTabLoading)
-                                          ?
-                                          // SizedBox(
-                                          //     height: 220.h,
-                                          //     width: double.infinity,
-                                          //     child: Center(
-                                          //       child:
-                                          //           CircularProgressIndicator(
-                                          //         color: R.color
-                                          //             .greenGradientBottom,
-                                          //       ),
-                                          //     ),
-                                          //   )
-                                          const SizedBox.shrink()
+                                      _cubit.isLessonsLoading
+                                          ? const LessonModulesSkeleton()
                                           : (state is LessonTabWeekChanged)
                                               ? Container()
                                               : _buildEmptyLessonList()
@@ -589,15 +564,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           ),
           const SizedBox(height: 8),
           if (_cubit.isForYouLoading)
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 130,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: R.color.greenGradientBottom,
-                ),
-              ),
-            )
+            const LessonCardRowSkeleton()
           else
             SizedBox(
               height: 262,
@@ -712,17 +679,9 @@ class _LessonTabPageState extends State<LessonTabPage>
           if (_cubit.isRecommendationLoading)
             KeyedSubtree(
               key: _recommendationLoadingKey,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 130,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                color: Colors.transparent,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(
-                    color: R.color.greenGradientBottom,
-                  ),
-                ),
+              child: const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: LessonRecommendationSkeleton(),
               ),
             )
           else
