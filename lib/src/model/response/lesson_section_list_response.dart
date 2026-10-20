@@ -1755,7 +1755,10 @@ class LessonSectionListResponseData {
     this.lessonTags,
     this.image,
   });
-  LessonSectionListResponseData.fromJson(Map<String, dynamic> json) {
+  /// [parseSections] false skips `lessonSections` (the full lesson content):
+  /// list screens don't show it, and it is ~99% of their payload.
+  LessonSectionListResponseData.fromJson(Map<String, dynamic> json,
+      {bool parseSections = true}) {
     id = json['id']?.toString();
     code = json['code']?.toString();
     name = json['name']?.toString();
@@ -1794,7 +1797,7 @@ class LessonSectionListResponseData {
       });
       lessonTagMappings = arr0;
     }
-    if (json['lessonSections'] != null) {
+    if (parseSections && json['lessonSections'] != null) {
       final v = json['lessonSections'];
       final arr0 = <LessonSectionItem>[];
       v.forEach((v) {
@@ -2259,6 +2262,9 @@ class LessonSectionListResponse {
 
 /// Wrapper for App/Lesson/LessonModuleType: same shape as MyLessonResponse
 /// but [data] is List<LessonSectionListResponseData>.
+/// List-only response of `LessonModuleType` / `GetRecommendedLessons`:
+/// `lessonSections` is never populated (see fromJson). Don't reuse it for an
+/// endpoint whose screen needs the lesson content.
 class LessonModuleTypeResponse {
   LessonSectionListResponseMeta? meta;
   List<LessonSectionListResponseData?>? data;
@@ -2276,7 +2282,11 @@ class LessonModuleTypeResponse {
       final v = json['data'];
       final arr0 = <LessonSectionListResponseData>[];
       v.forEach((v) {
-        arr0.add(LessonSectionListResponseData.fromJson(v));
+        // Only the Library lists use this response (LessonModuleType,
+        // GetRecommendedLessons); a lesson's content is fetched on its own
+        // page, so the multi-MB lessonSections isn't kept in memory here.
+        arr0.add(LessonSectionListResponseData.fromJson(v,
+            parseSections: false));
       });
       data = arr0;
     }
