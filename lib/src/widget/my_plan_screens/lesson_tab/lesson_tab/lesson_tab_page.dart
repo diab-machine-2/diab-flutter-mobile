@@ -339,7 +339,19 @@ class _LessonTabPageState extends State<LessonTabPage>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _buildForYouSection(),
+                                    // Whether a user has personalised lessons
+                                    // isn't known up front (a basic member
+                                    // gets 132 on prod), so the skeleton
+                                    // always shows; on an empty or failed
+                                    // answer the section folds away instead
+                                    // of the page jumping.
+                                    AnimatedSize(
+                                      duration:
+                                          const Duration(milliseconds: 250),
+                                      curve: Curves.easeOutCubic,
+                                      alignment: Alignment.topCenter,
+                                      child: _buildForYouSection(),
+                                    ),
                                     if (_cubit.lessonsList!.isEmpty)
                                       _cubit.isLessonsLoading
                                           ? const LessonModulesSkeleton()
