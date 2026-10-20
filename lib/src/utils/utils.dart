@@ -561,6 +561,7 @@ class Utils {
       case ScheduleType.goal_setting_recommend:
         return R.string.exercise.tr();
       case ScheduleType.book_1_1:
+      case ScheduleType.book_1_n:
       case ScheduleType.io_evaluate:
       case ScheduleType.output_assessment:
         return R.string.event.tr();
@@ -573,7 +574,6 @@ class Utils {
         return R.string.survey.tr();
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
-      case ScheduleType.book_1_n:
         return R.string.lesson.tr();
       case ScheduleType.custom:
         return R.string.target.tr();
@@ -617,6 +617,7 @@ class Utils {
       case ScheduleType.goal_setting_recommend:
         return R.color.exercise_color;
       case ScheduleType.book_1_1:
+      case ScheduleType.book_1_n:
       case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
         return R.color.event_color;
@@ -629,7 +630,6 @@ class Utils {
         return R.color.survey_color;
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
-      case ScheduleType.book_1_n:
         return R.color.lesson_color;
       case ScheduleType.update_profile:
         return R.color.survey_color;
