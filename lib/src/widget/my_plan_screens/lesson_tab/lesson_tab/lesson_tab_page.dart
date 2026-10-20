@@ -100,16 +100,20 @@ class _LessonTabPageState extends State<LessonTabPage>
       await _cubit.getRecommendationLessons(type: 0);
     });
 
-    _lessonScrollController.addListener(() {
-      if (_lessonScrollController.position.pixels ==
-          _lessonScrollController.position.maxScrollExtent) {
-        if (_cubit.currentLessonTypeIndex == 0) {
-          _cubit.getInitData(currentPage: ++currentPageRoad);
-        } else {
-          _cubit.getInitData(currentPage: ++currentPageSuggest);
-        }
-      }
-    });
+    // Load-more paused: page 1 asks for size 1000 and already returns every
+    // lesson (248/248 on prod), so page 2 always came back empty after a ~3s
+    // request each time the list reached the bottom. Re-enable together with
+    // a smaller page size if the list is ever paginated.
+    // _lessonScrollController.addListener(() {
+    //   if (_lessonScrollController.position.pixels ==
+    //       _lessonScrollController.position.maxScrollExtent) {
+    //     if (_cubit.currentLessonTypeIndex == 0) {
+    //       _cubit.getInitData(currentPage: ++currentPageRoad);
+    //     } else {
+    //       _cubit.getInitData(currentPage: ++currentPageSuggest);
+    //     }
+    //   }
+    // });
   }
 
   @override

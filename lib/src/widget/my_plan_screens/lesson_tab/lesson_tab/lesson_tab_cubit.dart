@@ -172,7 +172,10 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       }
     }
 
-    await getLessonWeekStates(isRefresh: isRefresh);
+    // Week states only feed the week selector, which is hidden for now
+    // (_weekScrollController isn't attached). Skipping the call saves a
+    // request before the lesson list; restore it with the selector.
+    // await getLessonWeekStates(isRefresh: isRefresh);
 
     if (currentWeek != null) {
       Timer(const Duration(milliseconds: 100), () {
