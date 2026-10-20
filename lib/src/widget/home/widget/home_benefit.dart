@@ -39,6 +39,11 @@ class HomeBenefitSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(24),
+      ),
+      // Border drawn over the children: in `decoration` the grey brand strip
+      // covers it at the top corners and sides.
+      foregroundDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: R.color.homeCardBorder),
       ),
       child: Column(

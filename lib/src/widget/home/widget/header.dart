@@ -203,6 +203,10 @@ class _HomeHeaderState extends State<HomeHeader>
             decoration: BoxDecoration(
               color: R.color.white,
               shape: BoxShape.circle,
+            ),
+            // Over the photo, which would otherwise cover the ring.
+            foregroundDecoration: BoxDecoration(
+              shape: BoxShape.circle,
               border: Border.all(color: R.color.color0xffDADEDF),
             ),
             child: url == null
