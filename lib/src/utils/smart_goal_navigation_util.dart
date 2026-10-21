@@ -184,6 +184,9 @@ class SmartGoalNavigationUtil {
       case ScheduleType.examination:
         await _handleExamination(context, smartGoal);
         break;
+      case ScheduleType.webinar:
+        await _handleWebinar(context, smartGoal);
+        break;
     }
 
     // Call refresh callback if provided (await so callers can act after data reload)
@@ -365,6 +368,23 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handlePeripheralRecommend(BuildContext context) async {
     await Navigator.pushNamed(context, NavigatorName.connect_device_app);
+  }
+
+  /// Webinar activity (type 36): its LearningPost id opens the event page;
+  /// the activity id rides along so "Tham gia ngay" completes it.
+  static Future<void> _handleWebinar(
+      BuildContext context, SmartGoalList? smartGoal) async {
+    final webinarId = smartGoal?.learningPostId;
+    if (webinarId == null || webinarId.isEmpty) {
+      Message.showToastMessage(context, R.string.webinar_not_found.tr());
+      return;
+    }
+    await Navigator.pushNamed(context, NavigatorName.webinar_info, arguments: {
+      'id': webinarId,
+      // Already done: re-joining has nothing left to complete.
+      'smartGoalId': smartGoal?.isCompleted == true ? null : smartGoal?.id,
+      'activityDate': smartGoal?.appointmentDate,
+    });
   }
 
   static Future<void> _handleExamination(

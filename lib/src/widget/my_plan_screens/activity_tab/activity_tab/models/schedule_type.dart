@@ -40,7 +40,8 @@ enum ScheduleType {
   evaluate_interview,
   booking_solo,
   infographic,
-  examination
+  examination,
+  webinar
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -69,6 +70,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.booking_solo:
         return R.drawable.ic_interview;
       case ScheduleType.book_1_n:
+      case ScheduleType.webinar:
         return R.drawable.ic_schedule_book_1_n;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
@@ -152,6 +154,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.booking_solo:
         return R.icons.ic_ti_kham_tu_xa;
       case ScheduleType.book_1_n:
+      case ScheduleType.webinar:
         return R.icons.ic_nv_su_kien;
       case ScheduleType.survey:
       case ScheduleType.io_evaluate:
@@ -226,6 +229,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.string.infographic.tr();
       case ScheduleType.examination:
         return R.string.examination.tr();
+      case ScheduleType.webinar:
+        return R.string.event.tr();
 
       // New Recommend : NOT USE
       case ScheduleType.lesson_recommend:
@@ -362,6 +367,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return 33;
       case ScheduleType.examination:
         return 35;
+      case ScheduleType.webinar:
+        return 36;
     }
   }
 
@@ -467,6 +474,7 @@ extension ScheduleTypeExtend on ScheduleType {
       return ScheduleType.booking_solo;
     if (index == ScheduleType.infographic.typeIndex)
       return ScheduleType.infographic;
+    if (index == ScheduleType.webinar.typeIndex) return ScheduleType.webinar;
     if (index == ScheduleType.examination.typeIndex)
       return ScheduleType.examination;
 

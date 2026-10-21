@@ -562,6 +562,7 @@ class Utils {
         return R.string.exercise.tr();
       case ScheduleType.book_1_1:
       case ScheduleType.book_1_n:
+      case ScheduleType.webinar:
       case ScheduleType.io_evaluate:
       case ScheduleType.output_assessment:
         return R.string.event.tr();
@@ -618,6 +619,7 @@ class Utils {
         return R.color.exercise_color;
       case ScheduleType.book_1_1:
       case ScheduleType.book_1_n:
+      case ScheduleType.webinar:
       case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
         return R.color.event_color;

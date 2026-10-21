@@ -157,6 +157,10 @@ class SmartGoalList {
   String? description;
   String? surveyId;
   String? calendarId;
+
+  /// Webinar activities (type 36): the event's LearningPost id, opened
+  /// with the webinar info page.
+  String? learningPostId;
   int? state;
   dynamic data;
   SmartGoalListReponseDataDailyTargetScheduler? targetScheduler;
@@ -178,6 +182,7 @@ class SmartGoalList {
     this.description,
     this.surveyId,
     this.calendarId,
+    this.learningPostId,
     this.state,
     this.data,
     this.targetScheduler,
@@ -222,6 +227,7 @@ class SmartGoalList {
     state = json['state']?.toInt();
     surveyId = json['surveyId']?.toString();
     calendarId = json['calendarId']?.toString();
+    learningPostId = json['learningPostId']?.toString();
     if (json['data'] != null &&
         type == ScheduleType.exercise_movement.typeIndex) {
       data = ExerciseMovementResponseData.fromJson(json['data']);
@@ -262,6 +268,7 @@ class SmartGoalList {
     data['description'] = description;
     data['surveyId'] = surveyId;
     data['calendarId'] = calendarId;
+    data['learningPostId'] = learningPostId;
     data['state'] = state;
     data['data'] = data.toString();
     if (targetScheduler != null) {

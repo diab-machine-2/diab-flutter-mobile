@@ -626,6 +626,8 @@ class App extends StatelessWidget {
                       settings,
                       WebinarInfoPage(
                         id: data?['id'],
+                        smartGoalId: data?['smartGoalId'],
+                        activityDate: data?['activityDate'],
                       ),
                     );
                   case NavigatorName.connection_instructions:

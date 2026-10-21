@@ -16,7 +16,9 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -32,7 +34,16 @@ import 'package:add_2_calendar_new/add_2_calendar_new.dart';
 class WebinarInfoPage extends StatefulWidget {
   final String id;
 
-  const WebinarInfoPage({Key? key, required this.id}) : super(key: key);
+  /// Set when opened from a program webinar activity (type 36): joining
+  /// marks that activity done.
+  final String? smartGoalId;
+
+  /// The activity's day (epoch seconds), sent with the completion.
+  final int? activityDate;
+
+  const WebinarInfoPage(
+      {Key? key, required this.id, this.smartGoalId, this.activityDate})
+      : super(key: key);
 
   @override
   State<WebinarInfoPage> createState() => _WebinarInfoPageState();
@@ -190,7 +201,36 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     final opened = await BranchioLinkConfig.instance.openLink(_webinar!.link!);
     if (!opened && mounted) {
       Message.showToastMessage(context, R.string.webinar_cannot_open_link.tr());
+      return;
     }
+    if (opened) await _completeProgramActivity();
+  }
+
+  bool _activityCompleted = false;
+
+  /// Joining a webinar assigned as a program activity completes it.
+  Future<void> _completeProgramActivity() async {
+    final goalId = widget.smartGoalId;
+    if (goalId == null || goalId.isEmpty || _activityCompleted) return;
+    _activityCompleted = true;
+    // appointmentDate is the activity's day as a UTC-midnight epoch: keep
+    // that calendar day whatever the device's time zone.
+    final DateTime date;
+    if (widget.activityDate != null) {
+      final utc = DateTime.fromMillisecondsSinceEpoch(
+          widget.activityDate! * 1000,
+          isUtc: true);
+      date = DateTime(utc.year, utc.month, utc.day);
+    } else {
+      date = DateTime.now();
+    }
+    await HomeClient()
+        .completeSmartGoal(date, goalId, 1, ScheduleType.webinar.typeIndex);
+    // Program tab and Home both list the activity.
+    Observable.instance
+        .notifyObservers([], notifyName: 'refresh_activity_tab');
+    Observable.instance
+        .notifyObservers([], notifyName: 'refresh_home_activity');
   }
 
   Future<void> _onWatchReplay() async {
