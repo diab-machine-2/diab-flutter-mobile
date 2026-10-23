@@ -726,7 +726,9 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage>
                       return;
                     }
                     await _cubit.initCreateDsmesBookingRequest(
-                        locale: context.locale.languageCode);
+                        locale: context.locale.languageCode,
+                        // Keep an examination booked from a program activity.
+                        clearExamination: !_cubit.isExamination);
 
                     DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
                         NavigatorName.dsmes_select_service,
@@ -779,7 +781,9 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage>
                     }
                     if (_cubit.selectedClinic == null) return;
                     _cubit.initCreateDsmesBookingRequest(
-                        locale: context.locale.languageCode);
+                        locale: context.locale.languageCode,
+                        // Keep an examination booked from a program activity.
+                        clearExamination: !_cubit.isExamination);
                     await DsmesNavigationMixin.getNavigationKey().currentState
                         ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                             arguments: {
@@ -846,7 +850,9 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage>
                   await _cubit.getClinicDetail(id: widget.clinicId);
                   if (_cubit.selectedClinic == null) return;
                   _cubit.initCreateDsmesBookingRequest(
-                      locale: context.locale.languageCode);
+                      locale: context.locale.languageCode,
+                      // Keep an examination booked from a program activity.
+                      clearExamination: !_cubit.isExamination);
                   await DsmesNavigationMixin.getNavigationKey().currentState
                       ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                           arguments: {

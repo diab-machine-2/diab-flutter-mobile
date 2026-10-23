@@ -22,8 +22,6 @@ import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/profile/address.dart';
-import 'package:medical/src/repo/home/home_client.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
@@ -440,16 +438,7 @@ class _DsmesConfirmCreateInformationState
 
     if (resp == null) return;
 
-    if (_cubit.isExamination &&
-        _cubit.smartGoalId != null &&
-        _cubit.smartGoalId!.isNotEmpty) {
-      await HomeClient().completeSmartGoal(
-        DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime),
-        _cubit.smartGoalId,
-        1,
-        ScheduleType.examination.typeIndex,
-      );
-    }
+    await _cubit.completeExaminationActivity();
 
     final startTime = DateFormat('HH:mm')
         .format(DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
@@ -597,6 +586,7 @@ class _DsmesConfirmCreateInformationState
                         ?.pushNamed(NavigatorName.clinic_providers, arguments: {
                       'specialtyId': 0,
                       'examinationType': _cubit.examinationType,
+                      'isExamination': _cubit.isExamination,
                       'isEditing': true,
                       'previousRoute': NavigatorName.dsmes_confirm_information,
                     });

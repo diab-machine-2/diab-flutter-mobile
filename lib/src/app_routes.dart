@@ -154,6 +154,8 @@ class AppRoutes {
             examinationClinicId: args?['examinationClinicId'],
             examinationType: args?['examinationType'],
             smartGoalId: args?['smartGoalId'],
+            smartGoalExecuteDayTimes: args?['smartGoalExecuteDayTimes'],
+            smartGoalAppointmentDate: args?['smartGoalAppointmentDate'],
           );
           break;
         }

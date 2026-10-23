@@ -628,6 +628,7 @@ class App extends StatelessWidget {
                         id: data?['id'],
                         smartGoalId: data?['smartGoalId'],
                         activityDate: data?['activityDate'],
+                        executeDayTimes: data?['executeDayTimes'],
                       ),
                     );
                   case NavigatorName.connection_instructions:

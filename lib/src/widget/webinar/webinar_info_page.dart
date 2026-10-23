@@ -18,7 +18,8 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
-import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/model/request/complete_smart_goal_request.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -38,11 +39,17 @@ class WebinarInfoPage extends StatefulWidget {
   /// marks that activity done.
   final String? smartGoalId;
 
-  /// The activity's day (epoch seconds), sent with the completion.
+  /// The activity's appointmentDate and executeDayTimes, sent with the
+  /// completion.
   final int? activityDate;
+  final int? executeDayTimes;
 
   const WebinarInfoPage(
-      {Key? key, required this.id, this.smartGoalId, this.activityDate})
+      {Key? key,
+      required this.id,
+      this.smartGoalId,
+      this.activityDate,
+      this.executeDayTimes})
       : super(key: key);
 
   @override
@@ -213,19 +220,16 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     final goalId = widget.smartGoalId;
     if (goalId == null || goalId.isEmpty || _activityCompleted) return;
     _activityCompleted = true;
-    // appointmentDate is the activity's day as a UTC-midnight epoch: keep
-    // that calendar day whatever the device's time zone.
-    final DateTime date;
-    if (widget.activityDate != null) {
-      final utc = DateTime.fromMillisecondsSinceEpoch(
-          widget.activityDate! * 1000,
-          isUtc: true);
-      date = DateTime(utc.year, utc.month, utc.day);
-    } else {
-      date = DateTime.now();
-    }
-    await HomeClient()
-        .completeSmartGoal(date, goalId, 1, ScheduleType.webinar.typeIndex);
+    // Same payload as the other activities: the activity's own
+    // executeDayTimes and appointmentDate, unchanged.
+    final result = await _repository.completeSmartGoal(
+        CompleteSmartGoalRequest(
+            id: goalId,
+            executeTimes: widget.executeDayTimes,
+            type: ScheduleType.webinar.typeIndex,
+            appointmentDate: widget.activityDate));
+    result.whenOrNull(
+        failure: (error) => TrackingManager.recordError(error, null));
     // Program tab and Home both list the activity.
     Observable.instance
         .notifyObservers([], notifyName: 'refresh_activity_tab');

@@ -57,15 +57,15 @@ class SmartGoalNavigationUtil {
     _config = config;
   }
 
-  /// Default examination handler used when no screen-specific handler is set.
-  /// Activity Tab can override via `SmartGoalConfig.customExaminationHandler`.
+  /// Examination activity (type 35), shared by Home, the Program tab and
+  /// deep links: pick at home / at a clinic, then book.
   static Future<void> defaultExaminationHandler(
       BuildContext context, SmartGoalList? smartGoal) async {
     final examinationType = _extractExaminationType(smartGoal);
     await _showExaminationOptionsBottomSheet(
       context,
       examinationType: examinationType,
-      smartGoalId: smartGoal?.id,
+      smartGoal: smartGoal,
     );
   }
 
@@ -384,6 +384,7 @@ class SmartGoalNavigationUtil {
       // Already done: re-joining has nothing left to complete.
       'smartGoalId': smartGoal?.isCompleted == true ? null : smartGoal?.id,
       'activityDate': smartGoal?.appointmentDate,
+      'executeDayTimes': smartGoal?.executeDayTimes,
     });
   }
 
@@ -426,7 +427,7 @@ class SmartGoalNavigationUtil {
   static Future<void> _showExaminationOptionsBottomSheet(
     BuildContext context, {
     String? examinationType,
-    String? smartGoalId,
+    SmartGoalList? smartGoal,
   }) async {
     final result = await showModalBottomSheet<String>(
       context: context,
@@ -452,7 +453,7 @@ class SmartGoalNavigationUtil {
                 alignment: Alignment.center,
                 children: [
                   Text(
-                    'choose_input_method'.tr(),
+                    R.string.choose_input_method.tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -470,14 +471,14 @@ class SmartGoalNavigationUtil {
               ),
               const SizedBox(height: 8),
               _buildExaminationOptionItem(
-                icon: 'lib/res/drawables/home/ic_examination_at_home.png',
-                title: 'xet_nghiem_tai_nha'.tr(),
+                icon: R.drawable.ic_examination_at_home,
+                title: R.string.xet_nghiem_tai_nha.tr(),
                 onTap: () => Navigator.of(context).pop('at_home'),
               ),
               const SizedBox(height: 12),
               _buildExaminationOptionItem(
-                icon: 'lib/res/drawables/home/ic_booking_clinic.png',
-                title: 'xet_nghiem_tai_co_so'.tr(),
+                icon: R.drawable.ic_booking_clinic,
+                title: R.string.xet_nghiem_tai_co_so.tr(),
                 onTap: () => Navigator.of(context).pop('at_clinic'),
               ),
             ],
@@ -486,24 +487,34 @@ class SmartGoalNavigationUtil {
       },
     );
 
+    if (result == null || !context.mounted) return;
+    // The booking marks this activity done once it is created, with the
+    // same executeDayTimes / appointmentDate as the other activities send.
+    final goal = smartGoal?.isCompleted == true ? null : smartGoal;
+    final activityArgs = {
+      'smartGoalId': goal?.id,
+      'smartGoalExecuteDayTimes': goal?.executeDayTimes,
+      'smartGoalAppointmentDate': goal?.appointmentDate,
+    };
+    // Awaited so onSelectGoal's refresh runs after the booking flow closes.
     if (result == 'at_home') {
-      Navigator.of(context).pushNamed(
+      await Navigator.of(context).pushNamed(
         NavigatorName.booking_clinic,
         arguments: {
           'isExamination': true,
           'examinationClinicId': Const.EXAMINATION_DEFAULT_CLINIC_ID,
           'examinationType': examinationType,
-          'smartGoalId': smartGoalId,
+          ...activityArgs,
         },
       );
     } else if (result == 'at_clinic') {
-      Navigator.of(context).pushNamed(
+      await Navigator.of(context).pushNamed(
         NavigatorName.booking_clinic,
         arguments: {
           'isExamination': true,
           'isExaminationAtClinic': true,
           'examinationType': examinationType,
-          'smartGoalId': smartGoalId,
+          ...activityArgs,
         },
       );
     }

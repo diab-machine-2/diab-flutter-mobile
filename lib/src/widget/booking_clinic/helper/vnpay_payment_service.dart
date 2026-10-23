@@ -534,6 +534,10 @@ class VNPayService with WidgetsBindingObserver {
     // Mark as processed immediately after successful booking creation
     _markTransactionProcessed(txnRef, appointmentId: resp.id);
 
+    // Booked from an examination activity (type 35): mark it done. After the
+    // dedupe mark so a duplicate callback can't slip in; never throws.
+    cubit.completeExaminationActivity();
+
     final result = await cubit.updateVnpayTransactionInfo(
         appointmentId: resp.id, txnRef: params['vnp_TxnRef']);
 

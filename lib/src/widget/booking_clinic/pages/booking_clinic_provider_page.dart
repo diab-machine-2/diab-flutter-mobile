@@ -22,11 +22,16 @@ class BookingClinicProvidersPage extends StatefulWidget {
   final int specialtyId;
   final String bookingType;
   final String? examinationType;
+
+  /// Examination at a clinic, also when the test type could not be read
+  /// from the activity name ([examinationType] null).
+  final bool isExamination;
   const BookingClinicProvidersPage({
     Key? key,
     required this.specialtyId,
     this.bookingType = Const.BOOKING_TYPE_CLINIC,
     this.examinationType,
+    this.isExamination = false,
   }) : super(key: key);
 
   @override
@@ -36,6 +41,9 @@ class BookingClinicProvidersPage extends StatefulWidget {
 
 class _BookingClinicProvidersPageState
     extends State<BookingClinicProvidersPage> {
+  bool get _isExaminationFlow =>
+      widget.isExamination || widget.examinationType != null;
+
   late DsmesAppointmentCubit _cubit;
   Map<String, bool> isProcessing = {
     'clinicDetail': false,
@@ -131,7 +139,7 @@ class _BookingClinicProvidersPageState
       // For normal booking flow, rely on global BlocConsumer in BookingClinicPage
       // to show BotToast loading. For examination flow, manage BotToast here
       // because the global listener is disabled when isExamination = true.
-      final isExaminationFlow = widget.examinationType != null;
+      final isExaminationFlow = _isExaminationFlow;
       if (isExaminationFlow) {
         BotToast.showLoading(allowClick: false);
       }
@@ -144,7 +152,7 @@ class _BookingClinicProvidersPageState
     } catch (e) {
       // Log error if needed
     } finally {
-      if (widget.examinationType != null) {
+      if (_isExaminationFlow) {
         BotToast.closeAllLoading();
       }
     }
@@ -233,7 +241,7 @@ class _BookingClinicProvidersPageState
                 // For examination flow, close the whole booking container and
                 // return to the activity tab (root navigator). For normal flow,
                 // just pop within the DSMES navigator.
-                if (widget.examinationType != null) {
+                if (_isExaminationFlow) {
                   Navigator.of(context, rootNavigator: true).pop();
                 } else {
                   DsmesNavigationMixin.getNavigationKey()
@@ -544,7 +552,7 @@ class _BookingClinicProvidersPageState
                                 isProcessing['bookingClinic'] = true;
 
                                 // Show loading for examination flow
-                                if (widget.examinationType != null) {
+                                if (_isExaminationFlow) {
                                   BotToast.showLoading(allowClick: false);
                                 }
 
@@ -553,18 +561,18 @@ class _BookingClinicProvidersPageState
                                       await _cubit.getClinicDetail(
                                           id: data.id,
                                           isLoading:
-                                              widget.examinationType == null);
+                                              !_isExaminationFlow);
 
                                   if (!detailSuccess ||
                                       _cubit.selectedClinic == null) {
-                                    if (widget.examinationType != null) {
+                                    if (_isExaminationFlow) {
                                       BotToast.closeAllLoading();
                                     }
                                     return;
                                   }
 
                                   // Set examination data if it's an examination flow
-                                  if (widget.examinationType != null) {
+                                  if (_isExaminationFlow) {
                                     _cubit.setExaminationData(
                                       isExamination: true,
                                       examinationType: widget.examinationType,
@@ -596,10 +604,10 @@ class _BookingClinicProvidersPageState
                                   _cubit.initCreateDsmesBookingRequest(
                                       locale: context.locale.languageCode,
                                       clearExamination:
-                                          widget.examinationType == null);
+                                          !_isExaminationFlow);
 
                                   // Delay navigation slightly to ensure nested navigator is ready
-                                  if (widget.examinationType != null) {
+                                  if (_isExaminationFlow) {
                                     await Future.delayed(
                                         Duration(milliseconds: 100));
                                   }

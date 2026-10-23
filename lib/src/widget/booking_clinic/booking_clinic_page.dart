@@ -36,6 +36,10 @@ class BookingClinicPage extends StatefulWidget {
   final String? examinationType;
   final String? smartGoalId;
 
+  /// The examination activity being booked (sent back when completing it).
+  final int? smartGoalExecuteDayTimes;
+  final int? smartGoalAppointmentDate;
+
   const BookingClinicPage({
     Key? key,
     this.isExamination = false,
@@ -43,6 +47,8 @@ class BookingClinicPage extends StatefulWidget {
     this.examinationClinicId,
     this.examinationType,
     this.smartGoalId,
+    this.smartGoalExecuteDayTimes,
+    this.smartGoalAppointmentDate,
   }) : super(key: key);
 
   @override
@@ -319,6 +325,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> {
                         BookingClinicProvidersPage(
                           specialtyId: args!["specialtyId"],
                           examinationType: args["examinationType"],
+                          isExamination: args["isExamination"] ?? false,
                         ),
                       );
                     }
@@ -452,6 +459,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> {
       examinationType: widget.examinationType,
       examinationLocation: Const.EXAMINATION_LOCATION_HOME,
       smartGoalId: widget.smartGoalId,
+      smartGoalExecuteDayTimes: widget.smartGoalExecuteDayTimes,
+      smartGoalAppointmentDate: widget.smartGoalAppointmentDate,
     );
 
     _cubit.initCreateDsmesBookingRequest(
@@ -480,6 +489,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> {
       examinationType: widget.examinationType,
       examinationLocation: Const.EXAMINATION_LOCATION_CLINIC,
       smartGoalId: widget.smartGoalId,
+      smartGoalExecuteDayTimes: widget.smartGoalExecuteDayTimes,
+      smartGoalAppointmentDate: widget.smartGoalAppointmentDate,
     );
 
     // Navigate to provider page with empty specialtyId and examinationType
@@ -488,11 +499,15 @@ class _BookingClinicPageState extends State<BookingClinicPage> {
       arguments: {
         'specialtyId': 0,
         'examinationType': widget.examinationType,
+        'isExamination': true,
       },
     );
   }
 
   Future<void> _onTapDiabSpecialty(ClinicSpecialty specialty) async {
+    // Picking a specialty is a normal booking: drop any examination the user
+    // backed out of, so it can't complete that activity.
+    _cubit.clearExaminationData();
     // Docosan id 0 = backend hasn't mapped this specialty yet (BE-5). The
     // provider search treats 0 as "no specialty" and would list unrelated
     // clinics, so stop here.

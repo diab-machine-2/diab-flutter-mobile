@@ -5,10 +5,12 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+import 'package:medical/src/model/request/complete_smart_goal_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
@@ -38,6 +40,8 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   final AppRepository appRepository;
@@ -64,6 +68,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   String? examinationType;
   String? examinationLocation; // Const.EXAMINATION_LOCATION_HOME or Const.EXAMINATION_LOCATION_CLINIC
   String? smartGoalId;
+  // The examination activity being booked; sent back when completing it.
+  int? smartGoalExecuteDayTimes;
+  int? smartGoalAppointmentDate;
 
   int currentPage = 1;
   bool hasMore = true;
@@ -664,11 +671,23 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     String? examinationType,
     String? examinationLocation,
     String? smartGoalId,
+    int? smartGoalExecuteDayTimes,
+    int? smartGoalAppointmentDate,
   }) {
     this.isExamination = isExamination;
     this.examinationType = examinationType;
     this.examinationLocation = examinationLocation;
-    this.smartGoalId = smartGoalId;
+    // Later steps (e.g. picking a clinic) re-set the flow without the
+    // activity; keep the one the flow started with.
+    if (!isExamination) {
+      this.smartGoalId = null;
+      this.smartGoalExecuteDayTimes = null;
+      this.smartGoalAppointmentDate = null;
+    } else if (smartGoalId != null) {
+      this.smartGoalId = smartGoalId;
+      this.smartGoalExecuteDayTimes = smartGoalExecuteDayTimes;
+      this.smartGoalAppointmentDate = smartGoalAppointmentDate;
+    }
   }
 
   void clearExaminationData() {
@@ -676,6 +695,35 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     examinationType = null;
     examinationLocation = null;
     smartGoalId = null;
+    smartGoalExecuteDayTimes = null;
+    smartGoalAppointmentDate = null;
+  }
+
+  /// A booking from an examination activity (type 35) was created: mark the
+  /// activity done, once. Never throws, so the success popup always shows.
+  Future<void> completeExaminationActivity() async {
+    final goalId = smartGoalId;
+    if (!isExamination || goalId == null || goalId.isEmpty) return;
+    smartGoalId = null;
+    try {
+      final result = await appRepository.completeSmartGoal(
+          CompleteSmartGoalRequest(
+              id: goalId,
+              executeTimes: smartGoalExecuteDayTimes,
+              type: ScheduleType.examination.typeIndex,
+              appointmentDate: smartGoalAppointmentDate));
+      result.when(
+          success: (_) {
+            // Home and the Program tab both list the activity.
+            Observable.instance
+                .notifyObservers([], notifyName: 'refresh_activity_tab');
+            Observable.instance
+                .notifyObservers([], notifyName: 'refresh_home_activity');
+          },
+          failure: (error) => TrackingManager.recordError(error, null));
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   setSelectedClinic(DsmesClinicModel? clinic) {
