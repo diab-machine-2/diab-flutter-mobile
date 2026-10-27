@@ -1926,4 +1926,12 @@ class Strings {
   String get home_event_online => 'home_event_online';
   String get home_kpi_empty_eyebrow => 'home_kpi_empty_eyebrow';
   String get home_benefit_book_clinic => 'home_benefit_book_clinic';
+  String get open_settings => 'open_settings';
+  String get food_not_found_to_sync => 'food_not_found_to_sync';
+  String get meal_analysis_failed => 'meal_analysis_failed';
+  String get camera_permission_request_failed => 'camera_permission_request_failed';
+  String get camera_not_found => 'camera_not_found';
+  String get camera_init_failed => 'camera_init_failed';
+  String get capture_photo_failed => 'capture_photo_failed';
+  String get pick_image_failed => 'pick_image_failed';
 }

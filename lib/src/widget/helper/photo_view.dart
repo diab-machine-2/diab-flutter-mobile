@@ -52,6 +52,17 @@ class _PhotoViewState extends State<PhotoView> {
                       File(file.path),
                       fit: BoxFit.fitWidth,
                     );
+                  } else if (file is String) {
+                    // Raw URL or device path (e.g. confirm-meal carousel)
+                    return file.startsWith('http')
+                        ? NetWorkImageWidget(
+                            imageUrl: file,
+                            fit: BoxFit.fitWidth,
+                          )
+                        : Image.file(
+                            File(file),
+                            fit: BoxFit.fitWidth,
+                          );
                   } else {
                     // Network image
                     return NetWorkImageWidget(

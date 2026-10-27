@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/Food/nutrition_guide_page.dart';
 import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/utils/const.dart';
@@ -40,23 +42,75 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   final FocusNode _focusNode = FocusNode();
   late TextEditingController _controllerNote;
 
+  /// Kcal of every meal logged today; null until loaded or when the meal is
+  /// not from today (the header then shows this meal's kcal only).
+  double? _todayCalories;
+
   @override
   void initState() {
     _controllerNote = TextEditingController(text: widget.data.note ?? '');
     _loadData();
+    _loadTodayCalories();
     super.initState();
+  }
+
+  Future<void> _loadTodayCalories() async {
+    final now = DateTime.now();
+    final date = widget.data.dateTime;
+    if (date.year != now.year || date.month != now.month || date.day != now.day) {
+      return;
+    }
+    try {
+      // Meal list groups are keyed by the day's UTC midnight; sum the
+      // calories of every meal in today's group (includes the one just saved).
+      final data = await FoodClient().fetchInput('', '1', 1, size: 50);
+      final today = data.inputs.where((group) {
+        if (group.date == null) return false;
+        final day =
+            DateTime.fromMillisecondsSinceEpoch(group.date! * 1000, isUtc: true);
+        return day.year == now.year &&
+            day.month == now.month &&
+            day.day == now.day;
+      });
+      if (today.isEmpty || !mounted) return;
+      final total = today.first.mealItems
+          .fold<double>(0, (sum, meal) => sum + (meal.caloValue ?? 0));
+      setState(() => _todayCalories = total);
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
     _controllerNote.dispose();
+    _cleanupTempFiles(widget.data.localImagePaths);
     super.dispose();
+  }
+
+  /// The meal is already uploaded, so the picked/captured copies in the
+  /// system temp directory can go once this screen stops showing them.
+  Future<void> _cleanupTempFiles(List<String> paths) async {
+    final tempDirPath = Directory.systemTemp.path;
+    for (final path in paths) {
+      try {
+        final file = File(path);
+        if (path.startsWith(tempDirPath) && await file.exists()) {
+          await file.delete();
+        }
+      } catch (_) {
+        // File may already be gone - nothing to clean up.
+      }
+    }
   }
 
   void _loadData() async {
     final data = widget.data;
-    _files = data.images;
+    _files = [
+      ...data.images,
+      ...data.localImagePaths.map((path) => File(path)),
+    ];
     _aiResult = data.healthRecommendation != null
         ? AiRecommendationResult(
             recommendation: data.healthRecommendation!,
@@ -95,13 +149,21 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
     }
   }
 
-  void _doBack() {
-    Observable.instance.notifyObservers([], notifyName: "food_change_data");
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
+    // The meal is already saved: any back leaves the input flow like
+    // "Hoàn thành" does, instead of returning to camera/search where
+    // "Tiếp tục" would save the same meal again.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _doComplete();
+      },
+      child: _buildPage(context),
+    );
+  }
+
+  Widget _buildPage(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
       body: Stack(
@@ -174,7 +236,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
         splashColor: R.color.transparent,
         highlightColor: R.color.transparent,
         icon: Icon(Icons.arrow_back, color: R.color.white),
-        onPressed: _doBack,
+        onPressed: _doComplete,
       ),
       actions: [
         Center(
@@ -228,7 +290,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                 children: [
                   TextSpan(
                     text:
-                        '${widget.data.totalCalories.toInt()}/${widget.data.goalCalories.toInt()}',
+                        '${(_todayCalories ?? widget.data.totalCalories).toInt()}/${widget.data.goalCalories.toInt()}',
                     style: TextStyle(
                       fontSize: 15,
                       color: R.color.greenGradientBottom,

@@ -102,11 +102,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       _safeDisposeCamera();
     } else if (state == AppLifecycleState.resumed) {
       // Wait a bit before reinitializing to ensure proper state
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted && !_disposed) {
-          _initializeCamera();
-        }
-      });
+      Future.delayed(const Duration(milliseconds: 500), _reinitCameraIfVisible);
     }
   }
 
@@ -125,7 +121,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           name: '[PERMISSION]');
       if (!cameraStatus.isGranted) {
         _requestingPermission = false;
-        _showErrorDialog('Camera permission is required to take photos');
+        if (!mounted) return;
+        _showCameraPermissionDialog();
         return;
       }
 
@@ -139,7 +136,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       _loadLastCapturedImage();
     } catch (e) {
       _requestingPermission = false;
-      _showErrorDialog('Lỗi khi yêu cầu quyền: $e');
+      developer.log('[PERMISSION] Error requesting permission: $e',
+          name: '[PERMISSION]');
+      _showErrorDialog(R.string.camera_permission_request_failed.tr());
     }
   }
 
@@ -162,7 +161,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       // Get available cameras
       _cameras = await availableCameras();
       if (_cameras.isEmpty) {
-        _showErrorDialog('Không tìm thấy camera nào');
+        _showErrorDialog(R.string.camera_not_found.tr());
         return;
       }
 
@@ -179,7 +178,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     } catch (e) {
       print('Error initializing camera: $e');
       if (mounted) {
-        _showErrorDialog('Không thể khởi tạo camera: $e');
+        _showErrorDialog(R.string.camera_init_failed.tr());
       }
     }
   }
@@ -283,7 +282,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       await _processSelectedImages([convertedPath]);
     } catch (e) {
       if (mounted) {
-        await _showErrorDialog('Lỗi khi chụp ảnh: $e');
+        developer.log('[CAPTURE] Error taking photo: $e', name: '[CAPTURE]');
+        await _showErrorDialog(R.string.capture_photo_failed.tr());
       }
     } finally {
       if (mounted && !_disposed) {
@@ -409,7 +409,49 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     );
   }
 
+  /// Camera access denied: explain why and offer a shortcut to the app's
+  /// system settings. Returning from settings triggers `resumed`, which
+  /// re-runs [_initializeCamera] once the permission is granted.
+  Future<void> _showCameraPermissionDialog() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(R.string.error.tr()),
+          content: Text(R.string.camera_permission_required.tr()),
+          actions: [
+            TextButton(
+              child: Text(R.string.close.tr()),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text(R.string.open_settings.tr()),
+              onPressed: () {
+                Navigator.pop(context);
+                openAppSettings();
+              },
+            ),
+          ],
+        );
+      },
+    );
+    // The app may have resumed (permission granted in Settings) while the
+    // dialog covered this route, so the resume handler skipped the restart.
+    if (mounted) _reinitCameraIfVisible();
+  }
+
+  void _reinitCameraIfVisible() {
+    if (mounted && !_disposed && (ModalRoute.of(context)?.isCurrent ?? false)) {
+      _initializeCamera();
+    }
+  }
+
   void _manualInputSelect() async {
+    // The camera is hidden for the whole manual flow - release it.
+    await _safeDisposeCamera();
+    if (!mounted) return;
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -436,6 +478,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         ),
       ),
     );
+    _reinitCameraIfVisible();
   }
 
   @override
@@ -935,7 +978,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           '[CAPTURE] Error picking image from gallery: $e',
           name: '[CAPTURE]');
       if (mounted) {
-        _showErrorDialog('Lỗi khi chọn ảnh: $e');
+        _showErrorDialog(R.string.pick_image_failed.tr());
       }
     }
   }
@@ -1137,13 +1180,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               'goalId': widget.goalId,
             });
 
-        // Re-initialize camera after returning from the confirm_food screen.
-        if (mounted && !_disposed) {
-          _initializeCamera();
-        }
+        // Re-initialize camera only when the user actually came back here;
+        // after a submit the result screen replaces confirm_food instead.
+        _reinitCameraIfVisible();
       } else {
         BotToast.closeAllLoading(); // Close all toasts including custom text
-        BotToast.showText(text: 'Không tìm thấy thực phẩm nào để đồng bộ');
+        BotToast.showText(text: R.string.food_not_found_to_sync.tr());
         // Restart camera - wait a bit for proper state
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted && !_disposed) {
@@ -1162,7 +1204,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           print('Error calling setState during error handling: $e');
         }
       }
-      BotToast.showText(text: 'Lỗi khi phân tích bữa ăn');
+      BotToast.showText(text: R.string.meal_analysis_failed.tr());
       // Restart camera - wait a bit for proper state
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted && !_disposed) {

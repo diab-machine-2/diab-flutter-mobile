@@ -43,20 +43,7 @@ class FoodItem extends StatelessWidget {
     final bool isSelected = selectedModel != null;
 
     return GestureDetector(
-      onTap: () {
-        if (isCategory) {
-          Navigator.pop(context);
-        }
-
-        // Use local callback if provided (e.g., search mode), otherwise use observer
-        if (onSelectionChanged != null) {
-          onSelectionChanged!(model, !isSelected);
-        } else if (isSelected) {
-          _removeFoodDirectly();
-        } else {
-          _addFoodDirectly();
-        }
-      },
+      onTap: () => _toggleSelection(context, isSelected),
       child: Container(
           decoration: BoxDecoration(
               color: (isSelected && !isSearch)
@@ -120,11 +107,9 @@ class FoodItem extends StatelessWidget {
             // Checkbox or Heart icon
             isSearch 
               ? GestureDetector(
-                  onTap: () {
-                    if (onSelectionChanged != null) {
-                      onSelectionChanged!(model, !isSelected);
-                    }
-                  },
+                  // Same as tapping the row; without this the checkbox
+                  // swallowed taps in tabs that don't pass onSelectionChanged.
+                  onTap: () => _toggleSelection(context, isSelected),
                   child: Container(
                       width: 24,
                       height: 24,
@@ -186,6 +171,21 @@ class FoodItem extends StatelessWidget {
       return '${R.string.da_an.tr()} ${formatNumber((selectedModel?.quantity ?? 0) * (selectedModel?.calorie ?? 0))} kcal';
     }
     return '${R.string.da_an.tr()} ${roundAsFixed((selectedModel?.portion ?? 0) * (selectedModel?.quantity ?? 0))} ${selectedModel?.unit ?? ''}, ${((selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0)).round()} kcal';
+  }
+
+  void _toggleSelection(BuildContext context, bool isSelected) {
+    if (isCategory) {
+      Navigator.pop(context);
+    }
+
+    // Use local callback if provided (e.g., search mode), otherwise use observer
+    if (onSelectionChanged != null) {
+      onSelectionChanged!(model, !isSelected);
+    } else if (isSelected) {
+      _removeFoodDirectly();
+    } else {
+      _addFoodDirectly();
+    }
   }
 
   void _addFoodDirectly() {

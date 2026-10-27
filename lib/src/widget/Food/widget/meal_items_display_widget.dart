@@ -80,7 +80,11 @@ class MealItemsDisplayWidget extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: NetWorkImageWidget(
-              imageUrl: food.imageUrl ?? '',
+              // AI items carry `imageUrl`; foods picked from the catalog only
+              // have `image.url`.
+              imageUrl: (food.imageUrl?.isNotEmpty ?? false)
+                  ? food.imageUrl!
+                  : (food.image?.url ?? ''),
               width: 60,
               height: 60,
               fit: BoxFit.cover,

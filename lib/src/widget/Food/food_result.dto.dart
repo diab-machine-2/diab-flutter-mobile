@@ -19,6 +19,8 @@ class FoodResultDto {
   final List<FoodModel> foods;
   final String? note;
   final List<ImagesModel> images;
+  // Device paths of the images just uploaded with this meal (note section).
+  final List<String> localImagePaths;
   final String? healthRecommendation;
   final bool? isFetchAnalysis;
   final List<AiReference>? references;
@@ -43,6 +45,7 @@ class FoodResultDto {
     required this.foods,
     this.note,
     required this.images,
+    this.localImagePaths = const [],
     this.healthRecommendation,
     this.isFetchAnalysis,
     this.references,

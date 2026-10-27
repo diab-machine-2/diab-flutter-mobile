@@ -593,9 +593,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
 
   Widget _buildButton() {
     return Container(
+      // No viewInsets padding: the Scaffold already resizes for the keyboard.
       margin: EdgeInsets.only(top: 8, bottom: 8, left: 12, right: 12),
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       height: 44,
       width: double.infinity,
       child: Row(
@@ -730,6 +729,11 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
               if (file.isNotEmpty) {
                 paths.add(file);
               }
+            } else if (file is XFile) {
+              // Images picked in the note section come back as XFile.
+              if (file.path.isNotEmpty) {
+                paths.add(file.path);
+              }
             } else if (file is File) {
               if (await file.exists()) {
                 paths.add(file.path);
@@ -826,10 +830,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           await HomeClient().completeSmartGoal(selectedDate,
               widget.goalId ?? '', 1, ScheduleType.food.typeIndex);
         }
-        // Clean up temporary files
-        if (paths.isNotEmpty) {
-          await _cleanupTempFiles(paths);
-        }
+        // Temp files are cleaned up by the result screen, which still shows
+        // them in its note section.
 
         // Parse MealScore response for result screen
         int? apiScore;
@@ -966,6 +968,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           foods: _selectedFoods,
           note: note,
           images: [],
+          localImagePaths: paths,
           healthRecommendation: apiMessage,
           isFetchAnalysis: false,
           score: apiScore,
@@ -1010,34 +1013,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
     }
   }
 
-  /// Clean up temporary files created on iOS (files in system temp directory)
-  /// This prevents disk space issues from accumulating temp files
-  Future<void> _cleanupTempFiles(List<String> paths) async {
-    try {
-      final tempDir = Directory.systemTemp;
-      final tempDirPath = tempDir.path;
-
-      for (String path in paths) {
-        try {
-          final file = File(path);
-          // Only delete if it's in the temp directory (iOS copied files)
-          if (path.startsWith(tempDirPath) && await file.exists()) {
-            await file.delete();
-            developer.log('[CAPTURE] Cleaned up temp file: $path',
-                name: '[CAPTURE]');
-          }
-        } catch (e) {
-          // Ignore errors during cleanup - file might already be deleted
-          developer.log('[CAPTURE] Error cleaning up temp file $path: $e',
-              name: '[CAPTURE]');
-        }
-      }
-    } catch (e) {
-      developer.log('[CAPTURE] Error in cleanup process: $e',
-          name: '[CAPTURE]');
-    }
-  }
-
   double _calculateTotalCarbs() {
     double total = 0;
     _selectedFoods.forEach((element) {
@@ -1065,13 +1040,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   void _showDialogSave() {
     final note = _controllerNote.text;
 
-    if (note.isEmpty && _selectedFoods.isEmpty && files.isEmpty) {
+    // Nothing to lose: go straight back to the camera / food search that
+    // opened this screen (never push a second camera route).
+    if (note.isEmpty && _selectedFoods.isEmpty) {
       Navigator.pop(context);
-      Navigator.pushNamed(context, NavigatorName.food_image_capture,
-          arguments: {
-            'timeframe': widget.timeframe,
-            'timeframeId': widget.timeframeId,
-          });
       return;
     }
 

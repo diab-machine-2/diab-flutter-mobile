@@ -111,6 +111,9 @@ class FoodInputModel {
   final int? fruitPercent;
   final AiRecommendationResult? aiAdvice;
   final String? imageUrl;
+  // All meal photos: main photo first, then extras in saved order. Extra
+  // links are signed and expire after ~5 minutes - never cache them.
+  final List<String> imageUrls;
   final bool? isFromAI;
   final bool? isBalanced;
   final String? timeFrameId;
@@ -138,6 +141,7 @@ class FoodInputModel {
     this.fruitPercent,
     this.aiAdvice,
     this.imageUrl,
+    this.imageUrls = const [],
     this.isFromAI,
     this.isBalanced,
     this.timeFrameId,
@@ -178,6 +182,11 @@ class FoodInputModel {
       fruitPercent: json['fruitPercent'],
       aiAdvice: AiRecommendationResult.fromDynamic(json['aiAdvice']),
       imageUrl: json['imageUrl'],
+      imageUrls: (json['imageUrls'] as List?)
+              ?.map((e) => e.toString())
+              .where((e) => e.isNotEmpty)
+              .toList() ??
+          [],
       isFromAI: json['isFromAI'],
       isBalanced: json['isBalanced'],
       timeFrameId: json['timeFrameId'],

@@ -10,11 +10,12 @@ import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,44 +41,49 @@ class UpdateMealPageAI extends StatefulWidget {
 class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
   final TextEditingController _controllerNote = TextEditingController();
   final List<FoodModel> _selectedFoods = [];
-  List<dynamic> files = [];
+  /// Editable state right after loading; compared on back to decide whether
+  /// leaving would discard anything.
+  String? _loadedSnapshot;
   int maxMedia = 5;
   DateTime selectedDate = DateTime.now();
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
       GlobalKey<SectionAddNoteState>();
-  final List<dynamic> _files = [];
+  /// Photos saved with this meal (server copies): the captured/analysed photo
+  /// first for AI meals, then the user's attachments. Re-fetched on every
+  /// open because the extra links expire after ~5 minutes.
+  final List<ImagesModel> _mealImages = [];
   int _currentImageIndex = 0;
   late PageController _pageController;
 
-  /// Displayable carousel items built from:
-  /// 1. The main AI captured imageUrl (if isFromAI)
-  /// 2. Non-null food thumbnail URLs (manually added foods)
-  /// 3. Any additional files (String paths) from notes/images
-  List<dynamic> get _carouselItems {
-    final items = <dynamic>[];
-    // 1. AI-captured meal image
-    if (_isFromAI && _mealImageUrl != null && _mealImageUrl!.isNotEmpty) {
-      items.add(ImagesModel(id: null, url: _mealImageUrl));
-    }
-    // 2. Food thumbnail images (manual foods have non-null image.url)
+  /// Carousel: the meal's own photos; only when it has none, fall back to
+  /// the catalog thumbnails of its foods.
+  List<ImagesModel> get _carouselItems {
+    if (_mealImages.isNotEmpty) return _mealImages;
+    final items = <ImagesModel>[];
     for (final food in _selectedFoods) {
-      if (food.image?.url != null && food.image!.url!.isNotEmpty) {
-        final url = food.image!.url!;
-        if (!items.any((i) => i is ImagesModel && i.url == url)) {
-          items.add(food.image!);
-        }
-      }
-    }
-    // 3. Additional raw file paths (e.g. from notes)
-    for (final f in _files) {
-      if (f is String && f.isNotEmpty) {
-        if (!items.contains(f)) {
-          items.add(f);
-        }
+      final url = food.image?.url;
+      if (url != null && url.isNotEmpty && !items.any((i) => i.url == url)) {
+        items.add(food.image!);
       }
     }
     return items;
+  }
+
+  /// `imageUrls` holds every meal photo. Servers without it: AI `imageUrl`
+  /// plus the legacy `images` list.
+  static List<ImagesModel> _mealImagesOf(FoodInputModel model) {
+    final urls = <String>[
+      ...model.imageUrls,
+      if (model.imageUrls.isEmpty) ...[
+        if ((model.isFromAI ?? false) && (model.imageUrl?.isNotEmpty ?? false))
+          model.imageUrl!,
+        ...model.images
+            .map((img) => img.url ?? '')
+            .where((url) => url.isNotEmpty),
+      ],
+    ];
+    return urls.toSet().map((url) => ImagesModel(id: null, url: url)).toList();
   }
 
   bool get _haveFood => _selectedFoods.isNotEmpty;
@@ -86,8 +92,6 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
       _selectedFoods.fold(0, (sum, food) => sum + (food.totalKcal ?? 0));
 
   bool _isLoading = true;
-  bool _isFromAI = false;
-  String? _mealImageUrl;
   String timeframe = '';
   String timeframeId = '';
 
@@ -105,23 +109,17 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
         setState(() {
           log("Foods model: ${jsonEncode(model.foods.map((f) => f.toJson()).toList())}");
           _selectedFoods.addAll(model.foods);
-          _isFromAI = model.isFromAI ?? false;
-          _mealImageUrl = model.imageUrl;
           if (model.date != null) {
             final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
             selectedDate = DateTime.fromMillisecondsSinceEpoch(
                 (model.date! - timezoneOffset) * 1000);
           }
           _controllerNote.text = model.note ?? '';
-          // Populate _files for the notes section (String file paths only)
-          for (final img in model.images) {
-            if (img.url != null && img.url!.isNotEmpty) {
-              _files.add(img.url!);
-            }
-          }
+          _mealImages.addAll(_mealImagesOf(model));
           timeframe = model.timeFrameName ?? model.mealText ?? '';
           timeframeId = model.timeFrameId ?? model.mealId ?? '';
           _isLoading = false;
+          _loadedSnapshot = _snapshot();
         });
       }
     } catch (e) {
@@ -215,36 +213,17 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                                               'index': index,
                                                             });
                                                       },
-                                                      child: (item
-                                                              is ImagesModel)
-                                                          ? Image.network(
-                                                              item.url ?? '',
-                                                              fit: BoxFit.cover,
-                                                              errorBuilder: (context,
-                                                                      error,
-                                                                      stackTrace) =>
-                                                                  Container(
-                                                                color: R.color
-                                                                    .glucose_bg_color,
-                                                              ),
-                                                            )
-                                                          : (item is String
-                                                              ? Image.file(
-                                                                  File(item),
-                                                                  fit:
-                                                                      BoxFit.cover,
-                                                                  errorBuilder: (context,
-                                                                          error,
-                                                                          stackTrace) =>
-                                                                      Container(
-                                                                    color: R.color
-                                                                        .glucose_bg_color,
-                                                                  ),
-                                                                )
-                                                              : Container(
-                                                                  color: R.color
-                                                                      .glucose_bg_color,
-                                                                )),
+                                                      child: Image.network(
+                                                        item.url ?? '',
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          color: R.color
+                                                              .glucose_bg_color,
+                                                        ),
+                                                      ),
                                                     );
                                                   },
                                                 ),
@@ -598,7 +577,8 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
         controllerNote: _controllerNote,
         maxMedia: 5,
         key: _sectionAddNoteKey,
-        initialFiles: _carouselItems,
+        // The meal's own photos - never the catalog thumbnails of the foods.
+        initialFiles: _mealImages,
         noteTitle: R.string.ghi_chu.tr(),
         horizontalPadding: 12,
         showCameraIcons: false,
@@ -611,9 +591,9 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
     return SafeArea(
       top: false,
       child: Container(
+        // No viewInsets padding: the Scaffold already resizes for the
+        // keyboard, adding it again pushed the note field off-screen.
         margin: EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -913,9 +893,11 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
       if (data.files.isNotEmpty) {
         for (var file in data.files) {
           try {
-            if (file is String) {
-              if (file.isNotEmpty) {
-                paths.add(file);
+            if (file is ImagesModel) {
+              // Already on the server - nothing to upload.
+            } else if (file is XFile) {
+              if (file.path.isNotEmpty) {
+                paths.add(file.path);
               }
             } else if (file is File) {
               if (await file.exists()) {
@@ -962,8 +944,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
           name: '[CAPTURE]');
 
       final client = FoodClient();
-      List<String?> removeIDs =
-          []; // Thêm tính năng lưu danh sách ảnh xoá cần thiết
+      final List<String?> removeIDs = data.removeIDs;
 
       // Swap portion and quantity to match the API expectation (like in DailyNutritionCubit editData)
       final List<FoodModel> swappedFoods = _selectedFoods.map((food) {
@@ -1076,16 +1057,25 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
     return total;
   }
 
-  void _showDialogSave() {
-    final note = _controllerNote.text;
+  String _snapshot() => [
+        selectedDate.millisecondsSinceEpoch,
+        _controllerNote.text,
+        ..._selectedFoods.map((f) => '${f.id}|${f.name}|${f.portion}|${f.unit}'),
+      ].join('\n');
 
-    if (note.isEmpty && _selectedFoods.isEmpty && files.isEmpty) {
+  bool get _hasNewImages =>
+      _sectionAddNoteKey.currentState
+          ?.getNote()
+          .files
+          .any((f) => f is! ImagesModel) ??
+      false;
+
+  /// Back from the meal detail always returns to the screen that opened it
+  /// (the meal list / trend chart); it only asks first when there are
+  /// unsaved edits.
+  void _showDialogSave() {
+    if (_isLoading || (_snapshot() == _loadedSnapshot && !_hasNewImages)) {
       Navigator.pop(context);
-      Navigator.pushNamed(context, NavigatorName.food_image_capture,
-          arguments: {
-            'timeframe': timeframe,
-            'timeframeId': timeframeId,
-          });
       return;
     }
 
@@ -1159,14 +1149,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context); // Close dialog
-                              Navigator.pop(context); // Close confirm_gen_food
-                              // Navigate back to food image capture screen
-                              Navigator.pushNamed(
-                                  context, NavigatorName.food_image_capture,
-                                  arguments: {
-                                    'timeframe': timeframe,
-                                    'timeframeId': timeframeId,
-                                  });
+                              Navigator.pop(context); // Close meal detail
                             },
                             child: Container(
                               height: 43,

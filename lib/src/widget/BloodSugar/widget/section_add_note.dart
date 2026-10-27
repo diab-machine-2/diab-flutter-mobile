@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -391,29 +390,10 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
   void _openGallery(BuildContext context) async {
     try {
-      // Check storage permission for gallery access on Android
-      if (Platform.isAndroid) {
-        // For Android 13+ use photos, for <=12 use storage
-        final androidInfo = await DeviceInfoPlugin().androidInfo;
-        final sdkInt = androidInfo.version.sdkInt;
-
-        Permission permissionToRequest;
-        if (sdkInt >= 33) {
-          permissionToRequest = Permission.photos; // READ_MEDIA_IMAGES
-        } else {
-          permissionToRequest = Permission.storage; // READ_EXTERNAL_STORAGE
-        }
-
-        final status = await permissionToRequest.status;
-        if (!status.isGranted) {
-          final newStatus = await permissionToRequest.request();
-          if (!newStatus.isGranted) {
-            _showGalleryPermissionDialog(context);
-            return;
-          }
-        }
-      }
-
+      // No runtime permission on Android: ImagePicker goes through the system
+      // photo picker (API 33+) / GET_CONTENT, which need none. Requesting
+      // READ_MEDIA_IMAGES - not declared in the manifest - is denied
+      // instantly, which used to block picking on Android 13+.
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
