@@ -117,5 +117,24 @@ void main() {
               .contains(HomeDailyCareSlug.healthProfile),
           isFalse);
     });
+
+    test('Tư vấn sống khỏe / Mời bạn bè: hidden by default, shown when listed',
+        () {
+      const flags = HomeViewFlags(hasBundle: true, hasKpi: true);
+      final byDefault = config.allFor(flags);
+      expect(byDefault, isNot(contains(HomeDailyCareSlug.healthConsulting)));
+      expect(byDefault, isNot(contains(HomeDailyCareSlug.referral)));
+
+      final listed = HomeDailyCareConfig.parse(
+              '{"all":["nhac-lich-uong-thuoc","tu-van-song-khoe","moi-ban-be"],'
+              '"grid_bundle_kpi":["tu-van-song-khoe","moi-ban-be"]}');
+      expect(listed.allFor(flags), [
+        HomeDailyCareSlug.medicineReminder,
+        HomeDailyCareSlug.healthConsulting,
+        HomeDailyCareSlug.referral,
+      ]);
+      expect(listed.gridFor(flags),
+          [HomeDailyCareSlug.healthConsulting, HomeDailyCareSlug.referral]);
+    });
   });
 }
