@@ -92,8 +92,6 @@ class HomeDailyCareConfig {
     HomeDailyCareSlug.labTest,
     HomeDailyCareSlug.buyMedicine,
     HomeDailyCareSlug.atClinic,
-    HomeDailyCareSlug.healthConsulting,
-    HomeDailyCareSlug.referral,
   ];
 
   final List<String> gridNoBundle;

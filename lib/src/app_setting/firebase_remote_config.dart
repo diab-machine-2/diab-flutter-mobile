@@ -167,11 +167,17 @@ class FirebaseRemoteSetting {
     if (bookingSpecialtyList.isNotEmpty) {
       _bookingSpecialtyList = bookingSpecialtyList;
     }
-    if (remoteConfig.getString('GLUCOSE_FAQS').isNotEmpty == true) {
-      _glucoseFaqs =
-          (jsonDecode(remoteConfig.getString('GLUCOSE_FAQS')) as List<dynamic>)
-              .map((item) => GlucoseFaq.fromJson(item as Map<String, dynamic>))
-              .toList();
+    // A malformed GLUCOSE_FAQS must not skip the keys read after it (VNPay,
+    // Home benefit / daily care), which would silently fall back to defaults.
+    try {
+      if (remoteConfig.getString('GLUCOSE_FAQS').isNotEmpty == true) {
+        _glucoseFaqs = (jsonDecode(remoteConfig.getString('GLUCOSE_FAQS'))
+                as List<dynamic>)
+            .map((item) => GlucoseFaq.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
     }
     _vnpayIntegratedInfo = AppSettings.environment == "product"
         ? remoteConfig.getString('VNPAY_INTEGRATED_INFO')
