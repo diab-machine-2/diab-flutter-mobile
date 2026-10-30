@@ -36,12 +36,44 @@ class _ScheduleActivityControllerState
     loadData();
   }
 
+  /// The 5 frames every account's schedule holds (same ids on dev and prod).
+  /// An account created without them gets an empty list back, which used to
+  /// leave this screen blank — and Home reminders never show without these
+  /// times. Shown unset ("--") so the user picks every time before saving.
+  static List<PatientTimeFrameModel> defaultFrames() => [
+        PatientTimeFrameModel(
+            timeFrameId: '433e32dd-aa64-4292-b91d-c4686c0e2479',
+            timeFrameName: R.string.wake_up.tr(),
+            time: null),
+        PatientTimeFrameModel(
+            timeFrameId: 'ba1e8229-34d7-4549-822e-169845509d5c',
+            timeFrameName: R.string.meal_breakfast.tr(),
+            time: null),
+        PatientTimeFrameModel(
+            timeFrameId: '80fa7c4d-04df-409c-9017-30aa85efe144',
+            timeFrameName: R.string.meal_lunch.tr(),
+            time: null),
+        PatientTimeFrameModel(
+            timeFrameId: 'b56c18ec-f4d6-4dbf-8b64-8916beeabbbe',
+            timeFrameName: R.string.meal_dinner.tr(),
+            time: null),
+        PatientTimeFrameModel(
+            timeFrameId: '38bf2515-99eb-40e4-bcd9-171db99f7b12',
+            timeFrameName: R.string.sleep_time.tr(),
+            time: null),
+      ];
+
   loadData() async {
     BotToast.showLoading();
-    model = await UserClient().fetchPatientTimeFrame();
+    try {
+      final frames = await UserClient().fetchPatientTimeFrame();
+      model = (frames == null || frames.isEmpty) ? defaultFrames() : frames;
+    } catch (e) {
+      if (mounted) Message.showToastMessage(context, e.toString());
+    }
     tempModel = [...model!];
     BotToast.closeAllLoading();
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -133,7 +165,7 @@ class _ScheduleActivityControllerState
           children: [
             Row(
               children: [
-                Image.asset(icons[index], width: 30, height: 30),
+                Image.asset(icons[index % icons.length], width: 30, height: 30),
                 SizedBox(width: 16),
                 Text(model![index].timeFrameName!,
                     style: TextStyle(
