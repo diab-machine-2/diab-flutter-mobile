@@ -104,12 +104,15 @@ class HomeActivity extends StatelessWidget {
         onViewProgram,
       );
     } else if (hasMore) {
+      // Figma: the label stays "Xem tất cả"; only the chevron turns from
+      // right (collapsed) to down (expanded).
       action = _headerAction(
-        expanded ? R.string.show_less.tr() : R.string.view_all.tr(),
-        Icon(
-          expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-          size: 16,
-          color: R.color.homeAccentTeal,
+        R.string.view_all.tr(),
+        AnimatedRotation(
+          turns: expanded ? 0.25 : 0,
+          duration: const Duration(milliseconds: 200),
+          child:
+              SvgPicture.asset(R.icons.ic_home_chevron, width: 14, height: 14),
         ),
         onToggleExpanded,
       );
@@ -278,12 +281,16 @@ class HomeActivity extends StatelessWidget {
               ),
               if (trailing != null) ...[
                 const SizedBox(width: 12),
-                // Time can carry a long frame name ("08:00 buổi tối").
-                Flexible(
+                // Sized to its text and pushed right. A Flexible here split
+                // the row 50/50 with the title, so the time floated mid-card.
+                // The cap still ellipsizes a long frame name ("08:00 buổi tối").
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 140),
                   child: Text(
                     trailing,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
                     style: TextStyle(
                       color: R.color.color0xff5E6566,
                       fontSize: 13,

@@ -305,7 +305,9 @@ class _BookingCard extends StatelessWidget {
                 padding: const EdgeInsets.all(14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Top-aligned with a fixed gap: with spaceBetween the
+                  // one-line title of the shorter card sat lower than the
+                  // two-line title next to it.
                   children: [
                     Container(
                       width: 44,
@@ -317,6 +319,7 @@ class _BookingCard extends StatelessWidget {
                       ),
                       child: SvgPicture.asset(icon, width: 24, height: 24),
                     ),
+                    const SizedBox(height: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
