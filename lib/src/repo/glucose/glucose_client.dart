@@ -317,6 +317,7 @@ class GlucoseClient extends FetchClient {
     String? modelNumber,
   }) async {
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       List<Map<String, dynamic>> params = [];
       glucoses.forEach((element) {
         final item = {
@@ -335,7 +336,10 @@ class GlucoseClient extends FetchClient {
 
       final response = await super.postHttp2(
           path: '/App/Glucose/Inputs',
-          params: jsonEncode({'glucoseInputs': params}));
+          params: jsonEncode({
+            'glucoseInputs': params,
+            'thresholdType': isGestationalDiabetes ? 1 : 0,
+          }));
 
       if (response.statusCode == 200) {
         return true;
