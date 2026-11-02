@@ -1,8 +1,12 @@
 class Const {
-  // product or staging or dev. Override per run for QA with
-  // `--dart-define=APP_ENV=staging`; release builds keep "product".
+  // product or staging or dev. CI (.github/workflows/ios-build.yml) sed-rewrites
+  // the string literal on the next line to pick the build env — keep it a plain
+  // single-line literal or the CI env switch silently stops working.
+  static const String _ENVIRONMENT_DEFAULT = "product";
+
+  // Override per run for QA with `--dart-define=APP_ENV=staging`.
   static const String ENVIRONMENT_DEFAULT =
-      String.fromEnvironment('APP_ENV', defaultValue: "product");
+      String.fromEnvironment('APP_ENV', defaultValue: _ENVIRONMENT_DEFAULT);
 
   // Numeric App Store id (apps.apple.com/app/id<ID>). Android uses the
   // runtime package name instead. White-label builds must change this.
