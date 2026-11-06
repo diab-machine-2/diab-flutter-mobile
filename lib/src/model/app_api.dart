@@ -98,6 +98,7 @@ import 'response/week_states_response.dart';
 import 'response/zoom_token_response.dart';
 import 'response/bcb_campaign_customer_response.dart';
 import 'response/my_benefit_response.dart';
+import 'response/booking_check_response.dart';
 import 'response/medication_order_response.dart';
 
 part 'app_api.g.dart';
@@ -729,4 +730,23 @@ abstract class AppApi {
     @Query("itemId") required String itemId,
     @Query("itemType") required int itemType,
   });
+
+  // BE-7: quota of benefit bookings, by mode (online / offline).
+  @GET("App/UserBundleOrders/my-benefit/booking-check")
+  Future<BookingCheckResponse> benefitBookingCheck(
+      @Query("mode") String mode);
+
+  /// Params go in the query; the backend still wants a JSON body (415
+  /// without one). One deduction per appointment, however often it's called.
+  @POST("App/UserBundleOrders/my-benefit/booking-use")
+  Future<BookingCheckResponse> benefitBookingUse(
+    @Query("mode") String mode,
+    @Query("appointmentId") String appointmentId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// Refunds the deduction of a cancelled appointment.
+  @DELETE("App/UserBundleOrders/my-benefit/booking-use/{appointmentId}")
+  Future<CommonResponse> benefitBookingRefund(
+      @Path("appointmentId") String appointmentId);
 }

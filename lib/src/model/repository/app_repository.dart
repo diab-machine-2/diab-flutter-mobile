@@ -110,6 +110,7 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/model/response/exercise_lesson_response.dart';
 import 'package:medical/src/model/response/bcb_campaign_customer_response.dart';
 import 'package:medical/src/model/response/my_benefit_response.dart';
+import 'package:medical/src/model/response/booking_check_response.dart';
 import 'package:medical/src/widget/benefit/my_benefit_mock.dart';
 
 import '../app_api.dart';
@@ -1565,6 +1566,59 @@ class AppRepository {
     try {
       final response = await appClient.useBenefitService(
           itemId: itemId, itemType: itemType);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /// BE-7 `mode`: at a clinic is `offline`, telemedicine `online`.
+  static String benefitBookingMode(bool atClinic) =>
+      atClinic ? 'offline' : 'online';
+
+  Future<ApiResult<BookingCheckResponse>> benefitBookingCheck(
+      String mode) async {
+    try {
+      final response = await appClient.benefitBookingCheck(mode);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<BookingCheckResponse>> benefitBookingUse(
+      {required String mode, required String appointmentId}) async {
+    try {
+      final response =
+          await appClient.benefitBookingUse(mode, appointmentId, {});
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /// Counts a benefit booking against the bundle: `booking-use` (BE-7), or
+  /// on a backend without it (404) the older per-item `use-service` when the
+  /// booking started from a bundle item. Never throws.
+  Future<void> countBenefitBooking({
+    required String mode,
+    required String appointmentId,
+    String? itemId,
+    int? itemType,
+  }) async {
+    final result =
+        await benefitBookingUse(mode: mode, appointmentId: appointmentId);
+    final missingEndpoint =
+        result.whenOrNull(failure: (e) => e is NotFound) ?? false;
+    if (missingEndpoint && itemId != null && itemType != null) {
+      await useBenefitService(itemId: itemId, itemType: itemType);
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> benefitBookingRefund(
+      String appointmentId) async {
+    try {
+      final response = await appClient.benefitBookingRefund(appointmentId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -971,12 +972,18 @@ class _BenefitBookingDetailContentState
                 subtitle: R.string.confirm_cancel_schedule_content
                     .tr(args: [startTime]),
                 onConfirm: () async {
-                  await _cubit.cancelDsmesAppointment(
+                  final cancelled = await _cubit.cancelDsmesAppointment(
                     request: DsmesCancelBookingRequest(
                       id: widget.appointment.id,
                       reason: [],
                     ),
                   );
+                  // BE-7: give the booking back to the bundle. A no-op for
+                  // an appointment that was never counted by booking-use.
+                  if (cancelled) {
+                    AppRepository().benefitBookingRefund(
+                        widget.appointment.id.toString());
+                  }
 
                   Navigator.of(context).pop();
                   if (_isExamination()) {

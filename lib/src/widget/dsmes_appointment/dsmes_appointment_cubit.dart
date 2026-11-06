@@ -347,16 +347,19 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return dsmesAppointment;
   }
 
-  Future<void> cancelDsmesAppointment(
+  /// Returns whether Docosan accepted the cancellation.
+  Future<bool> cancelDsmesAppointment(
       {required DsmesCancelBookingRequest request}) async {
     emit(DsmesAppointmentLoading());
     ApiResult<CommonResponse> apiResult =
         await appRepository.cancelDsmesBooking(request: request);
-    apiResult.when(success: (CommonResponse response) {
+    return apiResult.when(success: (CommonResponse response) {
       print('cancelDsmesAppointment: ${response.statusCode}');
       emit(DsmesAppointmentLoaded());
+      return true;
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      return false;
     });
   }
 

@@ -29,12 +29,15 @@ class VNPayService with WidgetsBindingObserver {
   final String serviceType;
   final DsmesAppointmentCubit cubit;
   /// Originating [MyBenefitItem.itemId] when this payment started from a tap
-  /// on a benefit bundle item — `null` for non-benefit bookings. When set,
-  /// alongside [itemType], a successful payment marks the item used via
-  /// `useBenefitService`, and "Về trang chủ" returns to the bundle page
-  /// instead of the tabbar.
+  /// on a benefit bundle item — `null` otherwise. When set, "Về trang chủ"
+  /// returns to the bundle page instead of the tabbar.
   final String? itemId;
   final int? itemType;
+
+  /// BE-7 mode (`online` / `offline`) when this is a benefit ("Quyền lợi")
+  /// booking — also from Home, where [itemId] is null. A successful booking
+  /// is then counted against the bundle. Null for daily-care bookings.
+  final String? benefitBookingMode;
 
   String tmnCode = '';
   String paymentUrl = '';
@@ -64,6 +67,7 @@ class VNPayService with WidgetsBindingObserver {
     required this.cubit,
     this.itemId,
     this.itemType,
+    this.benefitBookingMode,
   });
 
   void _ensureLifecycleObserverAttached() {
@@ -522,12 +526,14 @@ class VNPayService with WidgetsBindingObserver {
       return;
     }
 
-    if (itemId != null && itemType != null) {
+    if (benefitBookingMode != null) {
       // Best-effort — never blocks the success dialog, and the repo method
       // itself never throws (failures come back as ApiResult.failure).
-      AppRepository().useBenefitService(
-        itemId: itemId!,
-        itemType: itemType!,
+      AppRepository().countBenefitBooking(
+        mode: benefitBookingMode!,
+        appointmentId: resp.id.toString(),
+        itemId: itemId,
+        itemType: itemType,
       );
     }
 

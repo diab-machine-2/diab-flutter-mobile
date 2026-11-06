@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -1193,12 +1194,19 @@ class _DsmesBookingDetailContentState
                 subtitle: R.string.confirm_cancel_schedule_content
                     .tr(args: [startTime]),
                 onConfirm: () async {
-                  await _cubit.cancelDsmesAppointment(
+                  final cancelled = await _cubit.cancelDsmesAppointment(
                     request: DsmesCancelBookingRequest(
                       id: widget.appointment.id,
                       reason: [],
                     ),
                   );
+                  // BE-7: a paid benefit booking can be opened here too.
+                  // Refunding an appointment that was never counted (any
+                  // daily-care booking) is a no-op on the backend.
+                  if (cancelled) {
+                    AppRepository().benefitBookingRefund(
+                        widget.appointment.id.toString());
+                  }
 
                   Navigator.of(context).pop();
                   if (_cubit.isExamination) {

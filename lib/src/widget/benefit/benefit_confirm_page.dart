@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,12 +54,12 @@ class BenefitConfirmPage extends StatefulWidget {
   /// Originating [MyBenefitItem.itemId] when this booking started from a tap
   /// on a bundle item in `BenefitIntroduceBundlePage` — `null` for bookings
   /// started elsewhere (e.g. Home's generic booking quick actions). When set,
-  /// a successful booking marks the item used via `useBenefitService`, and
-  /// "Về trang chủ" returns to the bundle page instead of the tabbar.
+  /// "Về trang chủ" returns to the bundle page instead of the tabbar. Quota
+  /// is counted by mode via `benefitBookingUse` either way (BE-7).
   final String? itemId;
 
   /// The item's raw wire `itemType` (see `BenefitBundleItemType.resolve`),
-  /// passed through to `useBenefitService` alongside [itemId].
+  /// forwarded with [itemId].
   final int? itemType;
 
   const BenefitConfirmPage({
@@ -267,6 +269,35 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
   // ─── Booking ──────────────────────────────────────────────────────────────
 
+  /// BE-7: stop before booking when the bundle has no bookings left for
+  /// this mode. Anything but a clear "not allowed" (network error, a backend
+  /// without the endpoint) lets the booking go ahead as before.
+  Future<bool> _ensureBookingQuota(String mode) async {
+    BotToast.showLoading();
+    final result = await AppRepository().benefitBookingCheck(mode);
+    BotToast.closeAllLoading();
+    final check = result.whenOrNull(success: (r) => r.success ? r.data : null);
+    if (check == null || check.allowed) return true;
+    if (!mounted) return false;
+    final message = check.message?.trim() ?? '';
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(
+          message.isNotEmpty ? message : R.string.benefit_out_of_quota.tr(),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(R.string.close.tr()),
+          ),
+        ],
+      ),
+    );
+    return false;
+  }
+
   Future<void> _handleCreateBooking() async {
     // Handle reschedule case
     if (widget.action == 'reschedule' && widget.appointmentId != null) {
@@ -277,6 +308,10 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     // Never create a booking / open VNPay against a bundle removed
     // server-side — the guard shows a dialog and pops back to root.
     if (!await BenefitAvailabilityGuard.ensureAvailable()) return;
+
+    final bookingMode = AppRepository.benefitBookingMode(
+        widget.serviceType == DsmesAppointmentMode.atClinic.toString());
+    if (!await _ensureBookingQuota(bookingMode)) return;
 
     final data = _sectionAddSymptomKey.currentState?.getNote();
     String symptom = data?.note ?? '';
@@ -355,6 +390,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
           cubit: _cubit,
           itemId: widget.itemId,
           itemType: widget.itemType,
+          benefitBookingMode: bookingMode,
         );
         final initialized = await paymentService.initializePayment();
         if (initialized) {
@@ -390,14 +426,15 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
     if (resp == null) return;
 
-    if (widget.itemId != null && widget.itemType != null) {
-      // Best-effort — never blocks the success dialog, and the repo method
-      // itself never throws (failures come back as ApiResult.failure).
-      AppRepository().useBenefitService(
-        itemId: widget.itemId!,
-        itemType: widget.itemType!,
-      );
-    }
+    // BE-7: count the booking against the bundle — from Home too, which has
+    // no itemId. Best-effort: never blocks the success dialog, and the repo
+    // method never throws.
+    AppRepository().countBenefitBooking(
+      mode: bookingMode,
+      appointmentId: resp.id.toString(),
+      itemId: widget.itemId,
+      itemType: widget.itemType,
+    );
 
     final startTime = DateFormat('HH:mm')
         .format(DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));

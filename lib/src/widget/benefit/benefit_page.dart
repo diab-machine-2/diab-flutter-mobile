@@ -255,12 +255,11 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                       final args =
                           settings.arguments as Map<String, dynamic>?;
                       // Deliberately doesn't forward itemId/itemType: this
-                      // page is reached after `useBenefitService` has already
-                      // fired for the original booking, and its "Đổi lịch"
-                      // action (BenefitRescheduleFlow → _handleRescheduleBooking)
-                      // only changes the appointment time — it must NOT
-                      // re-call useBenefitService, which would double-count
-                      // quota usage for the same booking.
+                      // page is reached after the booking was already counted
+                      // (benefitBookingUse), and its "Đổi lịch" action
+                      // (BenefitRescheduleFlow → _handleRescheduleBooking)
+                      // only changes the appointment time — it must not
+                      // count quota again.
                       return _buildRoute(
                         settings,
                         BenefitBookingDetailPage(
