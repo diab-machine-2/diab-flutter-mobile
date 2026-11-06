@@ -253,12 +253,16 @@ class _CampaignTestResultScreenState extends State<CampaignTestResultScreen> {
                           ...items.map(
                             (item) => _ExamResultItem(
                               result: item,
-                              onView: () {
-                                Navigator.pushNamed(
+                              onView: () async {
+                                await Navigator.pushNamed(
                                   context,
                                   NavigatorName.campaign_test_result_detail,
                                   arguments: {'result': item},
                                 );
+                                // The detail screen marked it viewed (BE-2);
+                                // drop the dot without refetching.
+                                if (!mounted || !item.isUnviewed) return;
+                                setState(() => item.viewedAt = DateTime.now());
                               },
                             ),
                           ),
@@ -328,17 +332,38 @@ class _ExamResultItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: R.color.color0xffFEF2F2,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: SvgPicture.asset(
-              R.icons.ic_file_pdf,
-              width: 24,
-              height: 24,
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: R.color.color0xffFEF2F2,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: SvgPicture.asset(
+                  R.icons.ic_file_pdf,
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+              // Same red dot as Home's "Hồ sơ" tile: a result not opened yet.
+              if (result.isUnviewed)
+                Positioned(
+                  key: const ValueKey('exam_result_unviewed_dot'),
+                  top: -3,
+                  right: -3,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: R.color.homeAlertRed,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: R.color.white, width: 1.5),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(width: 10),
           Expanded(

@@ -107,17 +107,38 @@ class BloodPressureChartState extends State<BloodPressureChart>
         _subscription = null;
 
         final trends = _getTrends(state.model);
-        if (trends.isEmpty) {
-          Future.delayed(Duration(milliseconds: 500)).then((value) {
-            if (!mounted) return;
-            Navigator.pushReplacementNamed(
-                context, NavigatorName.add_blood_pressure,
-                arguments: {'type': 'input'});
-          });
-        }
+        if (trends.isEmpty) _leaveIfNoDataAtAll();
       }
     });
   }
+
+  /// The selected period is empty. Readings in a wider period → stay on the
+  /// dashboard (it shows the empty box; the user can switch period). No
+  /// reading in the widest period (90 days) → replace with the BP overview
+  /// (intro), the same place Home sends a user with no BP data.
+  Future<void> _leaveIfNoDataAtAll() async {
+    if (_periodFilterType != widestPeriodFilterType) {
+      try {
+        final result = await BloodPressureClient().fetchBloodPressureInput(
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+          '$widestPeriodFilterType',
+          null,
+          1,
+          size: '1',
+        );
+        if (result.inputs.isNotEmpty) return;
+      } catch (_) {
+        // Unknown → stay on the dashboard rather than bounce the user.
+        return;
+      }
+    }
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(
+        context, NavigatorName.blood_pressure_intro_1st_page);
+  }
+
+  /// periodFilterType 4 = 90 days, the widest the BP API accepts.
+  static const int widestPeriodFilterType = 4;
 
   void reloadData(int periodFilter, [bool isNew = false]) {
     _registerEmptyNavigation();

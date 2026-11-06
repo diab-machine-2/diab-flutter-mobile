@@ -6,6 +6,13 @@ class BcbExamResultModel {
   DateTime? viewedAt;
   int? type;
 
+  /// The backend sent a `viewedAt` key (BE-2). Older backends leave it out,
+  /// and then a null `viewedAt` says nothing about whether it was read.
+  final bool tracksViewed;
+
+  /// Not opened yet, as far as the backend tracks it.
+  bool get isUnviewed => tracksViewed && viewedAt == null;
+
   BcbExamResultModel({
     this.id,
     this.fileUrl,
@@ -13,6 +20,7 @@ class BcbExamResultModel {
     this.uploadedAt,
     this.viewedAt,
     this.type,
+    this.tracksViewed = false,
   });
 
   factory BcbExamResultModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +31,7 @@ class BcbExamResultModel {
       uploadedAt: _parseDateTime(json['uploadedAt']),
       viewedAt: _parseDateTime(json['viewedAt']),
       type: json['type'] as int?,
+      tracksViewed: json.containsKey('viewedAt'),
     );
   }
 
