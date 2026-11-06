@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -71,10 +72,12 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     _loadData();
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _loading = true;
-    });
+  Future<void> _loadData({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+      });
+    }
     try {
       final results = await Future.wait([
         _repository.getLearningPostEvent(widget.id),
@@ -113,8 +116,50 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
         setState(() {
           _loading = false;
         });
+        _schedulePhaseTimer();
       }
     }
+  }
+
+  Timer? _phaseTimer;
+
+  @override
+  void dispose() {
+    _phaseTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Rebuilds when the event's phase or countdown changes while the page is
+  /// open: at the start the button flips to "Tham gia ngay", at the end to
+  /// "Xem lại sự kiện"; in the last hour the countdown ticks each minute.
+  void _schedulePhaseTimer() {
+    _phaseTimer?.cancel();
+    final webinar = _webinar;
+    if (webinar == null) return;
+    final now = DateTime.now();
+    final start = _getEventDateTime(webinar);
+    final end = _getEventEndDateTime(webinar);
+    Duration? delay;
+    if (start != null && now.isBefore(start)) {
+      // Next change of the label: the hour count above an hour, the
+      // (rounded-up) minute count below it, or the start itself.
+      final untilStart = start.difference(now);
+      final step = untilStart >= const Duration(hours: 1)
+          ? const Duration(hours: 1)
+          : const Duration(minutes: 1);
+      final rem = Duration(
+          microseconds: untilStart.inMicroseconds % step.inMicroseconds);
+      delay = rem == Duration.zero ? step : rem;
+    } else if (end != null && now.isBefore(end)) {
+      delay = end.difference(now);
+    }
+    if (delay == null) return;
+    // Land just past the boundary so the phase checks see the new state.
+    _phaseTimer = Timer(delay + const Duration(seconds: 1), () {
+      if (!mounted) return;
+      setState(() {});
+      _schedulePhaseTimer();
+    });
   }
 
   Future<void> _onRegister() async {
@@ -201,6 +246,33 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
       // ignore: avoid_print
       print('[Webinar] Failed to add event to calendar: $e\n$s');
     }
+  }
+
+  /// "Tham gia ngay" on a live webinar the user hadn't registered for:
+  /// register silently (keeps the join count and isJoin right; no toast or
+  /// calendar entry for an event already running), then open the link. A
+  /// failed registration doesn't block joining.
+  Future<void> _onRegisterAndJoin() async {
+    final webinar = _webinar;
+    if (webinar == null || _registering) return;
+    setState(() => _registering = true);
+    BotToast.showLoading();
+    var registered = false;
+    try {
+      await _repository.registerLearningPostEvent(webinar.id ?? '');
+      registered = true;
+    } catch (_) {
+      // Expected on a backend that refuses registering a running event.
+    } finally {
+      BotToast.closeAllLoading();
+    }
+    // Still "registering" while the link opens, so a second tap can't
+    // register and open Zoom again.
+    await _onJoinNow();
+    _finishRegisterLoading();
+    // Picks up isJoin / join count quietly; nothing changed if registering
+    // failed.
+    if (registered && mounted) _loadData(showLoader: false);
   }
 
   Future<void> _onJoinNow() async {
@@ -364,6 +436,21 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     final now = DateTime.now();
     final difference = eventDateTime.difference(now);
     return difference.inHours > 0 ? difference.inHours : 0;
+  }
+
+  /// "Sẽ diễn ra sau N tiếng", or in minutes under an hour (it used to say
+  /// "0 tiếng").
+  String _countdownLabel(LearningPostModel model) {
+    final start = _getEventDateTime(model);
+    final left =
+        start == null ? Duration.zero : start.difference(DateTime.now());
+    if (left >= const Duration(hours: 1)) {
+      return R.string.webinar_upcoming_in_hours
+          .tr(args: [_calculateHoursUntilEvent(model).toString()]);
+    }
+    // Round up: 30s left still reads "1 phút".
+    final minutes = (left.inSeconds / 60).ceil().clamp(1, 60);
+    return R.string.webinar_upcoming_in_minutes.tr(args: ['$minutes']);
   }
 
   DateTime? _getEventEndDateTime(LearningPostModel model) {
@@ -576,13 +663,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                                   ),
                                                   GapW(4.w),
                                                   Text(
-                                                    R.string
-                                                        .webinar_upcoming_in_hours
-                                                        .tr(args: [
-                                                      _calculateHoursUntilEvent(
-                                                              webinar)
-                                                          .toString()
-                                                    ]),
+                                                    _countdownLabel(webinar),
                                                     style: TextStyle(
                                                       fontSize: 15.sp,
                                                       color: Colors.white,
@@ -1436,10 +1517,13 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
 
     // State 3: Event is currently happening (during event)
     if (isEventStarted) {
-      // If user joined and it's online event with link, show "Tham gia ngay"
-      if (isJoined && isOnlineEvent && hasLink) {
+      // Online event with a link: "Tham gia ngay" straight away, even if the
+      // user hasn't registered — no "Đăng ký tham gia" step once it's live.
+      if (isOnlineEvent && hasLink) {
         return InkWell(
-          onTap: _onJoinNow,
+          onTap: isJoined
+              ? _onJoinNow
+              : (_registering ? null : _onRegisterAndJoin),
           child: Container(
             width: double.infinity,
             height: 44,
