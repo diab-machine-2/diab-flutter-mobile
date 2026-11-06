@@ -28,6 +28,14 @@ class NewsDetailRepository extends FetchClient {
     }
   }
 
+  /// BE-4: counts one view (feeds `viewCount` on Home's news cards). Fire and
+  /// forget; an older backend without the endpoint just answers 404.
+  Future<void> markViewed(String newsId) async {
+    try {
+      await super.postData(url: '/App/LearningPost/$newsId/view');
+    } catch (_) {}
+  }
+
   static final NewsDetailRepository _instance =
       NewsDetailRepository._internal();
   factory NewsDetailRepository() {

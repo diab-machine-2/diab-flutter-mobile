@@ -29,6 +29,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 import 'package:medical/src/widget/home/home_mock.dart';
+import 'package:medical/src/widget/home/home_view_flags.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -824,7 +825,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     // Nutrition (Food)
     final double displayEnergy = model?.energyCard?.consumedEnergy ?? 0;
-    final haveNutrition = displayEnergy > 0;
+    final haveNutrition =
+        model != null && HomeViewFlags.hasRecentNutrition(model);
     final nutrition = HomeMeasurementData(
       title: R.string.dinh_duong.tr(),
       titleColor: haveNutrition ? _haveValueTitleColor : _noValueTitleColor,

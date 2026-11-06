@@ -153,7 +153,7 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  R.string.bloodpressure_benefit_observe.tr(),
+                  R.string.nutrient_benefit_record.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     height: 24 / 15,

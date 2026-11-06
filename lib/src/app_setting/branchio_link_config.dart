@@ -81,6 +81,7 @@ class BranchioLinkConfig {
   String? _pendingSurveyId;
   String? _pendingLessonId;
   String? _pendingLessonType;
+  String? _pendingLearningPostId;
   String? _pendingBcbCampaignId;
   String? _pendingBcbCampaignName;
   String? _pendingLabResultId;
@@ -161,14 +162,7 @@ class BranchioLinkConfig {
     }
     _isDeepLinkHandlerSetUp = true;
     print('[BRANCH_DEBUG] Inside setUpHandleDeepLink()');
-    SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
-      screenName: 'deeplink',
-      trackingEnabled: false, // Disable tracking for deeplinks
-      showGlucoseBottomSheet: false,
-      showBloodPressureIntro: false, // Skip intro for deeplinks
-      hasInputBloodPressure: true,
-      hasInputGlucose: true,
-    ));
+    SmartGoalNavigationUtil.setConfig(_smartGoalConfig);
     print('[BRANCH_DEBUG] Calling FlutterBranchSdk.listSession().listen()');
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       print('[BRANCH_DEBUG] Stream fired! Data: $data');
@@ -478,6 +472,8 @@ class BranchioLinkConfig {
       final surveyId = data['\$surveyId'] as String?;
       final lessonId = data['\$lessonId'] as String?;
       final lessonType = data['\$lessonType'] as String?;
+      // WEB-1: webinar activities (type 36) open this LearningPost.
+      final learningPostId = data['\$learningPostId']?.toString();
 
       if (targetType == null || smartGoalId == null) {
         return;
@@ -495,6 +491,7 @@ class BranchioLinkConfig {
         id: smartGoalId,
         surveyId: surveyId,
         type: targetTypeNum,
+        learningPostId: learningPostId,
       );
 
       if (lessonId != null && lessonType != null) {
@@ -514,6 +511,7 @@ class BranchioLinkConfig {
         _pendingTargetType = targetTypeNum;
         _pendingSmartGoalId = smartGoalId;
         _pendingSurveyId = surveyId;
+        _pendingLearningPostId = learningPostId;
         _pendingLessonId = lessonId;
         _pendingLessonType = lessonType;
       }
@@ -1469,6 +1467,7 @@ class BranchioLinkConfig {
         id: _pendingSmartGoalId,
         surveyId: _pendingSurveyId,
         type: _pendingTargetType,
+        learningPostId: _pendingLearningPostId,
       );
 
       // Handle lesson data if available
@@ -1488,6 +1487,7 @@ class BranchioLinkConfig {
       _pendingTargetType = null;
       _pendingSmartGoalId = null;
       _pendingSurveyId = null;
+      _pendingLearningPostId = null;
       _pendingLessonId = null;
       _pendingLessonType = null;
     }
@@ -1542,8 +1542,19 @@ class BranchioLinkConfig {
     _subLink?.cancel();
   }
 
+  // Re-applied before each goal: Home and the Program tab overwrite this global.
+  static final _smartGoalConfig = SmartGoalConfig(
+    screenName: 'deeplink',
+    trackingEnabled: false, // Disable tracking for deeplinks
+    showGlucoseBottomSheet: false,
+    showBloodPressureIntro: false, // Skip intro for deeplinks
+    hasInputBloodPressure: true,
+    hasInputGlucose: true,
+  );
+
   Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalList? smartGoal}) async {
+    SmartGoalNavigationUtil.setConfig(_smartGoalConfig);
     await SmartGoalNavigationUtil.onSelectGoal(
       navigatorKey.currentContext!,
       type,

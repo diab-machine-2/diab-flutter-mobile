@@ -177,24 +177,35 @@ class HomeNews extends StatelessWidget {
         const SizedBox(height: 8),
       ],
       _title(post.title),
-      // BE-4: reading time / view count aren't served yet; sample values only
-      // with HOME_MOCK.
-      if (HomeMock.enabled) ...[
+      if (_statsLine(post) case final stats?) ...[
         const SizedBox(height: 8),
         Text(
-          '${R.string.home_news_reading_time.tr(args: [
-                '${HomeMock.readingMinutes(post.id)}'
-              ])}'
-          ' · '
-          '${R.string.home_news_view_count.tr(args: [
-                NumberFormat.compact().format(HomeMock.viewCount(post.id))
-              ])}',
+          stats,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: _metaStyle(12).copyWith(letterSpacing: 0.2, height: 1.5),
         ),
       ],
     ];
+  }
+
+  /// "4 phút đọc · 1,2K lượt xem" from BE-4. A part the backend doesn't send
+  /// (older backend: both null) or that is 0 is left out; nothing to
+  /// show → no line. HOME_MOCK fills in sample values.
+  static String? _statsLine(LearningPostModel post) {
+    final minutes = HomeMock.enabled
+        ? HomeMock.readingMinutes(post.id)
+        : post.readingTime;
+    final views =
+        HomeMock.enabled ? HomeMock.viewCount(post.id) : post.viewCount;
+    final parts = [
+      if (minutes != null && minutes > 0)
+        R.string.home_news_reading_time.tr(args: ['$minutes']),
+      if (views != null && views > 0)
+        R.string.home_news_view_count
+            .tr(args: [NumberFormat.compact().format(views)]),
+    ];
+    return parts.isEmpty ? null : parts.join(' · ');
   }
 
   Widget _title(String title) => Text(

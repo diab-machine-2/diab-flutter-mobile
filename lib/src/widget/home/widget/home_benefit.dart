@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,7 +14,11 @@ import 'package:medical/src/widget/home/home_remote_config.dart';
 /// `HOME_BENEFIT_SHORTCUTS`.
 class HomeBenefitSection extends StatelessWidget {
   const HomeBenefitSection(
-      {super.key, required this.hasRecord, this.shortcutsConfig});
+      {super.key,
+      required this.hasRecord,
+      this.shortcutsConfig,
+      this.partnerLogoUrl,
+      this.description});
 
   /// With an exam result the clinic card reads "Đặt khám / Chọn bác sĩ và giờ
   /// khám"; without one, "Khám tại phòng khám / Chọn giờ khám".
@@ -21,6 +26,11 @@ class HomeBenefitSection extends StatelessWidget {
 
   /// `HOME_BENEFIT_SHORTCUTS` value; null reads Remote Config (tests pass it).
   final String? shortcutsConfig;
+
+  /// BE-1 (`/App/Home` bundlePartnerLogoUrl / bundleDescription). Empty keeps
+  /// the Figma defaults (AXON logo, "Chăm sóc sức khỏe nhân viên").
+  final String? partnerLogoUrl;
+  final String? description;
 
   void _openBooking(BuildContext context, String bookingType) {
     Navigator.pushNamed(context, NavigatorName.benefit_page,
@@ -115,9 +125,13 @@ class HomeBenefitSection extends StatelessWidget {
     );
   }
 
-  /// Brand strip. BE-1: logo and program description will come from the
-  /// backend; until then they are the Figma values (AXON).
+  /// Brand strip: partner logo and program description from BE-1, falling
+  /// back to the Figma values (AXON) when the backend sends none.
   Widget _buildBrandStrip() {
+    final defaultLogo = Image.asset(R.drawable.logo_axon,
+        width: 76, height: 15, fit: BoxFit.contain);
+    final logoUrl = partnerLogoUrl?.trim() ?? '';
+    final tagline = description?.trim() ?? '';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -126,8 +140,16 @@ class HomeBenefitSection extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset(R.drawable.logo_axon,
-              width: 76, height: 15, fit: BoxFit.contain),
+          logoUrl.isEmpty
+              ? defaultLogo
+              : CachedNetworkImage(
+                  imageUrl: logoUrl,
+                  width: 76,
+                  height: 32,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.centerLeft,
+                  errorWidget: (_, __, ___) => defaultLogo,
+                ),
           const SizedBox(width: 12),
           Container(width: 1, height: 32, color: R.color.color0xffDADEDF),
           const SizedBox(width: 12),
@@ -146,7 +168,9 @@ class HomeBenefitSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  R.string.home_benefit_tagline.tr(),
+                  tagline.isEmpty
+                      ? R.string.home_benefit_tagline.tr()
+                      : tagline,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

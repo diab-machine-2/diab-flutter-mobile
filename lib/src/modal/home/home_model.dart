@@ -23,6 +23,14 @@ class HomeModel {
   final bool bcbStatus;
   final bool hasBundle;
 
+  /// BE-1: partner logo and tagline of the "Quyền lợi" block. Null/empty
+  /// (or a backend without them) keeps the Figma defaults.
+  final String? bundlePartnerLogoUrl;
+  final String? bundleDescription;
+
+  /// BE-2: an exam result the user hasn't opened → red dot on "Hồ sơ".
+  final bool hasUnviewedExamResult;
+
   List<HomeMeasurementInlineData>? inlineMeasurements;
   List<HomeMeasurementData>? measurements;
 
@@ -50,6 +58,9 @@ class HomeModel {
     this.roadMapName,
     this.bcbStatus = false,
     this.hasBundle = false,
+    this.bundlePartnerLogoUrl,
+    this.bundleDescription,
+    this.hasUnviewedExamResult = false,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -115,6 +126,9 @@ class HomeModel {
       roadMapName: json['roadMapName'] ?? '',
       bcbStatus: json['bcbStatus'] ?? false,
       hasBundle: json['hasBundle'] ?? false,
+      bundlePartnerLogoUrl: json['bundlePartnerLogoUrl']?.toString(),
+      bundleDescription: json['bundleDescription']?.toString(),
+      hasUnviewedExamResult: json['hasUnviewedExamResult'] == true,
     );
   }
 
@@ -140,6 +154,9 @@ class HomeModel {
       'roadMapName': roadMapName,
       'bcbStatus': bcbStatus,
       'hasBundle': hasBundle,
+      'bundlePartnerLogoUrl': bundlePartnerLogoUrl,
+      'bundleDescription': bundleDescription,
+      'hasUnviewedExamResult': hasUnviewedExamResult,
     };
   }
 

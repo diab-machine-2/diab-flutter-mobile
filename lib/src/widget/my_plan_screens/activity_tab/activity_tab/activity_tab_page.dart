@@ -71,15 +71,18 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     final AppRepository appRepository = AppRepository();
     _cubit = ActivityTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
-    SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
-      screenName: 'activity_tab',
-      trackingEnabled: false,
-      showGlucoseBottomSheet: false,
-      showBloodPressureIntro: true,
-      hasInputBloodPressure: false,
-      hasInputGlucose: false,
-    ));
+    SmartGoalNavigationUtil.setConfig(_smartGoalConfig);
   }
+
+  // Re-applied before each tap: Home and deep links overwrite this global.
+  static final _smartGoalConfig = SmartGoalConfig(
+    screenName: 'activity_tab',
+    trackingEnabled: false,
+    showGlucoseBottomSheet: false,
+    showBloodPressureIntro: true,
+    hasInputBloodPressure: false,
+    hasInputGlucose: false,
+  );
 
   @override
   void dispose() {
@@ -1172,6 +1175,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
 
   Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalList? smartGoal}) async {
+    SmartGoalNavigationUtil.setConfig(_smartGoalConfig);
     await SmartGoalNavigationUtil.onSelectGoal(
       context,
       type,

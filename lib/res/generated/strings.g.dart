@@ -584,6 +584,7 @@ class Strings {
   String get did_you_know => 'did_you_know';
   String get glucose_benefit_observe => 'glucose_benefit_observe';
   String get bloodpressure_benefit_observe => 'bloodpressure_benefit_observe';
+  String get nutrient_benefit_record => 'nutrient_benefit_record';
   String get knowledge_from_diab_experts => 'knowledge_from_diab_experts';
   String get glucose_intro_help_title => 'glucose_intro_help_title';
   String get bloodpressure_intro_help_title => 'glucose_intro_help_title';
@@ -1701,6 +1702,7 @@ class Strings {
   String get webinar_share_subject => 'webinar_share_subject';
   String get webinar_not_found => 'webinar_not_found';
   String get webinar_upcoming_in_hours => 'webinar_upcoming_in_hours';
+  String get webinar_upcoming_in_minutes => 'webinar_upcoming_in_minutes';
   String get webinar_event_ended => 'webinar_event_ended';
   String get webinar_registration_count => 'webinar_registration_count';
   String get webinar_program_info => 'webinar_program_info';

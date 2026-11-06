@@ -12,6 +12,8 @@ HomeModel _model({
   ExerciseIndexModel? exercise,
   bool hasBundle = false,
   String? programName,
+  EnergyCardModel? energyCard,
+  bool hasUnviewedExamResult = false,
 }) {
   return HomeModel(
     glucoseIndex: GloucoseIndexModel(
@@ -44,13 +46,14 @@ HomeModel _model({
     ),
     weightCard: null,
     emotionCard: null,
-    energyCard: null,
+    energyCard: energyCard,
     energyExerciseCard: null,
     processCard: null,
     packageAccount: null,
     bmiCard: null,
     hasBundle: hasBundle,
     tranServicePackageName: programName,
+    hasUnviewedExamResult: hasUnviewedExamResult,
   );
 }
 
@@ -162,6 +165,21 @@ void main() {
               .hasUnviewedRecord,
           isFalse);
     });
+
+    test('BE-2: /App/Home hasUnviewedExamResult turns the dot on', () {
+      final results = [BcbExamResultModel(id: '1')];
+      expect(
+          HomeViewFlags.from(
+                  model: _model(hasUnviewedExamResult: true),
+                  examResults: results)
+              .hasUnviewedRecord,
+          isTrue);
+      // No result loaded (no "Hồ sơ" button) → no dot.
+      expect(
+          HomeViewFlags.from(model: _model(hasUnviewedExamResult: true))
+              .hasUnviewedRecord,
+          isFalse);
+    });
   });
 
   group('HomeMock.applyFlags', () {
@@ -190,6 +208,46 @@ void main() {
           HomeMock.applyFlags(flags, enabled: true, override: 'record=0');
       expect(result.hasRecord, isFalse);
       expect(result.hasUnviewedRecord, isFalse);
+    });
+  });
+
+  // Decides intro vs. data for "Dinh dưỡng" on Home (FOOD-5).
+  group('HomeViewFlags.hasRecentNutrition', () {
+    final now = DateTime(2026, 11, 3, 12);
+    HomeModel withMeal(double kcal, DateTime? at) => _model(
+          energyCard: EnergyCardModel(
+            consumedEnergy: kcal,
+            consumedEnergyDateTime:
+                at == null ? -62135596800 : at.millisecondsSinceEpoch ~/ 1000,
+            energyIcon: null,
+          ),
+        );
+
+    test('no energy card => false', () {
+      expect(HomeViewFlags.hasRecentNutrition(_model(), now: now), isFalse);
+    });
+
+    test('meal within 90 days => true', () {
+      expect(
+          HomeViewFlags.hasRecentNutrition(
+              withMeal(500, now.subtract(const Duration(days: 5))),
+              now: now),
+          isTrue);
+    });
+
+    test('dev account 0000656565: one meal from 20/10/2025 => false', () {
+      expect(
+          HomeViewFlags.hasRecentNutrition(
+              withMeal(5961, DateTime(2025, 10, 20)),
+              now: now),
+          isFalse);
+    });
+
+    test('zero kcal or default date => false', () {
+      expect(HomeViewFlags.hasRecentNutrition(withMeal(0, now), now: now),
+          isFalse);
+      expect(HomeViewFlags.hasRecentNutrition(withMeal(500, null), now: now),
+          isFalse);
     });
   });
 }

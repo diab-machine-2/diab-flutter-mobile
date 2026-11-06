@@ -32,8 +32,10 @@ class HomeViewFlags {
     this.hasUnviewedRecord = false,
   });
 
-  /// BE-2: the backend doesn't set `viewedAt` yet, so every result would look
-  /// unviewed. Until it does, the red dot only shows with `HOME_MOCK`.
+  /// BE-2: the red dot follows `/App/Home` hasUnviewedExamResult, which only
+  /// a backend that also tracks `mark-viewed` sends. Per-result `viewedAt`
+  /// stays off: an older backend leaves it null, so every result would look
+  /// unviewed.
   static const bool viewedAtSupported = false;
 
   factory HomeViewFlags.from({
@@ -49,8 +51,10 @@ class HomeViewFlags {
       hasProgram: _notBlank(model?.tranServicePackageName) ||
           _notBlank(userPackageName),
       hasRecord: hasRecord,
-      hasUnviewedRecord: viewedAtSupported &&
-          examResults.any((result) => result.viewedAt == null),
+      hasUnviewedRecord: hasRecord &&
+          ((model?.hasUnviewedExamResult ?? false) ||
+              (viewedAtSupported &&
+                  examResults.any((result) => result.viewedAt == null))),
     );
     return HomeMock.applyFlags(flags);
   }
@@ -68,6 +72,19 @@ class HomeViewFlags {
     final hasExercise =
         exercise?.isDataNotEmpty == true || (exercise?.index ?? 0) > 0;
     return glucose > 0 || hasBloodPressure || hasExercise;
+  }
+
+  /// The nutrition screens look back at most 90 days, so a meal older than
+  /// that counts as "no data" (intro first, no stale kcal on the KPI card).
+  /// `energyCard` can carry a meal from a year ago (FOOD-1/FOOD-5 in the
+  /// backend notes).
+  static bool hasRecentNutrition(HomeModel model, {DateTime? now}) {
+    final card = model.energyCard;
+    if ((card?.consumedEnergy ?? 0) <= 0) return false;
+    final at = card?.consumedEnergyDateTime ?? 0;
+    if (at <= 0) return false;
+    final cutoff = (now ?? DateTime.now()).subtract(const Duration(days: 90));
+    return at * 1000 >= cutoff.millisecondsSinceEpoch;
   }
 
   static bool _notBlank(String? value) => value?.trim().isNotEmpty == true;

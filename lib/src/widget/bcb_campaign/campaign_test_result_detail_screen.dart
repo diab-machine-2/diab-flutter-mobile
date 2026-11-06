@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
+import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,6 +27,34 @@ class _CampaignTestResultDetailScreenState
   bool _isLoading = true;
   String? _errorText;
   int _pdfViewerReloadToken = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _markViewed();
+  }
+
+  /// The list hands over the result as loaded, so its `viewedAt` stays null
+  /// after marking; this keeps a reopen from marking (and reloading Home)
+  /// again.
+  static final Set<String> _markedThisSession = {};
+
+  /// BE-2: opening a result clears the red dot on Home's "Hồ sơ". Unread
+  /// state is cosmetic, so failures are ignored.
+  Future<void> _markViewed() async {
+    final id = widget.result.id;
+    if (id == null ||
+        id.isEmpty ||
+        widget.result.viewedAt != null ||
+        _markedThisSession.contains(id)) {
+      return;
+    }
+    try {
+      await BcbCampaignClient().markResultViewed(id);
+      _markedThisSession.add(id);
+      Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+    } catch (_) {}
+  }
 
   Future<void> _downloadFile() async {
     final fileUrl = widget.result.fileUrl;

@@ -27,6 +27,9 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     try {
       Either<Failure, LearningPostModel> failureOrNewsDetail =
           await repository.getNewsDetaill(event.newsId);
+      if (failureOrNewsDetail.isRight()) {
+        repository.markViewed(event.newsId);
+      }
 
       yield failureOrNewsDetail.fold(
         (failure) => state.copyWith(

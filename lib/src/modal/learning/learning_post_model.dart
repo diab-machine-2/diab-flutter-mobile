@@ -36,6 +36,9 @@ class LearningPostModel {
   final String? lessonId; // ID of the lesson for replay
   final LessonSectionListResponseData? lesson; // Lesson data for replay
   final Doctor? doctor; // Doctor information
+  // BE-4: null on a backend that doesn't serve them yet.
+  final int? readingTime; // minutes
+  final int? viewCount;
 
   const LearningPostModel({
     required this.id,
@@ -63,6 +66,8 @@ class LearningPostModel {
     this.lessonId,
     this.lesson,
     this.doctor,
+    this.readingTime,
+    this.viewCount,
   });
   @override
   factory LearningPostModel.fromJson(Map<String, dynamic> json) {
@@ -125,6 +130,8 @@ class LearningPostModel {
       doctor: json['doctor'] != null && json['doctor'] is Map
           ? Doctor.fromJson(json['doctor'] as Map<String, dynamic>)
           : null,
+      readingTime: (json['readingTime'] as num?)?.toInt(),
+      viewCount: (json['viewCount'] as num?)?.toInt(),
     );
   }
 
@@ -158,6 +165,8 @@ class LearningPostModel {
       'eventJoinCount': eventJoinCount,
       'eventTime': eventTime,
       'eventDate': eventDate,
+      'readingTime': readingTime,
+      'viewCount': viewCount,
       'isJoin': isJoin,
       'eventAddress': eventAddress,
       'account': account?.toJson(),

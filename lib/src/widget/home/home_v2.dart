@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/src/repo/food/food_client.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -46,7 +48,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../modal/medicine/daily_medicine_model.dart';
 import '../../repo/medicine/medicine_client.dart';
 import '../../service/rating_service.dart';
-import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 import 'widget/add_measurement.dart';
 import 'widget/home_activity.dart';
@@ -106,6 +107,7 @@ class _HomeControllerState extends State<HomeController>
   bool _haveInputExerciseAlready = false;
   bool _haveInputBloodpressureAlready = false;
   bool _haveInputFoodAlready = false;
+  bool _hasNutritionHistory = false;
 
   bool _isActivityReminerExpanded = false;
 
@@ -170,20 +172,25 @@ class _HomeControllerState extends State<HomeController>
       await checkMedicineSchedule();
     });
 
-    SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
-      screenName: 'home',
-      trackingEnabled: true,
-      showGlucoseBottomSheet: true, // Home screen has special glucose handling
-      showBloodPressureIntro: true,
-      hasInputBloodPressure: _haveInputBloodpressureAlready,
-      hasInputGlucose: _haveInputGlucoseAlready,
-      customGlucoseHandler: (routeName, smartGoalId) async {
-        await _showGlucoseAddBottomSheet(routeName, smartGoalId: smartGoalId);
-      },
-      customExaminationHandler:
-          SmartGoalNavigationUtil.defaultExaminationHandler,
-    ));
+    SmartGoalNavigationUtil.setConfig(_smartGoalConfig());
   }
+
+  /// Rebuilt per activity tap: the util's config is a global the Program tab
+  /// also sets, and the KPI flags are only known once Home has loaded.
+  SmartGoalConfig _smartGoalConfig() => SmartGoalConfig(
+        screenName: 'home',
+        trackingEnabled: true,
+        showGlucoseBottomSheet: true, // Home screen has special glucose handling
+        showBloodPressureIntro: true,
+        hasInputBloodPressure: _haveInputBloodpressureAlready,
+        hasInputGlucose: _haveInputGlucoseAlready,
+        customGlucoseHandler: (routeName, smartGoalId) async {
+          await _showGlucoseAddBottomSheet(routeName,
+              smartGoalId: smartGoalId);
+        },
+        customExaminationHandler:
+            SmartGoalNavigationUtil.defaultExaminationHandler,
+      );
 
   @override
   void dispose() {
@@ -758,7 +765,6 @@ class _HomeControllerState extends State<HomeController>
           HomeLoaded? stateLoaded;
           if (state is HomeLoaded) {
             model = state.model;
-            _hasExerciseData = model?.exercise?.isDataNotEmpty ?? false;
             // AppSettings.hasBundle is NOT written here: HomeBloc._fetchHomes
             // already sets it (outside any build) for both the cached and the
             // network model. Writing it from build() re-notified
@@ -780,26 +786,18 @@ class _HomeControllerState extends State<HomeController>
               });
             }
 
-            if (state.model.measurements?.isNotEmpty == true) {
-              List<HomeMeasurementData> huyetAps = state.model.measurements!
-                  .where((e) => e.title.toLowerCase() == "huyết áp")
-                  .toList();
-              _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
-                  huyetAps.first.value1?.isNotEmpty == true &&
-                  huyetAps.first.value1 != "--";
-
-              List<HomeMeasurementData> dinduongs = state.model.measurements!
-                  .where((e) => e.title.toLowerCase() == "dinh dưỡng")
-                  .toList();
-              _haveInputFoodAlready = dinduongs.isNotEmpty &&
-                  dinduongs.first.value1?.isNotEmpty == true &&
-                  dinduongs.first.value1 != "--";
-            }
-
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
-                    true &&
-                state.model.measurements?.first.value1?.isNotEmpty == true &&
-                state.model.measurements?.first.value1 != "--";
+            // HomeBloc points a KPI at its detail route only when it has data
+            // (else at its intro/input). Matching on that route instead of
+            // the localized title keeps this right in English too.
+            final measurements = state.model.measurements ?? const [];
+            bool hasData(String detailRoute) =>
+                measurements.any((e) => e.navigatorName == detailRoute);
+            _haveInputGlucoseAlready =
+                hasData(NavigatorName.detail_blood_sugar);
+            _haveInputBloodpressureAlready =
+                hasData(NavigatorName.detail_blood_pressure);
+            _haveInputFoodAlready = hasData(NavigatorName.detail_food);
+            _hasExerciseData = hasData(NavigatorName.exercrise_dashboard);
             _haveInputExerciseAlready =
                 state.model.activities?.isNotEmpty == true;
           }
@@ -1018,7 +1016,10 @@ class _HomeControllerState extends State<HomeController>
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12.0),
                               child: HomeBenefitSection(
-                                  hasRecord: viewFlags.hasRecord),
+                                hasRecord: viewFlags.hasRecord,
+                                partnerLogoUrl: model?.bundlePartnerLogoUrl,
+                                description: model?.bundleDescription,
+                              ),
                             ),
                           ],
 
@@ -1116,9 +1117,22 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
-        // case dinh duong — uses home measurement state (see _haveInputFoodAlready)
+        // Same rule for every KPI here: no data yet → its intro first,
+        // else straight to input (glucose is handled just above).
+        if (item.navigatorName == NavigatorName.add_blood_pressure &&
+            !_haveInputBloodpressureAlready) {
+          Navigator.pushNamed(
+              context, NavigatorName.blood_pressure_intro_1st_page);
+          return;
+        }
         if (item.navigatorName == NavigatorName.add_food) {
-          _pushNutritionEntry(context);
+          final hasData = await _hasNutritionData();
+          if (!mounted) return;
+          if (hasData) {
+            FoodActionPopup.show(context);
+          } else {
+            Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
+          }
           return;
         }
         // case HbA1C - check if user has data
@@ -1138,8 +1152,7 @@ class _HomeControllerState extends State<HomeController>
           return;
         }
         // others
-        // CHEAT CODE : Vận Động -> Vận Động Bước 1
-        if (item.title == "Vận động") {
+        if (item.navigatorName == NavigatorName.exercrise_onboarding) {
           if (_hasExerciseData) {
             // disable diablog if user has already input exercise
             showActivityInputMethodSelection();
@@ -1442,6 +1455,7 @@ class _HomeControllerState extends State<HomeController>
 
   Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalList? smartGoal, required String title}) async {
+    SmartGoalNavigationUtil.setConfig(_smartGoalConfig());
     await SmartGoalNavigationUtil.onSelectGoal(
       context,
       type,
@@ -1515,9 +1529,30 @@ class _HomeControllerState extends State<HomeController>
     }
   }
 
+  /// Whether the user has logged any meal, so "Dinh dưỡng" opens data
+  /// instead of the intro. `energyCard` only counts today's meals since
+  /// FOOD-1, so without kcal today ask the 90-day meal list (the longest
+  /// range the nutrition screens show). A "yes" is kept for the session.
+  Future<bool> _hasNutritionData() async {
+    if (_haveInputFoodAlready || _hasNutritionHistory) return true;
+    BotToast.showLoading();
+    try {
+      final result = await FoodClient().fetchInput('', '4', 1, size: 1);
+      _hasNutritionHistory =
+          result.inputs.any((day) => day.mealItems.isNotEmpty);
+    } catch (_) {
+      // Unknown → intro; it still leads to meal input.
+    } finally {
+      BotToast.closeAllLoading();
+    }
+    return _hasNutritionHistory;
+  }
+
   /// Opens nutrition detail or first-time intro from home KPI state.
-  void _pushNutritionEntry(BuildContext context) {
-    if (_haveInputFoodAlready) {
+  Future<void> _pushNutritionEntry(BuildContext context) async {
+    final hasData = await _hasNutritionData();
+    if (!mounted) return;
+    if (hasData) {
       Navigator.pushNamed(context, NavigatorName.detail_food);
     } else {
       Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
