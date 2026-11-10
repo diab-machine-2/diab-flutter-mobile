@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
+import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/food_calorie_trend_chart.dart';
@@ -88,6 +90,43 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
     }
   }
 
+  /// Widest range of the period filter (90 days).
+  static const int widestPeriodFilterType = 4;
+
+  bool _isCheckingNoData = false;
+
+  /// The chart reports on every rebuild; once a meal is found in the widest
+  /// range, don't ask again.
+  bool _hasMealInWidestRange = false;
+
+  /// Same rule as the blood pressure dashboard: an empty period only sends
+  /// the user to the intro when there's no meal in the widest range either.
+  /// Home opens this dashboard straight from `energyCard`, which only counts
+  /// today's meals. On an error, stay here.
+  Future<void> _leaveIfNoDataAtAll() async {
+    if (_isCheckingNoData || _hasMealInWidestRange) return;
+    _isCheckingNoData = true;
+    try {
+      final period =
+          FoodDetailTabbarController.of(context)?.periodFilterType ?? 1;
+      if (period != widestPeriodFilterType) {
+        final result = await FoodClient()
+            .fetchInput('', '$widestPeriodFilterType', 1, size: 1);
+        if (result.inputs.any((day) => day.mealItems.isNotEmpty)) {
+          _hasMealInWidestRange = true;
+          return;
+        }
+      }
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(
+          context, NavigatorName.nutrient_intro_1st_page);
+    } catch (_) {
+      return;
+    } finally {
+      _isCheckingNoData = false;
+    }
+  }
+
   reloadData(int periodFilterType) {
     // Drop "has data" UI from the previous range while the new Summary loads.
     _hasFoodData.value = false;
@@ -129,8 +168,10 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                               FoodDetailTabbarController.of(context)
                                       ?.periodFilterType ??
                                   1,
-                          onDataLoaded: (hasData) =>
-                              _hasFoodData.value = hasData,
+                          onDataLoaded: (hasData) {
+                            _hasFoodData.value = hasData;
+                            if (!hasData) _leaveIfNoDataAtAll();
+                          },
                         ),
                         ValueListenableBuilder<bool>(
                           valueListenable: _hasFoodData,

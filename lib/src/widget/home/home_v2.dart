@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/repo/food/food_client.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -107,7 +105,6 @@ class _HomeControllerState extends State<HomeController>
   bool _haveInputExerciseAlready = false;
   bool _haveInputBloodpressureAlready = false;
   bool _haveInputFoodAlready = false;
-  bool _hasNutritionHistory = false;
 
   bool _isActivityReminerExpanded = false;
 
@@ -1126,9 +1123,9 @@ class _HomeControllerState extends State<HomeController>
           return;
         }
         if (item.navigatorName == NavigatorName.add_food) {
-          final hasData = await _hasNutritionData();
-          if (!mounted) return;
-          if (hasData) {
+          // Same as glucose / blood pressure: Home's own KPI (energyCard)
+          // decides, no extra request.
+          if (_haveInputFoodAlready) {
             FoodActionPopup.show(context);
           } else {
             Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
@@ -1529,33 +1526,11 @@ class _HomeControllerState extends State<HomeController>
     }
   }
 
-  /// Whether the user has logged any meal, so "Dinh dưỡng" opens data
-  /// instead of the intro. `energyCard` only counts today's meals since
-  /// FOOD-1, so without kcal today ask the 90-day meal list (the longest
-  /// range the nutrition screens show). A "yes" is kept for the session.
-  Future<bool> _hasNutritionData() async {
-    if (_haveInputFoodAlready || _hasNutritionHistory) return true;
-    BotToast.showLoading();
-    try {
-      final result = await FoodClient().fetchInput('', '4', 1, size: 1);
-      _hasNutritionHistory =
-          result.inputs.any((day) => day.mealItems.isNotEmpty);
-    } catch (_) {
-      // Unknown → intro; it still leads to meal input.
-    } finally {
-      BotToast.closeAllLoading();
-    }
-    return _hasNutritionHistory;
-  }
-
-  /// Opens nutrition detail or first-time intro from home KPI state.
-  Future<void> _pushNutritionEntry(BuildContext context) async {
-    final hasData = await _hasNutritionData();
-    if (!mounted) return;
-    if (hasData) {
-      Navigator.pushNamed(context, NavigatorName.detail_food);
-    } else {
-      Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
-    }
+  /// Opens the nutrition dashboard, like the blood pressure KPI. `energyCard`
+  /// only counts today's meals (FOOD-1), so "no kcal today" doesn't mean
+  /// "never logged": the dashboard itself sends a user with no meal in the
+  /// widest range to the intro (`FoodOverviewController`).
+  void _pushNutritionEntry(BuildContext context) {
+    Navigator.pushNamed(context, NavigatorName.detail_food);
   }
 }
