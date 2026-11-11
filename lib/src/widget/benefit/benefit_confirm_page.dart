@@ -12,6 +12,7 @@ import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
+import 'package:medical/src/model/response/booking_check_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
@@ -19,6 +20,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/benefit/benefit_availability_guard.dart';
+import 'package:medical/src/widget/benefit/benefit_booking_quota_gate.dart';
 import 'package:medical/src/widget/booking_clinic/helper/vnpay_payment_service.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -273,28 +275,18 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
   /// this mode. Anything but a clear "not allowed" (network error, a backend
   /// without the endpoint) lets the booking go ahead as before.
   Future<bool> _ensureBookingQuota(String mode) async {
+    // Home / the bundle page already checked; quota can still run out in
+    // between (another device, a booking made meanwhile).
     BotToast.showLoading();
-    final result = await AppRepository().benefitBookingCheck(mode);
-    BotToast.closeAllLoading();
-    final check = result.whenOrNull(success: (r) => r.success ? r.data : null);
-    if (check == null || check.allowed) return true;
+    final BookingCheckData? blocked;
+    try {
+      blocked = await BenefitBookingQuotaGate.blockingCheck(mode);
+    } finally {
+      BotToast.closeAllLoading();
+    }
+    if (blocked == null) return true;
     if (!mounted) return false;
-    final message = check.message?.trim() ?? '';
-    await showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        content: Text(
-          message.isNotEmpty ? message : R.string.benefit_out_of_quota.tr(),
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(R.string.close.tr()),
-          ),
-        ],
-      ),
-    );
+    await BenefitQuotaDialog.show(context, check: blocked);
     return false;
   }
 

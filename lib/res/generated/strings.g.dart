@@ -1936,4 +1936,9 @@ class Strings {
   String get camera_init_failed => 'camera_init_failed';
   String get capture_photo_failed => 'capture_photo_failed';
   String get pick_image_failed => 'pick_image_failed';
+  String get benefit_booking_quota_used_title =>
+      'benefit_booking_quota_used_title';
+  String get benefit_booking_unavailable_title =>
+      'benefit_booking_unavailable_title';
+  String get benefit_view_benefits => 'benefit_view_benefits';
 }

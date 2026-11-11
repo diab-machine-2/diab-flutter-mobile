@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/benefit/benefit_booking_quota_gate.dart';
 import 'package:medical/src/widget/home/home_daily_care.dart';
 import 'package:medical/src/widget/home/home_remote_config.dart';
 
@@ -32,7 +33,12 @@ class HomeBenefitSection extends StatelessWidget {
   final String? partnerLogoUrl;
   final String? description;
 
-  void _openBooking(BuildContext context, String bookingType) {
+  /// Checks the quota first so a user without bookings left is told right
+  /// away instead of after picking specialty, clinic and time.
+  Future<void> _openBooking(BuildContext context, String bookingType) async {
+    final allowed = await BenefitBookingQuotaGate.ensure(context,
+        atClinic: bookingType == Const.BENEFIT_BOOKING_AT_CLINIC);
+    if (!allowed || !context.mounted) return;
     Navigator.pushNamed(context, NavigatorName.benefit_page,
         arguments: {'bookingType': bookingType});
   }

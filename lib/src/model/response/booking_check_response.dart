@@ -31,6 +31,7 @@ class BookingCheckData {
     this.isUnlimited = false,
     this.remaining = 0,
     this.message,
+    this.reason,
   });
 
   /// `online` (telemedicine) or `offline` (at a clinic).
@@ -44,6 +45,14 @@ class BookingCheckData {
   /// Why booking isn't allowed (e.g. "Đã hết lượt đặt").
   final String? message;
 
+  /// Machine-readable [message]: `no_bundle` (no active bundle),
+  /// `not_included` (the bundle has no item for this mode), or null when
+  /// [allowed] / when the quota is simply used up.
+  final String? reason;
+
+  /// No active bundle → nothing to show on the bundle page.
+  bool get hasNoBundle => reason == 'no_bundle';
+
   factory BookingCheckData.fromJson(Map<String, dynamic> json) {
     return BookingCheckData(
       mode: json['mode']?.toString(),
@@ -51,6 +60,7 @@ class BookingCheckData {
       isUnlimited: json['isUnlimited'] == true,
       remaining: (json['remaining'] as num?)?.toInt() ?? 0,
       message: json['message']?.toString(),
+      reason: json['reason']?.toString(),
     );
   }
 }
