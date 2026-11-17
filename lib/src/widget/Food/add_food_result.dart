@@ -18,6 +18,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import 'food_result.dto.dart';
+import 'nutrient_percent.dart';
 import 'widget/meal_items_display_widget.dart';
 import 'widget/nutrition_ai_help_button.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
@@ -405,46 +406,31 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   Widget _nutritionDistributionBars() {
     final np = widget.data.nutritionPercent;
     final nc = widget.data.nutritionColors;
-    final defaultColor = Color(0xFFFFA726);
-
-    final items = [
-      {
-        'label': R.string.tinh_bot.tr(),
-        'percent': np?['carb'] ?? 0,
-        'color': _parseHexColor(nc?['carb'], defaultColor)
-      },
-      {
-        'label': R.string.protein_nutrient.tr(),
-        'percent': np?['protein'] ?? 0,
-        'color': _parseHexColor(nc?['protein'], defaultColor)
-      },
-      {
-        'label': R.string.fat_nutrient.tr(),
-        'percent': np?['fat'] ?? 0,
-        'color': _parseHexColor(nc?['fat'], defaultColor)
-      },
-      {
-        'label': R.string.vegetable_nutrient.tr(),
-        'percent': np?['vegetable'] ?? 0,
-        'color': _parseHexColor(nc?['vegetable'], defaultColor)
-      },
-      {
-        'label': R.string.nhom_hoa_qua.tr(),
-        'percent': np?['fruit'] ?? 0,
-        'color': _parseHexColor(nc?['fruit'], defaultColor)
-      },
-    ];
+    final labels = {
+      'carb': R.string.tinh_bot.tr(),
+      'protein': R.string.protein_nutrient.tr(),
+      'fat': R.string.fat_nutrient.tr(),
+      'vegetable': R.string.vegetable_nutrient.tr(),
+      'fruit': R.string.nhom_hoa_qua.tr(),
+    };
 
     return Column(
       children: [
-        ...items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _nutritionBar(
-                label: item['label'] as String,
-                percent: item['percent'] as int,
-                color: item['color'] as Color,
-              ),
-            )),
+        ...nutrientGroupKeys.map((key) {
+          final percent = np?[key];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _nutritionBar(
+              label: labels[key]!,
+              percent: percent,
+              // No server colour => same thresholds as the legend.
+              color: percent == null
+                  ? Colors.transparent
+                  : _parseHexColor(
+                      nc?[key], nutrientLevelColor(percent.toDouble())),
+            ),
+          );
+        }),
         const SizedBox(height: 8),
         // Row(
         //   children: [
@@ -466,7 +452,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
 
   Widget _nutritionBar({
     required String label,
-    required int percent,
+    required int? percent,
     required Color color,
   }) {
     return Row(
@@ -501,7 +487,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                 ),
               ),
               FractionallySizedBox(
-                widthFactor: min(percent / 100, 1.0),
+                widthFactor: min((percent ?? 0) / 100, 1.0),
                 child: Container(
                   height: 24,
                   decoration: BoxDecoration(
@@ -516,11 +502,16 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                 bottom: 0,
                 child: Center(
                   child: Text(
-                    '$percent%',
+                    percent == null
+                        ? R.string.chua_du_du_lieu.tr()
+                        : '$percent%',
                     style: TextStyle(
                       fontSize: 13,
-                      color: R.color.textDark,
-                      fontWeight: FontWeight.w700,
+                      color: percent == null
+                          ? R.color.primaryGreyColor
+                          : R.color.textDark,
+                      fontWeight:
+                          percent == null ? FontWeight.w400 : FontWeight.w700,
                     ),
                   ),
                 ),

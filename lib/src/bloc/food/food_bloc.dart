@@ -278,7 +278,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
     }
   }
 
-  static Map<String, double> _emptyNutrientPercentMap() => {
+  static Map<String, double?> _emptyNutrientPercentMap() => {
         'carb': 0,
         'protein': 0,
         'fat': 0,

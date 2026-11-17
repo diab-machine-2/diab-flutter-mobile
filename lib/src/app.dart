@@ -529,7 +529,7 @@ class App extends StatelessWidget {
                         settings,
                         FoodDetailTabbarController(
                           nutritionPercent:
-                              data?['nutritionPercent'] as Map<String, int>?,
+                              data?['nutritionPercent'] as Map<String, int?>?,
                           nutritionColors:
                               data?['nutritionColors'] as Map<String, String>?,
                         ),

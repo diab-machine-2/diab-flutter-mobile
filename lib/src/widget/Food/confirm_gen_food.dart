@@ -23,8 +23,24 @@ import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'food_result.dto.dart';
+import 'nutrient_percent.dart';
 import 'search_food_controller.dart';
 import 'widget/food_edit_popup.dart';
+
+/// Files to upload with an AI meal. The server already keeps the analysed
+/// photo (sent as `imageUrl`), so uploading it again stored it twice. Drop
+/// it unless the user swapped the main photo or the server has no copy.
+@visibleForTesting
+List<String> aiMealUploadPaths(
+  List<String> paths, {
+  required String? analysedPath,
+  required String? primaryPath,
+  required bool serverHasAnalysedImage,
+}) {
+  if (!serverHasAnalysedImage || analysedPath == null) return paths;
+  if (primaryPath != null && primaryPath != analysedPath) return paths;
+  return paths.where((p) => p != analysedPath).toList();
+}
 
 class ConfirmGeneratedFood extends StatefulWidget {
   final List<FoodModel> generatedFoods;
@@ -771,6 +787,17 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         }
       }
 
+      if (!widget.isManualInput) {
+        paths = aiMealUploadPaths(
+          paths,
+          analysedPath: widget.files.isNotEmpty ? widget.files.first : null,
+          primaryPath:
+              _displayImagePaths.isNotEmpty ? _displayImagePaths.first : null,
+          serverHasAnalysedImage:
+              FoodClient.aiImageUrlOf(widget.mealScoreData) != null,
+        );
+      }
+
       developer.log(
           '[CAPTURE] Prepared paths count: ${paths.length}, paths: ${paths.join(", ")}',
           name: '[CAPTURE]');
@@ -837,7 +864,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         int? apiScore;
         String? apiMessage;
         String? apiRange;
-        Map<String, int>? nutritionPercent;
+        Map<String, int?>? nutritionPercent;
         Map<String, String>? nutritionColors;
 
         if (mealScoreData != null) {
@@ -849,47 +876,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           apiRange = (mealScoreData['scoreRange'] ??
               mealScoreData['totalMealRange']) as String?;
 
-          // Parse nutrition percent from new fields
-          nutritionPercent = {
-            'carb': (mealScoreData['carbPercent'] as num?)?.toInt() ?? 0,
-            'protein': (mealScoreData['proteinPercent'] as num?)?.toInt() ?? 0,
-            'vegetable':
-                (mealScoreData['vegetablePercent'] as num?)?.toInt() ?? 0,
-            'fruit': (mealScoreData['fruitPercent'] as num?)?.toInt() ?? 0,
-            'fat': (mealScoreData['fatPercent'] as num?)?.toInt() ?? 0,
-          };
-
-          // Fallback to old nutritionPercent format
-          final npData = mealScoreData['nutritionPercent'];
-          if (npData != null) {
-            nutritionPercent = {
-              'carb': (npData['carb'] as num?)?.toInt() ??
-                  nutritionPercent['carb'] ??
-                  0,
-              'protein': (npData['protein'] as num?)?.toInt() ??
-                  nutritionPercent['protein'] ??
-                  0,
-              'vegetable': (npData['vegetable'] as num?)?.toInt() ??
-                  nutritionPercent['vegetable'] ??
-                  0,
-              'fruit': (npData['fruit'] as num?)?.toInt() ??
-                  nutritionPercent['fruit'] ??
-                  0,
-              'fat': (npData['fat'] as num?)?.toInt() ??
-                  nutritionPercent['fat'] ??
-                  0,
-            };
-            final colorsData = npData['colors'];
-            if (colorsData != null) {
-              nutritionColors = {
-                'carb': colorsData['carb']?.toString() ?? '#FFCD57',
-                'protein': colorsData['protein']?.toString() ?? '#FFCD57',
-                'vegetable': colorsData['vegetable']?.toString() ?? '#FFCD57',
-                'fruit': colorsData['fruit']?.toString() ?? '#FFCD57',
-                'fat': colorsData['fat']?.toString() ?? '#FFCD57',
-              };
-            }
-          }
+          // Flat carbPercent… (AI) or nested nutritionPercent{}; null groups
+          // stay null ("chưa đủ dữ liệu"), never 0.
+          nutritionPercent = parseNutrientPercent(mealScoreData);
+          nutritionColors = parseNutrientColors(mealScoreData);
         }
 
         // Get balance status from API range

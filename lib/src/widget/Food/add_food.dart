@@ -36,6 +36,7 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'food_result.dto.dart';
+import 'nutrient_percent.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 
 class AddFoodController extends StatefulWidget {
@@ -1071,34 +1072,16 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         int? apiScore;
         String? apiMessage;
         String? apiRange;
-        Map<String, int>? nutritionPercent;
+        Map<String, int?>? nutritionPercent;
         Map<String, String>? nutritionColors;
 
         if (mealScoreData != null) {
           apiScore = mealScoreData['totalMealScore'] as int?;
           apiMessage = mealScoreData['messageResult'] as String?;
           apiRange = mealScoreData['totalMealRange'] as String?;
-
-          final npData = mealScoreData['nutritionPercent'];
-          if (npData != null) {
-            nutritionPercent = {
-              'carb': (npData['carb'] as num?)?.toInt() ?? 0,
-              'protein': (npData['protein'] as num?)?.toInt() ?? 0,
-              'vegetable': (npData['vegetable'] as num?)?.toInt() ?? 0,
-              'fruit': (npData['fruit'] as num?)?.toInt() ?? 0,
-              'fat': (npData['fat'] as num?)?.toInt() ?? 0,
-            };
-            final colorsData = npData['colors'];
-            if (colorsData != null) {
-              nutritionColors = {
-                'carb': colorsData['carb']?.toString() ?? '#FFCD57',
-                'protein': colorsData['protein']?.toString() ?? '#FFCD57',
-                'vegetable': colorsData['vegetable']?.toString() ?? '#FFCD57',
-                'fruit': colorsData['fruit']?.toString() ?? '#FFCD57',
-                'fat': colorsData['fat']?.toString() ?? '#FFCD57',
-              };
-            }
-          }
+          // null groups stay null ("chưa đủ dữ liệu"), never 0.
+          nutritionPercent = parseNutrientPercent(mealScoreData);
+          nutritionColors = parseNutrientColors(mealScoreData);
         }
 
         String? balanceStatus;

@@ -26,8 +26,8 @@ class FoodResultDto {
   final List<AiReference>? references;
   final int? score; // Điểm đánh giá từ 0-10
   final String? balanceStatus; // "Cân bằng" hoặc "Chưa cân bằng"
-  final Map<String, int>?
-      nutritionPercent; // {carb, protein, vegetable, fruit, fat}
+  // {carb, protein, vegetable, fruit, fat}; a null group = not enough data.
+  final Map<String, int?>? nutritionPercent;
   final Map<String, String>? nutritionColors; // {carb: "#F86F6F", ...}
 
   FoodResultDto({

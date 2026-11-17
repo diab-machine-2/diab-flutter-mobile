@@ -93,36 +93,37 @@ class NutritionDateRange {
 }
 
 class NutritionPercent {
-  final int carb;
-  final int protein;
-  final int fat;
-  final int vegetable;
-  final int fruit;
+  // null = the server could not compute this group ("chưa đủ dữ liệu").
+  final int? carb;
+  final int? protein;
+  final int? fat;
+  final int? vegetable;
+  final int? fruit;
 
   NutritionPercent({
-    this.carb = 0,
-    this.protein = 0,
-    this.fat = 0,
-    this.vegetable = 0,
-    this.fruit = 0,
+    this.carb,
+    this.protein,
+    this.fat,
+    this.vegetable,
+    this.fruit,
   });
 
   factory NutritionPercent.fromJson(Map<String, dynamic> json) {
     return NutritionPercent(
-      carb: (json['carb'] as num?)?.toInt() ?? 0,
-      protein: (json['protein'] as num?)?.toInt() ?? 0,
-      fat: (json['fat'] as num?)?.toInt() ?? 0,
-      vegetable: (json['vegetable'] as num?)?.toInt() ?? 0,
-      fruit: (json['fruit'] as num?)?.toInt() ?? 0,
+      carb: (json['carb'] as num?)?.round(),
+      protein: (json['protein'] as num?)?.round(),
+      fat: (json['fat'] as num?)?.round(),
+      vegetable: (json['vegetable'] as num?)?.round(),
+      fruit: (json['fruit'] as num?)?.round(),
     );
   }
 
-  Map<String, double> toMap() => {
-        'carb': carb.toDouble(),
-        'protein': protein.toDouble(),
-        'fat': fat.toDouble(),
-        'vegetable': vegetable.toDouble(),
-        'fruit': fruit.toDouble(),
+  Map<String, double?> toMap() => {
+        'carb': carb?.toDouble(),
+        'protein': protein?.toDouble(),
+        'fat': fat?.toDouble(),
+        'vegetable': vegetable?.toDouble(),
+        'fruit': fruit?.toDouble(),
       };
 }
 

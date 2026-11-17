@@ -19,6 +19,7 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/widget/Food/nutrient_percent.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class FoodClient extends FetchClient {
@@ -373,6 +374,22 @@ class FoodClient extends FetchClient {
     }
   }
 
+  /// Server copy of the analysed photo, sent as `imageUrl` on an AI meal:
+  /// the top-level `imageUrl`, else the first `items[].imageUrl`.
+  static String? aiImageUrlOf(Map<String, dynamic>? mealScoreData) {
+    if (mealScoreData == null) return null;
+    final top = mealScoreData['imageUrl']?.toString() ?? '';
+    if (top.isNotEmpty) return top;
+    final items = mealScoreData['items'];
+    if (items is List) {
+      for (final item in items) {
+        final url = item is Map ? item['imageUrl']?.toString() ?? '' : '';
+        if (url.isNotEmpty) return url;
+      }
+    }
+    return null;
+  }
+
   /// AI Flow: Lưu bữa ăn từ kết quả phân tích AI
   /// NEW endpoint: POST /App/Nutrition/Input (JSON body)
   /// Body: isFromAI=true + all MealScore fields
@@ -398,33 +415,15 @@ class FoodClient extends FetchClient {
         params['totalMealScore'] =
             (mealScoreData['totalMealScore'] ?? '').toString();
         params['scoreRange'] = (mealScoreData['scoreRange'] ?? '').toString();
-        params['carbPercent'] = (mealScoreData['carbPercent'] ?? 0).toString();
-        params['proteinPercent'] =
-            (mealScoreData['proteinPercent'] ?? 0).toString();
-        params['fatPercent'] = (mealScoreData['fatPercent'] ?? 0).toString();
-        params['vegetablePercent'] =
-            (mealScoreData['vegetablePercent'] ?? 0).toString();
-        params['fruitPercent'] =
-            (mealScoreData['fruitPercent'] ?? 0).toString();
+        // A group the analysis could not compute is left out (null on the
+        // server), not sent as 0 — 0 would show as "Thiếu".
+        parseNutrientPercent(mealScoreData)!.forEach((key, value) {
+          if (value != null) params['${key}Percent'] = value.toString();
+        });
         params['aiAdvice'] = (mealScoreData['aiAdvice'] ?? '').toString();
 
-        // If top-level imageUrl is missing, fallback to first imageUrl in items[].
-        dynamic imageUrl = mealScoreData['imageUrl'];
-        if ((imageUrl == null || imageUrl.toString().isEmpty) &&
-            mealScoreData['items'] is List) {
-          final List<dynamic> items = mealScoreData['items'] as List<dynamic>;
-          for (final dynamic item in items) {
-            if (item is Map &&
-                item['imageUrl'] != null &&
-                item['imageUrl'].toString().isNotEmpty) {
-              imageUrl = item['imageUrl'];
-              break;
-            }
-          }
-        }
-        if (imageUrl != null && imageUrl.toString().isNotEmpty) {
-          params['imageUrl'] = imageUrl.toString();
-        }
+        final imageUrl = aiImageUrlOf(mealScoreData);
+        if (imageUrl != null) params['imageUrl'] = imageUrl;
       }
 
       // Build items fields for multipart binding
@@ -435,10 +434,16 @@ class FoodClient extends FetchClient {
         params['items[$i].unit'] = food.unit ?? '';
         params['items[$i].portion'] = (food.portion ?? 1).toString();
         params['items[$i].calorie'] = (food.calorie?.round() ?? 0).toString();
-        params['items[$i].glucose'] = (food.glucose ?? 0).toString();
-        params['items[$i].lipid'] = (food.lipid ?? 0).toString();
-        params['items[$i].protein'] = (food.protein ?? 0).toString();
-        params['items[$i].fibre'] = (food.fibre ?? 0).toString();
+        // Unknown nutrients are omitted (null), not sent as 0 g.
+        final nutrients = {
+          'glucose': food.glucose,
+          'lipid': food.lipid,
+          'protein': food.protein,
+          'fibre': food.fibre,
+        };
+        nutrients.forEach((name, value) {
+          if (value != null) params['items[$i].$name'] = value.toString();
+        });
       }
 
       log('input AI nutrition params: ${jsonEncode(params)}');
@@ -738,9 +743,20 @@ class FoodClient extends FetchClient {
     }
   }
 
+  /// Nutrition lessons. `LessonSupport` returns the same blood-pressure /
+  /// exercise lessons for every KPI, so nutrition uses `NutrientLesson`.
   Future<List<NutritionLesson>?> fetchNutritionLessons() async {
-    final Response response =
-        await super.fetchData(url: '/App/Lesson/LessonSupport', params: {});
+    final Response response = await super.postUri(
+      url: '/App/Lesson/NutrientLesson',
+      baseOption: true,
+      params: {
+        'type': 1,
+        'isNotCompleted': false,
+        'week': 0,
+        'page': 1,
+        'size': 10,
+      },
+    );
 
     if (response.statusCode == 200) {
       final listResponse = ListResponse.fromJson(

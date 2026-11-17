@@ -6,9 +6,10 @@ import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/Food/nutrient_percent.dart';
 
 class NutrientDistributionChart extends StatefulWidget {
-  final Map<String, int>? nutritionPercent;
+  final Map<String, int?>? nutritionPercent;
   final Map<String, String>? nutritionColors;
 
   NutrientDistributionChart(
@@ -40,17 +41,12 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
   }
 
   /// Lấy màu sắc dựa trên phần trăm
-  Color _getColorByPercent(double percent, String? colorCode) {
+  Color _getColorByPercent(double? percent, String? colorCode) {
+    if (percent == null) return R.color.neutralBg1;
     if (colorCode != null && colorCode.isNotEmpty) {
       return toColor(colorCode);
     }
-    if (percent <= 50) {
-      return R.color.warningYellow;
-    } else if (percent <= 100) {
-      return R.color.goodGreen;
-    } else {
-      return R.color.dangerRed;
-    }
+    return nutrientLevelColor(percent);
   }
 
   @override
@@ -60,7 +56,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
     // Navigation args: meal just analyzed. Otherwise use API nutrient overview.
     return BlocBuilder<FoodBloc, FoodState>(
         builder: (BuildContext context, FoodState state) {
-          Map<String, double>? nutrientData;
+          Map<String, double?>? nutrientData;
           if (state is FoodError) {
             Message.showToastMessage(context, state.message);
           }
@@ -89,7 +85,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
   }
 
   /// Hiển thị chart từ nutrient data — cùng style với AI MealScore chart
-  Widget _buildNutrientBars(Map<String, double> data) {
+  Widget _buildNutrientBars(Map<String, double?> data) {
     final displayItems = [
       {'label': R.string.tinh_bot.tr(), 'key': 'carb'},
       {'label': R.string.protein_nutrient.tr(), 'key': 'protein'},
@@ -130,7 +126,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
             SizedBox(height: 16),
             ...displayItems.map((item) {
               final key = item['key'] as String;
-              final percent = data[key] ?? 0;
+              final percent = data[key];
               return _buildNutrientRow(
                 item['label'] as String,
                 percent,
@@ -143,8 +139,10 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
     );
   }
 
-  Widget _buildNutrientRow(String name, double percent, Color color) {
-    final double displayPercent = percent > 100 ? 100 : percent;
+  /// [percent] null = the server could not compute it: empty bar and
+  /// "Chưa đủ dữ liệu" instead of a 0% that would read as "Thiếu".
+  Widget _buildNutrientRow(String name, double? percent, Color color) {
+    final double displayPercent = (percent ?? 0).clamp(0, 100).toDouble();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -186,11 +184,19 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                       child: Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: Text(
-                          '${percent.round()}%',
+                          percent == null
+                              ? R.string.chua_du_du_lieu.tr()
+                              : '${percent.round()}%',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: percent > 80 ? Colors.white : R.color.black,
+                            fontWeight: percent == null
+                                ? FontWeight.w400
+                                : FontWeight.w700,
+                            color: percent == null
+                                ? R.color.primaryGreyColor
+                                : percent > 80
+                                    ? Colors.white
+                                    : R.color.black,
                           ),
                         ),
                       ),
@@ -249,7 +255,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
             SizedBox(height: 16),
             ...items.map((item) {
               final key = item['key'] as String;
-              final percent = (np[key] ?? 0).toDouble();
+              final percent = np[key]?.toDouble();
               final colorCode = nc?[key];
               return _buildNutrientRow(
                 item['label'] as String,

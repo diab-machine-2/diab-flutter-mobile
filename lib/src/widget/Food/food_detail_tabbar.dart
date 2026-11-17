@@ -21,7 +21,7 @@ import '../BloodPressure/widget/horizontal_selector.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   final int? initialTabIndex;
-  final Map<String, int>? nutritionPercent;
+  final Map<String, int?>? nutritionPercent;
   final Map<String, String>? nutritionColors;
 
   const FoodDetailTabbarController(

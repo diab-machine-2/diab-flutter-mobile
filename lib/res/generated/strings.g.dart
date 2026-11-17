@@ -1941,4 +1941,5 @@ class Strings {
   String get benefit_booking_unavailable_title =>
       'benefit_booking_unavailable_title';
   String get benefit_view_benefits => 'benefit_view_benefits';
+  String get chua_du_du_lieu => 'chua_du_du_lieu';
 }
