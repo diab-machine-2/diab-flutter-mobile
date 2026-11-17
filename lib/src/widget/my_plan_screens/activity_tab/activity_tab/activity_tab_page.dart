@@ -270,6 +270,31 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                   ),
                                 ),
 
+                              // No activity on the selected day (e.g. a
+                              // benefit-only bundle): say so instead of a
+                              // blank area above "Xem báo cáo".
+                              if (_cubit.showNoActivity)
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 24),
+                                  decoration: BoxDecoration(
+                                    color: R.color.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                        color: R.color.color0xffE5E5E5),
+                                  ),
+                                  child: Text(
+                                    R.string.program_no_activity_on_day.tr(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: R.color.primaryGreyColor,
+                                      fontSize: 14,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+
                               if (_selectedTopTab == 0)
                                 Container(
                                   alignment: Alignment.center,

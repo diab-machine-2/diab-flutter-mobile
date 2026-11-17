@@ -48,6 +48,17 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   List<SmartGoalList?> smartGoalNotCompleteInWeekly = [];
   List<SmartGoalList?> lessonsWeekly = [];
 
+  /// True once a day's list has been received, so the empty state is not
+  /// shown while the first request is still in flight (or after it failed).
+  bool smartGoalsLoaded = false;
+
+  /// Loaded, and the selected day has neither its own activities nor
+  /// not-completed ones from the week: the tab shows an empty state.
+  bool get showNoActivity =>
+      smartGoalsLoaded &&
+      smartGoalDayList.isEmpty &&
+      smartGoalNotCompleteInWeekly.isEmpty;
+
   List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
   List<DayStatesResponseData?> get dayStatesList =>
       statistic?.daysInCurrentWeek ?? [];
@@ -306,6 +317,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       smartGoalNotCompleteInWeekly =
           response.data?.activitiesNotCompleteInWeekly ?? [];
       lessonsWeekly = response.data?.lessonsWeekly ?? [];
+      smartGoalsLoaded = true;
 
       // smartGoalDayList.removeWhere((element) => element?.state == 4);
       // smartGoalWeekList.removeWhere((element) => element?.state == 4);

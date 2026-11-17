@@ -52,6 +52,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   bool _firstLoad = false;
   bool _hasWeightRecord = false;
 
+  /// Activities fetched from the network in this session. Until then the
+  /// card shows its loading state: cached activities belong to the day (and
+  /// app version) they were saved on, so painting them shows stale items.
+  bool _activitiesFresh = false;
+
   int get _currentWeek {
     if (AppSettings.userInfo?.ownPackage?.ownRoadmap?.currentWeek != null) {
       int week = AppSettings.userInfo!.ownPackage!.ownRoadmap!.currentWeek!;
@@ -94,9 +99,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           // if have cache
           _cached = HomeLoaded(
             model: model,
-            activities: model.activities,
+            // Not model.activities: see _activitiesFresh.
+            activities: const [],
             reminders: model.reminders,
-            activityLoading: false,
+            activityLoading: true,
             measurementLoading: false,
             reminderLoading: false,
           );
@@ -134,7 +140,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (_cached?.copyWith(model: home) ?? HomeLoaded(model: home))
                 .copyWith(
           measurementLoading: false,
-          activityLoading: _firstLoad,
+          activityLoading: _firstLoad || !_activitiesFresh,
           reminderLoading: _firstLoad,
         );
         yield currentState;
@@ -159,6 +165,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield currentState;
 
         currentState = await (await activitiesFuture)(currentState);
+        _activitiesFresh = true;
         // set "activities" data
         home.activities = currentState.activities;
         yield currentState;
