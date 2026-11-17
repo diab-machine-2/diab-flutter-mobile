@@ -236,6 +236,32 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     yield patch(state as HomeLoaded);
   }
 
+  /// Today's activities, the same two lists the Program tab ("Hoạt động")
+  /// shows for today: `daily`, then the week's not-completed activities
+  /// (`activitiesNotCompleteInWeekly`, progress != 1). Not `weekly`: that is
+  /// the whole week's roadmap (with duplicates), which the Program tab no
+  /// longer shows, so Home listed lessons the Program tab didn't.
+  @visibleForTesting
+  static List<SmartGoalList> todayGoals({
+    List<SmartGoalList?>? daily,
+    List<SmartGoalList?>? notCompleteInWeek,
+  }) {
+    final result = <SmartGoalList>[];
+    final ids = <String>{};
+    void add(SmartGoalList goal) {
+      if (goal.id == null || !ids.add(goal.id!)) return;
+      result.add(goal);
+    }
+
+    for (final goal in daily ?? const <SmartGoalList?>[]) {
+      if (goal != null) add(goal);
+    }
+    for (final goal in notCompleteInWeek ?? const <SmartGoalList?>[]) {
+      if (goal != null && goal.progress != 1) add(goal);
+    }
+    return result;
+  }
+
   /// Fires the "today's activities" network call immediately and returns an
   /// applier that computes the resulting state. Split in two like this
   /// (fetch now, apply later) so `_fetchHomes()` can kick this off at the
@@ -273,19 +299,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         apiResult.when(
           success: (SmartGoalListReponse response) {
             List<HomeActivityData> combinedActivities = [];
-            if (response.data?.daily?.isNotEmpty == true ||
-                response.data?.weekly?.isNotEmpty == true) {
-              final dailyActivities = (response.data?.daily ?? [])
-                  .where((e) => e != null)
-                  .map((e) => e!)
-                  .map((e) {
+            final goals = todayGoals(
+              daily: response.data?.daily,
+              notCompleteInWeek: response.data?.activitiesNotCompleteInWeekly,
+            );
+            if (goals.isNotEmpty) {
+              combinedActivities.addAll(goals.map((e) {
                 final ScheduleType type =
                     ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
                         lessonData: e.lessonData,
                         lessonNested: e.lesson,
                         activityName: e.name,
                         activityDescription: e.description);
-                final activity = HomeActivityData(
+                return HomeActivityData(
                   id: e.id!,
                   icon: type.icon,
                   title: e.name ?? type.title,
@@ -293,32 +319,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                   smartGoal: e,
                   description: e.description,
                 );
-                return activity;
-              }).toList();
-              combinedActivities.addAll(dailyActivities);
-              final weeklyActivities = (response.data?.weekly ?? [])
-                  .where((e) => e != null)
-                  .map((e) => e!)
-                  .map((e) {
-                final ScheduleType type =
-                    ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
-                        lessonData: e.lessonData,
-                        lessonNested: e.lesson,
-                        activityName: e.name,
-                        activityDescription: e.description);
-                final activity = HomeActivityData(
-                  id: e.id!,
-                  icon: type.icon,
-                  title: e.description != null
-                      ? type.title
-                      : (e.name ?? type.title),
-                  type: type,
-                  smartGoal: e,
-                  description: e.description,
-                );
-                return activity;
-              }).toList();
-              combinedActivities.addAll(weeklyActivities);
+              }));
               bool isCompletedAll = combinedActivities.isEmpty ||
                   combinedActivities
                       .every((element) => element.smartGoal.state == 1);
@@ -775,6 +776,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ;
 
     print('  haveBloodPressure: $haveBloodPressure');
+    final haveRecentBloodPressure = haveBloodPressure &&
+        HomeViewFlags.hasRecentBloodPressure(model);
     final bloodPressure = HomeMeasurementData(
       title: R.string.huyet_ap.tr(),
       titleColor: haveBloodPressure ? _haveValueTitleColor : _noValueTitleColor,
@@ -796,10 +799,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               ? _convertHexStringToInt(model.bloodPressureIndex.colorDiastolic!)
               : null,
       unit: model?.bloodPressureIndex.unit ?? "mmHg",
-      navigatorName: haveBloodPressure
+      // Value shown whatever its age; the dashboard only covers 90 days, so
+      // an older reading routes like "no data" (Home opens the BP intro).
+      navigatorName: haveRecentBloodPressure
           ? NavigatorName.detail_blood_pressure
           : NavigatorName.add_blood_pressure,
-      args: haveBloodPressure ? null : {'type': 'input'},
+      args: haveRecentBloodPressure ? null : {'type': 'input'},
     );
 
     // Exercise

@@ -250,4 +250,37 @@ void main() {
           isFalse);
     });
   });
+  // Home BP KPI: dashboard (90 days) or intro, decided before navigating.
+  group('HomeViewFlags.hasRecentBloodPressure', () {
+    final now = DateTime(2026, 11, 13, 12);
+    HomeModel bp(DateTime? at, {double sys = 120, double dia = 80}) => _model(
+        systolic: sys,
+        diastolic: dia,
+        bpDate: at == null ? null : at.millisecondsSinceEpoch ~/ 1000);
+
+    test('reading within 90 days => true', () {
+      expect(
+          HomeViewFlags.hasRecentBloodPressure(
+              bp(now.subtract(const Duration(days: 89))),
+              now: now),
+          isTrue);
+    });
+
+    test('staging 0702112615: last reading 02/02/2026 => false', () {
+      expect(
+          HomeViewFlags.hasRecentBloodPressure(bp(DateTime(2026, 2, 2)),
+              now: now),
+          isFalse);
+    });
+
+    test('no value or no date => false', () {
+      expect(HomeViewFlags.hasRecentBloodPressure(_model(), now: now),
+          isFalse);
+      expect(HomeViewFlags.hasRecentBloodPressure(bp(null), now: now),
+          isFalse);
+      expect(
+          HomeViewFlags.hasRecentBloodPressure(bp(now, sys: 0), now: now),
+          isFalse);
+    });
+  });
 }

@@ -87,6 +87,19 @@ class HomeViewFlags {
     return at * 1000 >= cutoff.millisecondsSinceEpoch;
   }
 
+  /// Latest BP reading (`bloodPressureIndex.createDateTime`, the measured
+  /// time) falls inside the dashboard's widest period, 90 days. Older → the
+  /// KPI still shows the value, but tapping it goes to the BP intro instead
+  /// of a dashboard that would find nothing and bounce there itself.
+  static bool hasRecentBloodPressure(HomeModel model, {DateTime? now}) {
+    final bp = model.bloodPressureIndex;
+    if ((bp.systolic ?? 0) <= 0 || (bp.diastolic ?? 0) <= 0) return false;
+    final at = bp.createDateTime ?? 0;
+    if (at <= 0) return false;
+    final cutoff = (now ?? DateTime.now()).subtract(const Duration(days: 90));
+    return at * 1000 >= cutoff.millisecondsSinceEpoch;
+  }
+
   static bool _notBlank(String? value) => value?.trim().isNotEmpty == true;
 
   HomeViewFlags copyWith({
