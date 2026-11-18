@@ -14,13 +14,13 @@ import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/notification/notification_mark_read.dart';
 import 'package:medical/src/widget/components/load_more.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/shimmer_box.dart';
 
 import '../../modal/notification/notification_list_model.dart';
+import 'notification_sent_label.dart';
 
 class NotificationUnreadController extends StatefulWidget {
   const NotificationUnreadController({required this.isRemovealbe});
@@ -310,17 +310,17 @@ class NotificationUnreadControllerState
                     ),
                   ),
                   Html(data: model.topic ?? ''),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Text(
-                      convertToUTC(
-                          model.sentDateTime ?? 0, 'HH:mm - dd/MM/yyyy'),
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.gray),
+                  if (notificationSentLabel(model.sentDateTime) case final sent?)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        sent,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: R.color.gray),
+                      ),
                     ),
-                  ),
                 ],
               ),
             )

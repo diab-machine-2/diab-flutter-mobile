@@ -337,7 +337,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                     dateHeaderBuilder: _dateHeaderBuilder,
                     emptyState: Center(
                       child: Text(
-                        'No messages here yet',
+                        R.string.conversation_empty_message.tr(),
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,
