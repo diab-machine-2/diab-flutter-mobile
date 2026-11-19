@@ -522,7 +522,9 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         backgroundColor: Colors.transparent,
         color: Colors.white,
         buttonBackgroundColor: const Color(0xFF008479),
-        normalButtonColor: const Color(0xFF9C9C9C),
+        // #666666 (was #9C9C9C, contrast ~2.7:1 on white): readable
+        // inactive tab icons and titles, ~5.7:1.
+        normalButtonColor: R.color.primaryGreyColor,
         activeButtonColor: Colors.white,
         activeButtonBorderColor: const Color(0xFFE1FAF8),
         height: 56.0,

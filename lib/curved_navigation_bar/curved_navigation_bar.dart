@@ -112,12 +112,18 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     super.dispose();
   }
 
+  /// Largest font scale for the tab titles: the 56px bar fits 12px x 1.3,
+  /// and titles still scale down (FittedBox) when a tab is too narrow.
+  static const double _maxTitleScale = 1.3;
+
   @override
   Widget build(BuildContext context) {
     final textDirection = Directionality.of(context);
     final double activeIconSize = 52.0;
     final double activeTabPaddingTitle = 4.0;
-    final double titleHeight = 11.0;
+    // 12 (was 11) and follows the system font up to [_maxTitleScale]: the
+    // smallest text in the app, read by older users.
+    final double titleHeight = 12.0;
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxWidth = min(constraints.maxWidth, widget.maxWidth ?? constraints.maxWidth);
@@ -209,15 +215,19 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                 MediaQuery(
                                   data: media.copyWith(
                                     textScaler: media.textScaler
-                                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.0),
+                                        .clamp(minScaleFactor: 1.0, maxScaleFactor: _maxTitleScale),
                                   ),
-                                  child: Text(
-                                    widget.tabTitles[_endingIndex],
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: widget.buttonBackgroundColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: titleHeight,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      widget.tabTitles[_endingIndex],
+                                      textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        color: widget.buttonBackgroundColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: titleHeight,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -250,11 +260,26 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                   SizedBox(height: activeTabPaddingTitle),
                                   item,
                                   const SizedBox(height: 4.0),
-                                  Text(
-                                    widget.tabTitles[index],
-                                    style: TextStyle(
-                                      color: widget.normalButtonColor,
-                                      fontSize: titleHeight,
+                                  // Same as the active title: capped font
+                                  // scale in a fixed-height bar, and shrink
+                                  // rather than overlap neighbours
+                                  // ("Chương trình" / "Thư viện").
+                                  MediaQuery(
+                                    data: media.copyWith(
+                                      textScaler: media.textScaler.clamp(
+                                          minScaleFactor: 1.0,
+                                          maxScaleFactor: _maxTitleScale),
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        widget.tabTitles[index],
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          color: widget.normalButtonColor,
+                                          fontSize: titleHeight,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],

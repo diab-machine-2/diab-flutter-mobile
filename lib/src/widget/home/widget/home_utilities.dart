@@ -89,7 +89,7 @@ class HomeUtilities extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  SvgPicture.asset(utility.icon, width: 24, height: 24),
+                  SvgPicture.asset(utility.icon, width: 28, height: 28),
                   if (showDot)
                     Positioned(
                       top: 0,
@@ -106,17 +106,25 @@ class HomeUtilities extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                utility.gridTitle ?? utility.title,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: R.color.homeTitleText,
-                  fontSize: 12,
-                  height: 1.5,
-                  letterSpacing: 0.2,
-                  fontWeight: FontWeight.w500,
+              Builder(
+                builder: (context) => Text(
+                  utility.gridTitle ?? utility.title,
+                  textAlign: TextAlign.center,
+                  // 3 lines: at the largest system font "Nhắc lịch uống
+                  // thuốc" / "Lịch đo đường huyết" need a third line.
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  // Up to 1.3x (~18px) so tiles don't grow too tall.
+                  textScaler: MediaQuery.textScalerOf(context)
+                      .clamp(maxScaleFactor: 1.3),
+                  // 14 (was 12): readable for older users.
+                  style: TextStyle(
+                    color: R.color.homeTitleText,
+                    fontSize: 14,
+                    height: 1.4,
+                    letterSpacing: 0,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],

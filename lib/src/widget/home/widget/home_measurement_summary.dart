@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -93,17 +94,24 @@ class MeasurementSummary extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 10, 8, 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (var i = 0; i < measurements.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 4),
-                  Expanded(
-                      child: _buildMetric(context, measurements[i],
-                          i < _metricIcons.length ? _metricIcons[i] : null)),
+            child: Builder(builder: (context) {
+              // One size per row (value / unit / title) across the four
+              // KPIs: each shrinking on its own made "Huyết áp" bigger
+              // than "Đường huyết".
+              final groups = _MetricTextGroups();
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var i = 0; i < measurements.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 4),
+                    Expanded(
+                        child: _buildMetric(context, measurements[i],
+                            i < _metricIcons.length ? _metricIcons[i] : null,
+                            groups)),
+                  ],
                 ],
-              ],
-            ),
+              );
+            }),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 2, 12, 16),
@@ -168,8 +176,8 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(
-      BuildContext context, HomeMeasurementData data, String? icon) {
+  Widget _buildMetric(BuildContext context, HomeMeasurementData data,
+      String? icon, _MetricTextGroups groups) {
     final value1 = data.value1;
     final value2 = data.value2;
     final hasValue1 = value1 != null && value1.isNotEmpty && value1 != '--';
@@ -186,8 +194,8 @@ class MeasurementSummary extends StatelessWidget {
     );
 
     final Widget value = !hasValue1
-        ? Text(emptyValue, style: valueStyle)
-        : Text.rich(
+        ? _groupText(emptyValue, valueStyle, groups.value)
+        : AutoSizeText.rich(
             TextSpan(children: [
               TextSpan(
                   text: value1,
@@ -201,6 +209,9 @@ class MeasurementSummary extends StatelessWidget {
             ]),
             style: valueStyle,
             maxLines: 1,
+            group: groups.value,
+            minFontSize: _metricMinFontSize,
+            stepGranularity: _metricStep,
           );
 
     return InkWell(
@@ -223,20 +234,33 @@ class MeasurementSummary extends StatelessWidget {
                 : SvgPicture.asset(icon, width: 24, height: 24),
           ),
           const SizedBox(height: 6),
-          FittedBox(fit: BoxFit.scaleDown, child: value),
-          Text(
-            data.unit,
-            style: _captionStyle.copyWith(fontFamily: R.font.viga),
-            maxLines: 1,
-          ),
-          Text(
-            data.title,
-            style: _captionStyle.copyWith(fontWeight: FontWeight.w500),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          value,
+          // Large system font: shrink into the quarter-width column instead
+          // of clipping ("mmH", "Đườ…"), at the same size in all four KPIs.
+          _groupText(data.unit, _captionStyle.copyWith(fontFamily: R.font.viga),
+              groups.unit),
+          // Title may wrap to 2 lines ("Đường / huyết") before shrinking.
+          _groupText(data.title,
+              _captionStyle.copyWith(fontWeight: FontWeight.w500), groups.title,
+              maxLines: 2),
         ],
       ),
+    );
+  }
+
+  static const double _metricMinFontSize = 6;
+  static const double _metricStep = 0.5;
+
+  Widget _groupText(String text, TextStyle style, AutoSizeGroup group,
+      {int maxLines = 1}) {
+    return AutoSizeText(
+      text,
+      style: style,
+      textAlign: TextAlign.center,
+      maxLines: maxLines,
+      group: group,
+      minFontSize: _metricMinFontSize,
+      stepGranularity: _metricStep,
     );
   }
 
@@ -537,4 +561,12 @@ class MeasurementSummary extends StatelessWidget {
       }
     };
   }
+}
+
+/// Shared font sizes for the KPI row: every value, unit and title takes the
+/// size of the one that has to shrink the most, so the four KPIs match.
+class _MetricTextGroups {
+  final value = AutoSizeGroup();
+  final unit = AutoSizeGroup();
+  final title = AutoSizeGroup();
 }

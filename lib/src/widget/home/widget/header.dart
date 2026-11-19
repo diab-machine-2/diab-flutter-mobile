@@ -120,7 +120,9 @@ class _HomeHeaderState extends State<HomeHeader>
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
+        // Right 12 (not 4): room for the bell badge, which now sticks out
+        // past the bell's top-right corner.
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
         child: Row(
           children: [
             Expanded(
@@ -147,16 +149,18 @@ class _HomeHeaderState extends State<HomeHeader>
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        // Program name: up to 2 lines so older users can
+                        // read the whole name instead of "Chương trình…".
                         Text(
                           _subtitle,
                           style: TextStyle(
                             color: R.color.white,
-                            fontSize: 13,
-                            height: 1.5,
-                            letterSpacing: 0.4,
+                            fontSize: 14,
+                            height: 1.4,
+                            letterSpacing: 0.2,
                             fontWeight: FontWeight.w400,
                           ),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
@@ -259,19 +263,26 @@ class _HomeHeaderState extends State<HomeHeader>
             height: 40,
             child: Center(child: SvgPicture.asset(icon)),
           ),
+          // On the bell's top-right corner (the 24px icon spans 8..32 of the
+          // 40px box), covering about a quarter of it instead of two
+          // thirds; the white ring separates it from icon and header.
           if (badge != null)
             Positioned(
-              top: 3,
-              left: 14,
+              top: 0,
+              left: 22,
               child: Container(
-                constraints: const BoxConstraints(minWidth: 18),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                constraints: const BoxConstraints(minWidth: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   color: R.color.homeAlertRed,
                   borderRadius: BorderRadius.circular(99),
+                  border: Border.all(color: R.color.white, width: 1.5),
                 ),
                 child: Text(
                   badge,
+                  // A big system font grew the badge back over the bell.
+                  textScaler: MediaQuery.textScalerOf(context)
+                      .clamp(maxScaleFactor: 1.2),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: R.color.white,

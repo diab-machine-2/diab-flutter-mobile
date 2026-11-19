@@ -217,11 +217,16 @@ class HomeBenefitSection extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+            // Up to 1.3x (~18px) so 2 lines still fit a quarter-width
+            // column ("Đặt xét nghiệm") at the largest system font.
+            textScaler:
+                MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.3),
+            // 14 (was 12): readable for older users.
             style: TextStyle(
               color: R.color.homeTitleText,
-              fontSize: 12,
-              height: 1.5,
-              letterSpacing: 0.2,
+              fontSize: 14,
+              height: 1.4,
+              letterSpacing: 0,
               fontWeight: FontWeight.w500,
             ),
           ),
