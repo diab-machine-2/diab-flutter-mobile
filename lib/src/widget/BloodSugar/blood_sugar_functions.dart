@@ -12,6 +12,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 
 class BloodSugarFunctions {
   static void showModalAddData(BuildContext context,
@@ -132,79 +133,81 @@ class BloodSugarFunctions {
             ),
             const SizedBox(height: 8),
             // Build content
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  buildContentItem(
-                    R.string.glucose_connect_device_title.tr(),
-                    R.string.glucose_connect_device_subtitle.tr(),
-                    R.drawable.im_glucose_input_device,
-                    () async {
-                      AppSettings.setLastOpenedGlucoseInputType('device');
-                      TrackingManager.trackEvent(
-                        'glucose_select_method',
-                        'kpi_glucose',
-                        params: {
-                          'method': 'device',
-                        },
-                      );
-                      Navigator.pop(context);
-                      if (popPrevious) {
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    buildContentItem(
+                      R.string.glucose_connect_device_title.tr(),
+                      R.string.glucose_connect_device_subtitle.tr(),
+                      R.drawable.im_glucose_input_device,
+                      () async {
+                        AppSettings.setLastOpenedGlucoseInputType('device');
+                        TrackingManager.trackEvent(
+                          'glucose_select_method',
+                          'kpi_glucose',
+                          params: {
+                            'method': 'device',
+                          },
+                        );
                         Navigator.pop(context);
-                      }
-                      BlocProvider.of<NiproBloc>(context).tryAutoConnect();
-                    },
-                  ),
-                  GapH(16),
-                  buildContentItem(
-                    R.string.glucose_photo_title.tr(),
-                    R.string.glucose_photo_subtitle.tr(),
-                    R.drawable.im_glucose_from_photo,
-                    () async {
-                      AppSettings.setLastOpenedGlucoseInputType('camera');
-                      await TrackingManager.trackEvent(
-                        'glucose_select_method',
-                        'kpi_glucose',
-                        params: {
-                          'method': 'camera',
-                        },
-                      );
-                      Navigator.pop(context);
-                      if (popPrevious) {
+                        if (popPrevious) {
+                          Navigator.pop(context);
+                        }
+                        BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+                      },
+                    ),
+                    GapH(16),
+                    buildContentItem(
+                      R.string.glucose_photo_title.tr(),
+                      R.string.glucose_photo_subtitle.tr(),
+                      R.drawable.im_glucose_from_photo,
+                      () async {
+                        AppSettings.setLastOpenedGlucoseInputType('camera');
+                        await TrackingManager.trackEvent(
+                          'glucose_select_method',
+                          'kpi_glucose',
+                          params: {
+                            'method': 'camera',
+                          },
+                        );
                         Navigator.pop(context);
-                      }
-                      // Navigate to new blood sugar image capture flow
-                      Navigator.pushNamed(
-                          context, NavigatorName.blood_sugar_image_capture,
-                          arguments: {'goalId': goalId});
-                    },
-                  ),
-                  GapH(16),
-                  buildContentItem(
-                    R.string.glucose_manual_title.tr(),
-                    R.string.glucose_manual_subtitle.tr(),
-                    R.drawable.im_glucose_input_manual,
-                    () async {
-                      AppSettings.setLastOpenedGlucoseInputType('manual');
-                      TrackingManager.trackEvent(
-                        'glucose_select_method',
-                        'kpi_glucose',
-                        params: {
-                          'method': 'manual',
-                        },
-                      );
-                      Navigator.pop(context);
-                      if (popPrevious) {
+                        if (popPrevious) {
+                          Navigator.pop(context);
+                        }
+                        // Navigate to new blood sugar image capture flow
+                        Navigator.pushNamed(
+                            context, NavigatorName.blood_sugar_image_capture,
+                            arguments: {'goalId': goalId});
+                      },
+                    ),
+                    GapH(16),
+                    buildContentItem(
+                      R.string.glucose_manual_title.tr(),
+                      R.string.glucose_manual_subtitle.tr(),
+                      R.drawable.im_glucose_input_manual,
+                      () async {
+                        AppSettings.setLastOpenedGlucoseInputType('manual');
+                        TrackingManager.trackEvent(
+                          'glucose_select_method',
+                          'kpi_glucose',
+                          params: {
+                            'method': 'manual',
+                          },
+                        );
                         Navigator.pop(context);
-                      }
-                      Navigator.pushNamed(
-                          context, NavigatorName.add_blood_sugar_new,
-                          arguments: {'type': 'input', 'goalId': goalId});
-                    },
-                  ),
-                  GapH(16),
-                ],
+                        if (popPrevious) {
+                          Navigator.pop(context);
+                        }
+                        Navigator.pushNamed(
+                            context, NavigatorName.add_blood_sugar_new,
+                            arguments: {'type': 'input', 'goalId': goalId});
+                      },
+                    ),
+                    GapH(16),
+                  ],
+                ),
               ),
             ),
           ],
@@ -235,13 +238,15 @@ class BloodSugarFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: hasHealthConnection == true ? 290 : 350,
+        constraints: sheetConstraints(
+            context, hasHealthConnection == true ? 290 : 350),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         margin: EdgeInsets.all(10),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: EdgeInsets.all(20),
@@ -256,67 +261,69 @@ class BloodSugarFunctions {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  if (hasHealthConnection == false)
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    if (hasHealthConnection == false)
+                      ButtonWidget(
+                          isIconSvg: false,
+                          icon: healthIcon,
+                          backgroundColor: Color(0xFFE4FCF3),
+                          textColor: Color(0xff249B92),
+                          title: healthTitle,
+                          onPressed: () async {
+                            RequestHealthConnect.showModal(context,
+                                callback: () => Navigator.pop(context));
+                          }),
+                    SizedBox(height: 15),
                     ButtonWidget(
-                        isIconSvg: false,
-                        icon: healthIcon,
-                        backgroundColor: Color(0xFFE4FCF3),
-                        textColor: Color(0xff249B92),
-                        title: healthTitle,
-                        onPressed: () async {
-                          RequestHealthConnect.showModal(context,
-                              callback: () => Navigator.pop(context));
-                        }),
-                  SizedBox(height: 15),
-                  ButtonWidget(
-                    icon: R.icons.ic_bluetooth,
-                    backgroundColor: Color(0xFFE4FCF3),
-                    textColor: Color(0xff249B92),
-                    title: 'Kết nối từ thiết bị',
-                    onPressed: () async {
-                      await TrackingManager.trackEvent(
-                        'glucose_select_method',
-                        'kpi_glucose',
-                        params: {
-                          'method': 'device',
-                        },
-                      );
-                      Navigator.pop(context);
-                      BlocProvider.of<NiproBloc>(context).tryAutoConnect();
-                    },
-                  ),
-                  SizedBox(height: 15),
-                  ButtonWidget(
-                    icon: R.icons.ic_tap,
-                    backgroundColor: Color(0xFFE4FCF3),
-                    textColor: Color(0xff249B92),
-                    title: 'Nhập thủ công',
-                    onPressed: () async {
-                      await TrackingManager.trackEvent(
-                        'glucose_select_method',
-                        'kpi_glucose',
-                        params: {
-                          'method': 'manual',
-                        },
-                      );
-                      Navigator.pop(context);
-                      Navigator.pushNamed(
-                          context, NavigatorName.add_blood_sugar_new,
-                          arguments: {'type': 'input'});
-                    },
-                  ),
-                  SizedBox(height: 15),
-                  ButtonWidget(
-                    backgroundColor: Color(0xFFF4F4F4),
-                    textColor: Color(0xff172823),
-                    title: 'Đóng',
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
+                      icon: R.icons.ic_bluetooth,
+                      backgroundColor: Color(0xFFE4FCF3),
+                      textColor: Color(0xff249B92),
+                      title: 'Kết nối từ thiết bị',
+                      onPressed: () async {
+                        await TrackingManager.trackEvent(
+                          'glucose_select_method',
+                          'kpi_glucose',
+                          params: {
+                            'method': 'device',
+                          },
+                        );
+                        Navigator.pop(context);
+                        BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    ButtonWidget(
+                      icon: R.icons.ic_tap,
+                      backgroundColor: Color(0xFFE4FCF3),
+                      textColor: Color(0xff249B92),
+                      title: 'Nhập thủ công',
+                      onPressed: () async {
+                        await TrackingManager.trackEvent(
+                          'glucose_select_method',
+                          'kpi_glucose',
+                          params: {
+                            'method': 'manual',
+                          },
+                        );
+                        Navigator.pop(context);
+                        Navigator.pushNamed(
+                            context, NavigatorName.add_blood_sugar_new,
+                            arguments: {'type': 'input'});
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    ButtonWidget(
+                      backgroundColor: Color(0xFFF4F4F4),
+                      textColor: Color(0xff172823),
+                      title: 'Đóng',
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
               ),
             )
           ],

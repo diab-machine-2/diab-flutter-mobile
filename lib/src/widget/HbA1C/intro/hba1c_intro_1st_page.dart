@@ -170,7 +170,10 @@ class _HbA1cIntro1stPageState extends State<HbA1cIntro1stPage> {
                   onTap: _navigateToInputSelection,
                   child: Container(
                     width: double.infinity,
-                    height: 44,
+                    // Large system font: grow and wrap instead of clipping the label.
+                    constraints: const BoxConstraints(minHeight: 44),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                         color: R.color.greenGradientBottom,
                         borderRadius: BorderRadius.circular(200),
@@ -184,6 +187,7 @@ class _HbA1cIntro1stPageState extends State<HbA1cIntro1stPage> {
                     child: Center(
                       child: Text(
                         "Nhập HbA1c",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           color: R.color.white,
                           fontSize: 16,

@@ -498,19 +498,21 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
           child: Column(
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Row(children: [
-                  isSvgIcon
-                      ? SvgPicture.asset(
-                          icon,
-                          width: 20,
-                          height: 20,
-                          color: R.color.accentColor,
-                        )
-                      : Image.asset(icon, width: 20, height: 20),
-                  const SizedBox(width: 16),
-                  Text(title, style: const TextStyle(fontSize: 16))
-                ]),
+              // Title takes the remaining width and wraps, so a large system
+              // font no longer clips it or pushes the chevron off screen.
+              Row(children: [
+                isSvgIcon
+                    ? SvgPicture.asset(
+                        icon,
+                        width: 20,
+                        height: 20,
+                        color: R.color.accentColor,
+                      )
+                    : Image.asset(icon, width: 20, height: 20),
+                const SizedBox(width: 16),
+                Expanded(
+                    child: Text(title, style: const TextStyle(fontSize: 16))),
+                const SizedBox(width: 8),
                 Icon(Icons.arrow_forward_ios,
                     color: R.color.mainColor, size: 16)
               ]),

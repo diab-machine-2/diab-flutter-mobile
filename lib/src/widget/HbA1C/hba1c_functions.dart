@@ -7,6 +7,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 
 Future<void> showHbA1cInputMethodModal(
   BuildContext context, {
@@ -102,7 +103,8 @@ Future<void> showHbA1cInputMethodModal(
     context: context,
     isScrollControlled: true,
     builder: (context) => Container(
-      height: 365 + MediaQuery.of(context).viewInsets.bottom / 2,
+      constraints: sheetConstraints(
+          context, 365 + MediaQuery.of(context).viewInsets.bottom / 2),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -144,58 +146,60 @@ Future<void> showHbA1cInputMethodModal(
           ),
           const SizedBox(height: 8),
           // Build content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                buildContentItem(
-                  healthTitle,
-                  'Tự động nhập chỉ số HbA1c một cách nhanh chóng và chính xác.',
-                  healthIcon,
-                  () async {
-                    TrackingManager.trackEvent(
-                      'hba1c_select_method',
-                      'kpi_hba1c',
-                      params: {
-                        'method': 'device',
-                      },
-                    );
-                    Navigator.pop(context);
-                    if (popPrevious) {
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                children: [
+                  buildContentItem(
+                    healthTitle,
+                    'Tự động nhập chỉ số HbA1c một cách nhanh chóng và chính xác.',
+                    healthIcon,
+                    () async {
+                      TrackingManager.trackEvent(
+                        'hba1c_select_method',
+                        'kpi_hba1c',
+                        params: {
+                          'method': 'device',
+                        },
+                      );
                       Navigator.pop(context);
-                    }
-                    // Show Health Connect/Apple Health connection modal
-                    RequestHealthConnect.showModal(
-                      context,
-                      callback: () {
-                        // After successful connection, user can input HbA1C manually
-                        // or the data will be synced automatically from Health Connect
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                buildContentItem(
-                  'Nhập thủ công',
-                  'Nhập chỉ số HbA1c của bạn bằng cách nhập thủ công từ kết quả xét nghiệm đã có sẵn',
-                  R.drawable.im_glucose_input_manual,
-                  () async {
-                    TrackingManager.trackEvent(
-                      'hba1c_select_method',
-                      'kpi_hba1c',
-                      params: {
-                        'method': 'manual',
-                      },
-                    );
-                    Navigator.pop(context);
-                    if (popPrevious) {
+                      if (popPrevious) {
+                        Navigator.pop(context);
+                      }
+                      // Show Health Connect/Apple Health connection modal
+                      RequestHealthConnect.showModal(
+                        context,
+                        callback: () {
+                          // After successful connection, user can input HbA1C manually
+                          // or the data will be synced automatically from Health Connect
+                        },
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  buildContentItem(
+                    'Nhập thủ công',
+                    'Nhập chỉ số HbA1c của bạn bằng cách nhập thủ công từ kết quả xét nghiệm đã có sẵn',
+                    R.drawable.im_glucose_input_manual,
+                    () async {
+                      TrackingManager.trackEvent(
+                        'hba1c_select_method',
+                        'kpi_hba1c',
+                        params: {
+                          'method': 'manual',
+                        },
+                      );
                       Navigator.pop(context);
-                    }
-                    Navigator.pushNamed(context, NavigatorName.add_hba1c,
-                        arguments: {'type': 'input', 'goalId': goalId});
-                  },
-                ),
-              ],
+                      if (popPrevious) {
+                        Navigator.pop(context);
+                      }
+                      Navigator.pushNamed(context, NavigatorName.add_hba1c,
+                          arguments: {'type': 'input', 'goalId': goalId});
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ],

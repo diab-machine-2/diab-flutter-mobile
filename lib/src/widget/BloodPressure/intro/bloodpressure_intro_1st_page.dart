@@ -230,7 +230,10 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                   onTap: _navigateToInputSelection,
                   child: Container(
                     width: double.infinity,
-                    height: 44,
+                    // Large system font: grow and wrap instead of clipping the label.
+                    constraints: const BoxConstraints(minHeight: 44),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                         color: R.color.greenGradientBottom,
                         borderRadius: BorderRadius.circular(200),
@@ -244,6 +247,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                     child: Center(
                       child: Text(
                         R.string.enter_blood_pressure.tr(),
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           color: R.color.white,
                           fontSize: 16,

@@ -35,48 +35,66 @@ class CalendarNavigationBar extends StatelessWidget {
   final bool canNavigatePrevious;
   final bool canNavigateNext;
 
+  /// Below this width per unit of text scale, "Hôm nay" and the date
+  /// cluster no longer fit on one line (the date got squeezed to nothing).
+  static const double _oneLineWidthPerScale = 280;
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Today button (standalone)
-        _buildTodayButton(context),
-        const SizedBox(width: 12),
+    return LayoutBuilder(builder: (context, constraints) {
+      final textScale = MediaQuery.textScalerOf(context).scale(15) / 15;
+      // Large system font / display size: date cluster on its own line.
+      if (constraints.maxWidth < _oneLineWidthPerScale * textScale) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildNavigationCluster(context),
+            const SizedBox(height: 8),
+            _buildTodayButton(context),
+          ],
+        );
+      }
+      return Row(
+        children: [
+          // Today button (standalone)
+          _buildTodayButton(context),
+          const SizedBox(width: 12),
+          Expanded(child: _buildNavigationCluster(context)),
+        ],
+      );
+    });
+  }
 
-        // Navigation cluster container
-        Expanded(
-          child: Container(
-            height: 42,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF2F6F9),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Row(
-              children: [
-                // Left arrow (icon only)
-                _buildArrowIcon(
-                  icon: Icons.chevron_left_rounded,
-                  onTap: canNavigatePrevious ? onPreviousDay : null,
-                  isEnabled: canNavigatePrevious,
-                ),
-                const SizedBox(width: 4),
-
-                // Date picker button (calendar icon prefix)
-                Expanded(child: _buildDatePickerButton(context)),
-
-                const SizedBox(width: 4),
-                // Right arrow (icon only)
-                _buildArrowIcon(
-                  icon: Icons.chevron_right_rounded,
-                  onTap: canNavigateNext ? onNextDay : null,
-                  isEnabled: canNavigateNext,
-                ),
-              ],
-            ),
+  Widget _buildNavigationCluster(BuildContext context) {
+    return Container(
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F6F9),
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Row(
+        children: [
+          // Left arrow (icon only)
+          _buildArrowIcon(
+            icon: Icons.chevron_left_rounded,
+            onTap: canNavigatePrevious ? onPreviousDay : null,
+            isEnabled: canNavigatePrevious,
           ),
-        ),
-      ],
+          const SizedBox(width: 4),
+
+          // Date picker button (calendar icon prefix)
+          Expanded(child: _buildDatePickerButton(context)),
+
+          const SizedBox(width: 4),
+          // Right arrow (icon only)
+          _buildArrowIcon(
+            icon: Icons.chevron_right_rounded,
+            onTap: canNavigateNext ? onNextDay : null,
+            isEnabled: canNavigateNext,
+          ),
+        ],
+      ),
     );
   }
 
@@ -146,18 +164,26 @@ class CalendarNavigationBar extends StatelessWidget {
               color: R.color.greenGradientBottom,
             ),
             const SizedBox(width: 8),
-            MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                textScaler: MediaQuery.of(context)
-                    .textScaler
-                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
-              ),
-              child: Text(
-                '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
+            // Bounded + scale-down: with a large display size even the
+            // 1.3x-clamped date overlapped the next-day arrow.
+            Flexible(
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ),

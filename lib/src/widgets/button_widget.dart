@@ -95,14 +95,22 @@ class ButtonWidget extends StatelessWidget {
                         height: 22,
                       ),
               ),
-            Text(
-              title,
-              style: TextStyle(
-                  color: onPressed == null
-                      ? R.color.gray
-                      : textColor ?? R.color.white,
-                  fontSize: textSize ?? 16,
-                  fontWeight: FontWeight.w700),
+            // Large system font: shrink to the button (fixed height, often a
+            // fixed width) instead of spilling out of it.
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: onPressed == null
+                          ? R.color.gray
+                          : textColor ?? R.color.white,
+                      fontSize: textSize ?? 16,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
             ),
             if (icon != null && isArrowRight)
               Padding(

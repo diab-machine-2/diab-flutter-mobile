@@ -163,7 +163,8 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  height: 40,
+                  // Large system font: grow and wrap instead of clipping the label.
+                  constraints: const BoxConstraints(minHeight: 40),
                   decoration: BoxDecoration(
                     color: R.color.mainColor,
                     borderRadius: BorderRadius.circular(200),
@@ -188,6 +189,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
                     ),
                     child: Text(
                       R.string.blood_sugar_input.tr(),
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,

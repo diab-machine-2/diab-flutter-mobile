@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 
 class FoodFunctions {
   static void showModalAddData(
@@ -80,7 +81,8 @@ class FoodFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: 380 + MediaQuery.of(context).viewInsets.bottom / 2,
+        constraints: sheetConstraints(
+            context, 380 + MediaQuery.of(context).viewInsets.bottom / 2),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -122,55 +124,57 @@ class FoodFunctions {
             ),
             const SizedBox(height: 8),
             // Build content
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  buildContentItem(
-                    'Chụp ảnh bữa ăn',
-                    'Chụp ảnh bữa ăn để có thể tự động lưu một cách nhanh chóng và chính xác',
-                    R.drawable.im_food_method_capture,
-                    () async {
-                      // TODO: add tracking event
-                      // TrackingManager.trackEvent(
-                      //   'glucose_select_method',
-                      //   'kpi_glucose',
-                      //   params: {
-                      //     'method': 'device',
-                      //   },
-                      // );
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, NavigatorName.food_image_capture,
-                          arguments: {'timeframe': timeframe, 'timeframeId': timeframeId, 'goalId': goalId});
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  buildContentItem(
-                    'Nhập thủ công bữa ăn',
-                    'Nhập thủ công các thông tin từ bữa ăn thực tế của bạn',
-                    R.drawable.im_glucose_input_manual,
-                    () async {
-                      // TODO: add tracking event
-                      // TrackingManager.trackEvent(
-                      //   'glucose_select_method',
-                      //   'kpi_glucose',
-                      //   params: {
-                      //     'method': 'manual',
-                      //   },
-                      // );
-                      if (fromDashboard) {
-                        Navigator.of(context).pop();
-                      } else {
-                        Navigator.of(context).popUntil((route) => route.isFirst);
-                      }
-                      Navigator.pushNamed(
-                        context,
-                        NavigatorName.add_food,
-                        arguments: {'type': 'input', 'timeframeId': timeframeId, 'goalId': goalId},
-                      );
-                    },
-                  ),
-                ],
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Column(
+                  children: [
+                    buildContentItem(
+                      'Chụp ảnh bữa ăn',
+                      'Chụp ảnh bữa ăn để có thể tự động lưu một cách nhanh chóng và chính xác',
+                      R.drawable.im_food_method_capture,
+                      () async {
+                        // TODO: add tracking event
+                        // TrackingManager.trackEvent(
+                        //   'glucose_select_method',
+                        //   'kpi_glucose',
+                        //   params: {
+                        //     'method': 'device',
+                        //   },
+                        // );
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, NavigatorName.food_image_capture,
+                            arguments: {'timeframe': timeframe, 'timeframeId': timeframeId, 'goalId': goalId});
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    buildContentItem(
+                      'Nhập thủ công bữa ăn',
+                      'Nhập thủ công các thông tin từ bữa ăn thực tế của bạn',
+                      R.drawable.im_glucose_input_manual,
+                      () async {
+                        // TODO: add tracking event
+                        // TrackingManager.trackEvent(
+                        //   'glucose_select_method',
+                        //   'kpi_glucose',
+                        //   params: {
+                        //     'method': 'manual',
+                        //   },
+                        // );
+                        if (fromDashboard) {
+                          Navigator.of(context).pop();
+                        } else {
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+                        }
+                        Navigator.pushNamed(
+                          context,
+                          NavigatorName.add_food,
+                          arguments: {'type': 'input', 'timeframeId': timeframeId, 'goalId': goalId},
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

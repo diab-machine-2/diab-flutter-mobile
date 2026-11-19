@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 
 class BloodPressureFunctions {
   static void showModalAddData(BuildContext context,
@@ -89,7 +90,8 @@ class BloodPressureFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: 365 + MediaQuery.of(context).viewInsets.bottom / 2,
+        constraints: sheetConstraints(
+            context, 365 + MediaQuery.of(context).viewInsets.bottom / 2),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -131,59 +133,67 @@ class BloodPressureFunctions {
             ),
             const SizedBox(height: 8),
             // Build content
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  buildContentItem(
-                    healthTitle,
-                    'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
-                    healthIcon,
-                    () async {
-                      if (await AppSettings.getLastOpenedBloodPressureInputType() == null) {
-                        AppSettings.setLastOpenedBloodPressureInputType('device');
-                      }
-                      // TODO: BLOOD PRESSURE
-                      // TrackingManager.trackEvent(
-                      //   'glucose_select_method',
-                      //   'kpi_glucose',
-                      //   params: {
-                      //     'method': 'device',
-                      //   },
-                      // );
-                      Navigator.pop(context);
-                      if (popPrevious) {
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Column(
+                  children: [
+                    buildContentItem(
+                      healthTitle,
+                      'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
+                      healthIcon,
+                      () async {
+                        if (await AppSettings
+                                .getLastOpenedBloodPressureInputType() ==
+                            null) {
+                          AppSettings.setLastOpenedBloodPressureInputType(
+                              'device');
+                        }
+                        // TODO: BLOOD PRESSURE
+                        // TrackingManager.trackEvent(
+                        //   'glucose_select_method',
+                        //   'kpi_glucose',
+                        //   params: {
+                        //     'method': 'device',
+                        //   },
+                        // );
                         Navigator.pop(context);
-                      }
-                      BlocProvider.of<NiproBloc>(context).tryAutoConnect();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  buildContentItem(
-                    'Nhập thủ công',
-                    'Nhập chỉ số huyết áp của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
-                    R.drawable.im_bloodpressure_input_manual,
-                    () async {
-                      if (await AppSettings.getLastOpenedBloodPressureInputType() == null) {
-                        AppSettings.setLastOpenedBloodPressureInputType('manual');
-                      }
-                      // TrackingManager.trackEvent(
-                      //   'glucose_select_method',
-                      //   'kpi_glucose',
-                      //   params: {
-                      //     'method': 'manual',
-                      //   },
-                      // );
-                      Navigator.pop(context);
-                      if (popPrevious) {
+                        if (popPrevious) {
+                          Navigator.pop(context);
+                        }
+                        BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    buildContentItem(
+                      'Nhập thủ công',
+                      'Nhập chỉ số huyết áp của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
+                      R.drawable.im_bloodpressure_input_manual,
+                      () async {
+                        if (await AppSettings
+                                .getLastOpenedBloodPressureInputType() ==
+                            null) {
+                          AppSettings.setLastOpenedBloodPressureInputType(
+                              'manual');
+                        }
+                        // TrackingManager.trackEvent(
+                        //   'glucose_select_method',
+                        //   'kpi_glucose',
+                        //   params: {
+                        //     'method': 'manual',
+                        //   },
+                        // );
                         Navigator.pop(context);
-                      }
-                      Navigator.pushNamed(
-                          context, NavigatorName.add_blood_pressure,
-                          arguments: {'type': 'input', 'goalId': goalId});
-                    },
-                  ),
-                ],
+                        if (popPrevious) {
+                          Navigator.pop(context);
+                        }
+                        Navigator.pushNamed(
+                            context, NavigatorName.add_blood_pressure,
+                            arguments: {'type': 'input', 'goalId': goalId});
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

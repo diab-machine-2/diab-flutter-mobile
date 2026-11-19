@@ -70,31 +70,39 @@ class _BmiInputTypeBottomSheetView extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(
-            height: 24,
-          ),
-          _BmiInputOptionItem(
-            name: R.string.connect_from_Health_Connect.tr(),
-            description: R.string.enter_healt_connect_details.tr(),
-            image: Platform.isIOS
-                ? R.drawable.logo_healthkit
-                : R.drawable.logo_healthConnect,
-            onTap: () {
-              Navigator.pop(context);
-              onAutoInputSelected?.call();
-            },
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          _BmiInputOptionItem(
-            name: R.string.enter_manually.tr(),
-            description: R.string.input_manual_des.tr(),
-            image: R.drawable.im_glucose_input_manual,
-            onTap: () {
-              Navigator.pop(context);
-              onManualInputSelected?.call();
-            },
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  _BmiInputOptionItem(
+                    name: R.string.connect_from_Health_Connect.tr(),
+                    description: R.string.enter_healt_connect_details.tr(),
+                    image: Platform.isIOS
+                        ? R.drawable.logo_healthkit
+                        : R.drawable.logo_healthConnect,
+                    onTap: () {
+                      Navigator.pop(context);
+                      onAutoInputSelected?.call();
+                    },
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  _BmiInputOptionItem(
+                    name: R.string.enter_manually.tr(),
+                    description: R.string.input_manual_des.tr(),
+                    image: R.drawable.im_glucose_input_manual,
+                    onTap: () {
+                      Navigator.pop(context);
+                      onManualInputSelected?.call();
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

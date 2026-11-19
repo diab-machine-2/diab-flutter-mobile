@@ -363,13 +363,16 @@ class _StepListControllerState extends State<StepListController>
                                             color: R.color.white,
                                           ),
                                           GapW(12),
-                                          AutoSizeText(
-                                            R.string.login_with_phone.tr(),
-                                            maxLines: 1,
-                                            style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
+                                          Flexible(
+                                            // Bounded width so AutoSizeText can shrink at large font.
+                                            child: AutoSizeText(
+                                              R.string.login_with_phone.tr(),
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                color: R.color.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -406,14 +409,17 @@ class _StepListControllerState extends State<StepListController>
                                               R.icons.ic_zalo,
                                             ),
                                             GapW(12),
-                                            AutoSizeText(
-                                              R.string.login_with_zalo.tr(),
-                                              maxLines: 1,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: R.color.color0xff111515,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
+                                            Flexible(
+                                              // Bounded width so AutoSizeText can shrink at large font.
+                                              child: AutoSizeText(
+                                                R.string.login_with_zalo.tr(),
+                                                maxLines: 1,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: R.color.color0xff111515,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
                                               ),
                                             )
                                           ],

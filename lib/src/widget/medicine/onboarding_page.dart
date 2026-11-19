@@ -11,6 +11,7 @@ import '../../utils/navigator_name.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'widgets/input_options_bottom_sheet.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 import 'package:medical/src/utils/utils.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -440,40 +441,55 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ),
       isScrollControlled: true,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                R.string.input_options.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: R.color.color0xff111515,
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+              maxHeight:
+                  MediaQuery.sizeOf(context).height * kSheetMaxHeightFactor),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  R.string.input_options.tr(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff111515,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              _buildOptionItem(
-                icon: R.drawable.ic_input_by_camera,
-                title: R.string.input_by_camera.tr(),
-                description: R.string.input_by_camera_description.tr(),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: Navigate to camera feature
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildOptionItem(
-                icon: R.drawable.ic_input_by_hand,
-                title: R.string.input_by_hand.tr(),
-                description: R.string.input_by_hand_description.tr(),
-                onTap: () {
-                  Navigator.of(context).pushNamed(NavigatorName.medicine_search);
-                },
-              ),
-              const SizedBox(height: 48),
-            ],
+                const SizedBox(height: 24),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildOptionItem(
+                          icon: R.drawable.ic_input_by_camera,
+                          title: R.string.input_by_camera.tr(),
+                          description:
+                              R.string.input_by_camera_description.tr(),
+                          onTap: () {
+                            Navigator.pop(context);
+                            // TODO: Navigate to camera feature
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        _buildOptionItem(
+                          icon: R.drawable.ic_input_by_hand,
+                          title: R.string.input_by_hand.tr(),
+                          description: R.string.input_by_hand_description.tr(),
+                          onTap: () {
+                            Navigator.of(context)
+                                .pushNamed(NavigatorName.medicine_search);
+                          },
+                        ),
+                        const SizedBox(height: 48),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

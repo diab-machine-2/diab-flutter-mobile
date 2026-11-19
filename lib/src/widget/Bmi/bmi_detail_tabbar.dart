@@ -22,6 +22,7 @@ import 'package:medical/src/widget/nipro/health_app/widgets/request_health_conne
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BmiDetailTabbarController extends StatefulWidget {
@@ -211,13 +212,14 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
         context: context,
         isScrollControlled: true,
         builder: (context) => Container(
-          height: 350,
+          constraints: sheetConstraints(context, 350),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
           ),
           margin: EdgeInsets.all(10),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: EdgeInsets.all(20),
@@ -233,42 +235,44 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  children: [
-                    ButtonWidget(
-                      isIconSvg: false,
-                      icon: healthIcon,
-                      backgroundColor: Color(0xFFE4FCF3),
-                      textColor: Color(0xff249B92),
-                      title: healthTitle,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        RequestHealthConnect.showModal(context,
-                            callback: () => Navigator.pop(context));
-                      },
-                    ),
-                    SizedBox(height: 15),
-                    ButtonWidget(
-                      icon: R.icons.ic_tap,
-                      backgroundColor: Color(0xFFE4FCF3),
-                      textColor: Color(0xff249B92),
-                      title: R.string.enter_manually.tr(),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(context, NavigatorName.add_bmi,
-                            arguments: {'type': 'input', 'id': null});
-                      },
-                    ),
-                    SizedBox(height: 15),
-                    ButtonWidget(
-                      backgroundColor: Color(0xFFF4F4F4),
-                      textColor: Color(0xff172823),
-                      title: R.string.close.tr(),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    children: [
+                      ButtonWidget(
+                        isIconSvg: false,
+                        icon: healthIcon,
+                        backgroundColor: Color(0xFFE4FCF3),
+                        textColor: Color(0xff249B92),
+                        title: healthTitle,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          RequestHealthConnect.showModal(context,
+                              callback: () => Navigator.pop(context));
+                        },
+                      ),
+                      SizedBox(height: 15),
+                      ButtonWidget(
+                        icon: R.icons.ic_tap,
+                        backgroundColor: Color(0xFFE4FCF3),
+                        textColor: Color(0xff249B92),
+                        title: R.string.enter_manually.tr(),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pushNamed(context, NavigatorName.add_bmi,
+                              arguments: {'type': 'input', 'id': null});
+                        },
+                      ),
+                      SizedBox(height: 15),
+                      ButtonWidget(
+                        backgroundColor: Color(0xFFF4F4F4),
+                        textColor: Color(0xff172823),
+                        title: R.string.close.tr(),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
                 ),
               )
             ],
@@ -422,17 +426,25 @@ class _ActionFilterState extends State<ActionFilter> {
         backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
-        builder: (context) => FillterBloodPanel(
-            selectedIndex: selectedIndex,
-            callback: (value, index) async {
-              await AppSettings.setHomeFilters(ScreenList.WEIGHT.index, value);
-              if (index != null) {
-                setState(() {
-                  name = value;
-                  selectedIndex = index;
-                });
-                widget.callback!(index + 1);
-              }
-            }));
+        builder: (context) => ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height *
+                      kSheetMaxHeightFactor),
+              child: SingleChildScrollView(
+                child: FillterBloodPanel(
+                    selectedIndex: selectedIndex,
+                    callback: (value, index) async {
+                      await AppSettings.setHomeFilters(
+                          ScreenList.WEIGHT.index, value);
+                      if (index != null) {
+                        setState(() {
+                          name = value;
+                          selectedIndex = index;
+                        });
+                        widget.callback!(index + 1);
+                      }
+                    }),
+              ),
+            ));
   }
 }

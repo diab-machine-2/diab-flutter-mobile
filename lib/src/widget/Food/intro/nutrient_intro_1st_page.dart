@@ -163,7 +163,8 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  height: 44,
+                  // Large system font: grow and wrap instead of clipping the label.
+                  constraints: const BoxConstraints(minHeight: 44),
                   decoration: BoxDecoration(
                     color: R.color.mainColor,
                     borderRadius: BorderRadius.circular(200),
@@ -188,6 +189,7 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
                     ),
                     child: Text(
                       R.string.record_your_meal.tr(),
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,

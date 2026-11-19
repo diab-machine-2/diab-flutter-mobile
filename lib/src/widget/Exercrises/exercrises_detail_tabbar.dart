@@ -22,6 +22,7 @@ import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ExercrisesDetailTabbarController extends StatefulWidget {
@@ -198,13 +199,14 @@ class _ExercrisesDetailTabbarControllerState
           context: context,
           isScrollControlled: true,
           builder: (context) => Container(
-            height: 280,
+            constraints: sheetConstraints(context, 280),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
             margin: EdgeInsets.all(10),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   padding: EdgeInsets.all(20),
@@ -220,37 +222,39 @@ class _ExercrisesDetailTabbarControllerState
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    children: [
-                      ButtonWidget(
-                        isIconSvg: false,
-                        icon: healthIcon,
-                        backgroundColor: Color(0xFFE4FCF3),
-                        textColor: Color(0xff249B92),
-                        title: healthTitle,
-                        onPressed: () => RequestHealthConnect.showModal(context,
-                            callback: () => Navigator.pop(context)),
-                      ),
-                      SizedBox(height: 15),
-                      ButtonWidget(
-                        icon: R.icons.ic_tap,
-                        backgroundColor: Color(0xFFE4FCF3),
-                        textColor: Color(0xff249B92),
-                        title: 'Nhập thủ công',
-                        onPressed: () => Navigator.pushNamed(
-                            context, NavigatorName.exercrise_add_v2,
-                            arguments: {'type': 'input'}),
-                      ),
-                      SizedBox(height: 15),
-                      ButtonWidget(
-                        backgroundColor: Color(0xFFF4F4F4),
-                        textColor: Color(0xff172823),
-                        title: 'Đóng',
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      children: [
+                        ButtonWidget(
+                          isIconSvg: false,
+                          icon: healthIcon,
+                          backgroundColor: Color(0xFFE4FCF3),
+                          textColor: Color(0xff249B92),
+                          title: healthTitle,
+                          onPressed: () => RequestHealthConnect.showModal(context,
+                              callback: () => Navigator.pop(context)),
+                        ),
+                        SizedBox(height: 15),
+                        ButtonWidget(
+                          icon: R.icons.ic_tap,
+                          backgroundColor: Color(0xFFE4FCF3),
+                          textColor: Color(0xff249B92),
+                          title: 'Nhập thủ công',
+                          onPressed: () => Navigator.pushNamed(
+                              context, NavigatorName.exercrise_add_v2,
+                              arguments: {'type': 'input'}),
+                        ),
+                        SizedBox(height: 15),
+                        ButtonWidget(
+                          backgroundColor: Color(0xFFF4F4F4),
+                          textColor: Color(0xff172823),
+                          title: 'Đóng',
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               ],
@@ -410,18 +414,25 @@ class _ActionFilterState extends State<ActionFilter> {
         backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
-        builder: (context) => FillterBloodPanel(
-            selectedIndex: selectedIndex,
-            callback: (value, index) async {
-              await AppSettings.setHomeFilters(
-                  ScreenList.EXERCISE.index, value);
-              if (index != null) {
-                setState(() {
-                  name = value;
-                  selectedIndex = index;
-                });
-                widget.callback!(index + 1);
-              }
-            }));
+        builder: (context) => ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height *
+                      kSheetMaxHeightFactor),
+              child: SingleChildScrollView(
+                child: FillterBloodPanel(
+                    selectedIndex: selectedIndex,
+                    callback: (value, index) async {
+                      await AppSettings.setHomeFilters(
+                          ScreenList.EXERCISE.index, value);
+                      if (index != null) {
+                        setState(() {
+                          name = value;
+                          selectedIndex = index;
+                        });
+                        widget.callback!(index + 1);
+                      }
+                    }),
+              ),
+            ));
   }
 }

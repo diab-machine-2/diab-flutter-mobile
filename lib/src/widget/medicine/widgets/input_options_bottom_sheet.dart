@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../res/R.dart';
+import '../../../widgets/sheet_constraints.dart';
 
 class InputOptionsBottomSheet extends StatelessWidget {
   final VoidCallback? onCameraTap;
@@ -32,53 +33,65 @@ class InputOptionsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              const SizedBox(width: 20),
-              Expanded(
-                child: Text(
-                  R.string.input_options.tr(),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * kSheetMaxHeightFactor),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Text(
+                    R.string.input_options.tr(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
+                ),
+                InkWell(
+                  onTap: () { Navigator.pop(context); },
+                  child: Icon(Icons.close, size: 20),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    InputOptionItem(
+                      icon: R.drawable.ic_input_by_camera,
+                      title: R.string.input_by_camera.tr(),
+                      description: R.string.input_by_camera_description.tr(),
+                      onTap: () {
+                        Navigator.pop(context);
+                        onCameraTap?.call();
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    InputOptionItem(
+                      icon: R.drawable.ic_input_by_hand,
+                      title: R.string.input_by_hand.tr(),
+                      description: R.string.input_by_hand_description.tr(),
+                      onTap: () {
+                        Navigator.pop(context);
+                        onHandTap?.call();
+                      },
+                    ),
+                    const SizedBox(height: 48),
+                  ],
                 ),
               ),
-              InkWell(
-                onTap: () { Navigator.pop(context); },
-                child: Icon(Icons.close, size: 20),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          InputOptionItem(
-            icon: R.drawable.ic_input_by_camera,
-            title: R.string.input_by_camera.tr(),
-            description: R.string.input_by_camera_description.tr(),
-            onTap: () {
-              Navigator.pop(context);
-              onCameraTap?.call();
-            },
-          ),
-          const SizedBox(height: 16),
-          InputOptionItem(
-            icon: R.drawable.ic_input_by_hand,
-            title: R.string.input_by_hand.tr(),
-            description: R.string.input_by_hand_description.tr(),
-            onTap: () {
-              Navigator.pop(context);
-              onHandTap?.call();
-            },
-          ),
-          const SizedBox(height: 48),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

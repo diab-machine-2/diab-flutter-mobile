@@ -17,6 +17,7 @@ import 'package:medical/src/widget/Exercrises/widget/exercrises_lesson_section.d
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/sheet_constraints.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../app_setting/firebase_tracking/activity_list_tracking.dart';
 import '../../repo/home/home_client.dart';
@@ -420,6 +421,9 @@ showActivityInputMethodSelection({bool? hasExerciseData}) async {
         context: navigatorKey.currentContext!,
         isScrollControlled: true,
         builder: (context) => Container(
+          constraints: BoxConstraints(
+              maxHeight:
+                  MediaQuery.sizeOf(context).height * kSheetMaxHeightFactor),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
@@ -453,36 +457,37 @@ showActivityInputMethodSelection({bool? hasExerciseData}) async {
                   ],
                 ),
               ),
-              ListView(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(15),
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  _buildItemMaterialDialog(
-                    healthTitle,
-                    R.string.enter_healt_connect_details.tr(),
-                    healthIcon,
-                    () {
-                      AppSettings.setLastOpenedExerciseInputType('auto');
-                      Navigator.pop(context);
-                      RequestHealthConnect.showModal(context, callback: () {
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(15),
+                  children: [
+                    _buildItemMaterialDialog(
+                      healthTitle,
+                      R.string.enter_healt_connect_details.tr(),
+                      healthIcon,
+                      () {
+                        AppSettings.setLastOpenedExerciseInputType('auto');
                         Navigator.pop(context);
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  _buildItemMaterialDialog(
-                    R.string.enter_manually.tr(),
-                    R.string.enter_manually_details.tr(),
-                    R.drawable.ic_manual_input_btn,
-                    () {
-                      AppSettings.setLastOpenedExerciseInputType('manual');
-                      Navigator.pop(context);
-                      Navigator.pushNamed(
-                          context, NavigatorName.exercrise_add_v2);
-                    },
-                  ),
-                ],
+                        RequestHealthConnect.showModal(context, callback: () {
+                          Navigator.pop(context);
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildItemMaterialDialog(
+                      R.string.enter_manually.tr(),
+                      R.string.enter_manually_details.tr(),
+                      R.drawable.ic_manual_input_btn,
+                      () {
+                        AppSettings.setLastOpenedExerciseInputType('manual');
+                        Navigator.pop(context);
+                        Navigator.pushNamed(
+                            context, NavigatorName.exercrise_add_v2);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

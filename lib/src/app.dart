@@ -11,6 +11,7 @@ import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/app_text_scale.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodpressure_v2.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar_v2.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_table.dart';
@@ -133,12 +134,12 @@ class App extends StatelessWidget {
               color: Colors.white,
               theme: AppTheme.theme,
               builder: (context, child) {
-                // TODO: textScaleFactor deprecated >> CHECK LATER
-                // MediaQueryData mediaData = MediaQuery.of(context);
-                // child = MediaQuery(
-                //   data: mediaData.copyWith(textScaleFactor: min(1.1, mediaData.textScaleFactor)),
-                //   child: child!,
-                // );
+                final mediaData = MediaQuery.of(context);
+                child = MediaQuery(
+                  data: mediaData.copyWith(
+                      textScaler: appTextScaler(mediaData.textScaler)),
+                  child: child!,
+                );
                 child = BotToastInit()(context, child);
                 // Mandatory store-update popup, above every route and toast.
                 child = ForceUpdateGate(child: child);

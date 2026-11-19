@@ -70,16 +70,27 @@ class ToggleButtonsHorizontal extends StatelessWidget {
             //   right: isLast ? Radius.circular(radius) : Radius.zero,
             // ),
           ),
+          // Fixed-height cell: shrink the label at a large system font
+          // instead of clipping it ("Trước ă…" in the glucose input).
           child: Center(
-            child: Text(
-              names[currentIndex],
-              style: (selectionTextStyle ?? TextStyle(
-                fontSize: 13,
-              )).copyWith(
-                color: isSelected ? R.color.white : R.color.primaryGreyColor,
-                fontWeight: (selectionTextStyle?.fontWeight != null && isSelected)
-                    ? selectionTextStyle?.fontWeight
-                    : FontWeight.w400,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  names[currentIndex],
+                  maxLines: 1,
+                  style: (selectionTextStyle ?? TextStyle(
+                    fontSize: 13,
+                  )).copyWith(
+                    color:
+                        isSelected ? R.color.white : R.color.primaryGreyColor,
+                    fontWeight:
+                        (selectionTextStyle?.fontWeight != null && isSelected)
+                            ? selectionTextStyle?.fontWeight
+                            : FontWeight.w400,
+                  ),
+                ),
               ),
             ),
           ),
@@ -149,13 +160,23 @@ class ToggleButtonsVertical extends StatelessWidget {
             //   right: isLast ? Radius.circular(radius) : Radius.zero,
             // ),
           ),
+          // Fixed-size cell: shrink the label at a large system font instead
+          // of clipping it ("mmol/" in the glucose input).
           child: Center(
-            child: Text(
-              names[currentIndex].tr(),
-              style: TextStyle(
-                color: isSelected ? R.color.white : R.color.primaryGreyColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  names[currentIndex].tr(),
+                  maxLines: 1,
+                  style: TextStyle(
+                    color:
+                        isSelected ? R.color.white : R.color.primaryGreyColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ),
             ),
           ),
