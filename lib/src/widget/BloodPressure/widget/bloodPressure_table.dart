@@ -142,7 +142,7 @@ class _BloodPressureTableControllerState
                                   ),
                                   children: model.map((item) {
                                     final time = item.date!;
-                                    final timeFrame = item.timeFrame!;
+                                    final timeFrame = item.timeFrame ?? '';
                                     final systolic = item.systolic!.toInt();
                                     final diastolic = item.diastolic!.toInt();
                                     final pulseRate = item.pulseRate!.toInt();

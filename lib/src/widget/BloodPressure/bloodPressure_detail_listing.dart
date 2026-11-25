@@ -359,7 +359,9 @@ class BloodPressureDetailListingControllerState
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(element.timeFrame!,
+                              // timeFrame is null for readings with no
+                              // time frame (e.g. synced ones).
+                              Text(element.timeFrame ?? '',
                                   style: TextStyle(
                                       color: Color(0xFF5E6566),
                                       fontSize: 15,
