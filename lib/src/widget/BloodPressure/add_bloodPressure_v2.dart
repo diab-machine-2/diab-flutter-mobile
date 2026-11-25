@@ -126,7 +126,6 @@ class _AddBloodPressureControllerState
     Color(0xFFAF0000),
   ];
   bool isLoading = true;
-  late AnimationController _controller;
   final FocusNode _focusNode = FocusNode();
 
   int _lastTimeFrameIndex = 0;
@@ -177,7 +176,6 @@ class _AddBloodPressureControllerState
   void dispose() {
     // Remove listener before disposing
     _diastolicFocus.removeListener(_onDiastolicFocusChange);
-    _controller.dispose();
     _focusNode.dispose();
     _systolicFocus.dispose();
     _diastolicFocus.dispose();
