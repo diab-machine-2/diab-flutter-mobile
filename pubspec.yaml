@@ -260,9 +260,6 @@ flutter:
     - family: Montserrat
       fonts:
         - asset: assets/fonts/montserrat_bold.ttf
-    - family: SFPro
-      fonts:
-        - asset: assets/fonts/sf_pro.ttf
     - family: Nunito
       fonts:
         - asset: assets/fonts/nunito.ttf
