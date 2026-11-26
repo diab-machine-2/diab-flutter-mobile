@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
@@ -9,7 +8,7 @@ import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'weight_bloc_event.dart';
 part 'weight_bloc_state.dart';
@@ -94,7 +93,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       if (e is Error) {
         yield WeightError(message: e.message);
       } else {
-        yield WeightError(message: R.string.error_can_not_connect_to_server.tr());
+        yield WeightError(message: apiErrorMessage(e));
       }
     }
   }
@@ -120,7 +119,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       if (e is Error) {
         yield WeightError(message: e.message);
       } else {
-        yield WeightError(message: R.string.error_can_not_connect_to_server.tr());
+        yield WeightError(message: apiErrorMessage(e));
       }
     }
   }
@@ -149,7 +148,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       if (e is Error) {
         yield WeightError(message: e.message);
       } else {
-        yield WeightError(message: R.string.error_can_not_connect_to_server.tr());
+        yield WeightError(message: apiErrorMessage(e));
       }
     }
   }

@@ -19,7 +19,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/widget/components/ai_references_widget.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/utils/api_error.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -249,9 +249,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 periodFilterType: periodFilterType.toString(),
                 page: '1'));
           }
-          if (state is GlucoseError) {
-            Message.showToastMessage(context, state.message);
-          }
           AiRecommendationResult? aiSuggestion;
           String? mostAppearType;
           String? mostAppearTypeColor;
@@ -282,9 +279,35 @@ class BloodSugarChartState extends State<BloodSugarChart>
             });
           }
 
-          if (model == null)
+          if (model == null) {
+            // Nothing loaded yet and the request failed: say why instead of
+            // spinning forever (same as the blood-pressure chart).
+            if (state is GlucoseError) {
+              // The AI section is fed by this request's callback; without it
+              // the section keeps its loading indicator forever.
+              if (widget.bloodSugarChartCallback != null) {
+                final failure = AiRecommendationResult.failure(state.message);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) widget.bloodSugarChartCallback!(null, failure);
+                });
+              }
+              return Container(
+                height: 450,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                alignment: Alignment.center,
+                child: Text(
+                  (state.message?.isNotEmpty ?? false)
+                      ? state.message!
+                      : apiErrorMessage(null),
+                  textAlign: TextAlign.center,
+                  style:
+                      TextStyle(color: R.color.color0xff636A6B, fontSize: 15),
+                ),
+              );
+            }
             return Container(
                 height: 450, child: Center(child: CircularProgressIndicator()));
+          }
 
           return VisibilityDetector(
             key: Key('blood_sugar_chart'),
@@ -703,7 +726,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
             )
           else if (aiSuggestion.recommendation.isEmpty)
             Text(
-              'CÃ³ lá»—i xáº£y ra',
+              aiSuggestion.errorMessage ?? R.string.an_error_occurred.tr(),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,

@@ -1,11 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/failures.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/response/default_model_response.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class NewsDetailRepository extends FetchClient {
   Future<Either<Failure, LearningPostModel>> getNewsDetaill(
@@ -23,7 +22,7 @@ class NewsDetailRepository extends FetchClient {
       }
     } catch (e) {
       return Left(
-        Failure(message: R.string.error_can_not_connect_to_server.tr()),
+        Failure(message: apiErrorMessage(e)),
       );
     }
   }

@@ -2,16 +2,15 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/medicine/prescription_model.dart';
 import 'package:medical/src/modal/medicine/search_medicine_result_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show File;
 
 import '../../modal/medicine/medicine_item_model.dart';
 import '../../modal/medicine/medicine_schedule_model.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class MedicineClient extends FetchClient {
   Future<SearchMedicineResultModel?> searchMedicine(
@@ -58,7 +57,7 @@ class MedicineClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -85,7 +84,7 @@ class MedicineClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -112,7 +111,7 @@ class MedicineClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -133,7 +132,7 @@ class MedicineClient extends FetchClient {
         throw error;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -151,7 +150,7 @@ class MedicineClient extends FetchClient {
         throw error;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -167,7 +166,7 @@ class MedicineClient extends FetchClient {
         throw error;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -185,7 +184,7 @@ class MedicineClient extends FetchClient {
         throw error;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -208,7 +207,7 @@ class MedicineClient extends FetchClient {
         throw response.statusMessage!;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 
@@ -244,7 +243,7 @@ class MedicineClient extends FetchClient {
         throw response.statusMessage!;
       }
     } catch (ex) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(apiFailureKind(ex));
     }
   }
 }

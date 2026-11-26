@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
 import 'package:medical/src/modal/bmi/calculate_bmi.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
@@ -13,7 +12,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/models/weight_ranger_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class WeightClient extends FetchClient {
   // nhập chỉ chỉ số cân nặng
@@ -58,7 +57,7 @@ class WeightClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   // //============ lấy danh sách chỉ số Weight =============/
@@ -124,7 +123,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -176,7 +175,7 @@ class WeightClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -201,7 +200,7 @@ class WeightClient extends FetchClient {
       throw error;
     }
     // } catch (e) {
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    //   throw apiFailure(e);
     // }
   }
 
@@ -222,7 +221,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
@@ -255,7 +254,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   //============ lấy chi tiết chỉ số Cân nặng =============/
@@ -271,7 +270,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   //============ calculate BMI =============/
@@ -296,7 +295,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -339,7 +338,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -363,7 +362,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -377,7 +376,7 @@ class WeightClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -391,7 +390,7 @@ class WeightClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 }

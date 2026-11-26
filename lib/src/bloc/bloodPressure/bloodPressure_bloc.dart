@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
@@ -14,6 +12,7 @@ import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 
 import '../../app_setting/app_setting.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'bloodPressure_bloc_event.dart';
 part 'bloodPressure_bloc_state.dart';
@@ -57,7 +56,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -87,7 +86,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -110,7 +109,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -140,7 +139,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -162,7 +161,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -184,7 +183,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }

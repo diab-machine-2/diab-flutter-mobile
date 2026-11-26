@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
@@ -20,7 +19,7 @@ import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/Food/nutrient_percent.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class FoodClient extends FetchClient {
   // ============================================================
@@ -41,7 +40,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -80,7 +79,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -97,7 +96,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -125,7 +124,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -144,7 +143,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -162,7 +161,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -178,7 +177,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -215,7 +214,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -232,7 +231,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -247,7 +246,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -292,7 +291,7 @@ class FoodClient extends FetchClient {
       }
     } catch (e) {
       print('Error in postFoodImages: $e');
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -370,7 +369,7 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -465,7 +464,7 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -504,7 +503,7 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -525,7 +524,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -571,7 +570,7 @@ class FoodClient extends FetchClient {
       }
     } catch (e) {
       print('❌ [NutritionSummary] Error: $e');
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -590,7 +589,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -605,7 +604,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -625,7 +624,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -645,7 +644,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -665,7 +664,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -685,7 +684,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -704,7 +703,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -725,7 +724,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -739,7 +738,7 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -794,7 +793,7 @@ class FoodClient extends FetchClient {
       return null;
     } catch (e) {
       print('❌ fetchDietAnalysis Error: $e');
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 }

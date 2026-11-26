@@ -7,8 +7,7 @@ import 'package:medical/src/model/bcb_campaign/bcb_partner_info_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_registration_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_customer_appointment_model.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class BcbCampaignClient extends FetchClient {
   /// GET App/BcbCampaign?accountId={accountId} — lấy danh sách chiến dịch của KH
@@ -32,7 +31,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -53,7 +52,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -74,7 +73,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -98,7 +97,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -122,7 +121,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -141,7 +140,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -157,7 +156,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -184,7 +183,7 @@ class BcbCampaignClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 }

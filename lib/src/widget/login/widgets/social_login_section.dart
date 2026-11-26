@@ -14,6 +14,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class _SocialLoginButton extends StatelessWidget {
   const _SocialLoginButton({
@@ -210,7 +211,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             appleCredential: credential);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+            context, apiErrorMessage(error));
       } else {
         // Message.showToastMessage(context, error.toString());
       }
@@ -288,7 +289,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             googleAccount: account, appleCredential: null);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+            context, apiErrorMessage(error));
       } else {
         BotToast.closeAllLoading();
         Message.showToastMessage(context, error.toString());

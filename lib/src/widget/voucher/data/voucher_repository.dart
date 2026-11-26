@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/default_model_response.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 
 import 'models/voucherList_response.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class VoucherRepository extends FetchClient {
   Future<Either<Failure, VoucherListResponse>> getListVoucher() async {
@@ -25,7 +26,7 @@ class VoucherRepository extends FetchClient {
           Failure(message: R.string.error_can_not_connect_to_server.tr()));
     } catch (e) {
       return Left(
-        Failure(message: R.string.error_can_not_connect_to_server.tr()),
+        Failure(message: apiErrorMessage(e)),
       );
     }
   }
@@ -43,7 +44,7 @@ class VoucherRepository extends FetchClient {
           Failure(message: R.string.error_can_not_connect_to_server.tr()));
     } catch (e) {
       return Left(
-        Failure(message: R.string.error_can_not_connect_to_server.tr()),
+        Failure(message: apiErrorMessage(e)),
       );
     }
   }
@@ -62,7 +63,7 @@ class VoucherRepository extends FetchClient {
           Failure(message: R.string.error_can_not_connect_to_server.tr()));
     } catch (e) {
       return Left(
-        Failure(message: R.string.error_can_not_connect_to_server.tr()),
+        Failure(message: apiErrorMessage(e)),
       );
     }
   }
@@ -81,7 +82,7 @@ class VoucherRepository extends FetchClient {
           Failure(message: R.string.error_can_not_connect_to_server.tr()));
     } catch (e) {
       return Left(
-        Failure(message: R.string.error_can_not_connect_to_server.tr()),
+        Failure(message: apiErrorMessage(e)),
       );
     }
   }

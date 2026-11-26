@@ -13,6 +13,7 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/shimmer_box.dart';
 
 import '../../modal/notification/notification_list_model.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class NotificationDetailController extends StatefulWidget {
   const NotificationDetailController({this.id, this.communicationId});
@@ -59,7 +60,7 @@ class _NotificationDetailControllerState
           .fetchNotificationDetail(widget.id, widget.communicationId);
     } catch (e) {
       _errorMessage = e is Error
-          ? (e.message ?? R.string.error_can_not_connect_to_server.tr())
+          ? (e.message ?? apiErrorMessage(e))
           : e.toString();
     } finally {
       if (mounted) {

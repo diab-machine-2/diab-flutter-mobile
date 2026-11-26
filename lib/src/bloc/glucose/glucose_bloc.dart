@@ -12,6 +12,7 @@ import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'glucose_bloc_event.dart';
 part 'glucose_bloc_state.dart';
@@ -57,7 +58,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         yield GlucoseError(message: e.message);
       } else {
         yield GlucoseError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -75,7 +76,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         yield GlucoseError(message: e.message);
       } else {
         yield GlucoseError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -137,8 +138,17 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         //   mostAppearTypeColor: mostAppearTypeColor,
         //   rangeType: rangeType,
         // );
-        final glucoseInputAIAnalysis =
-            await client.fetchGlucoseAlltimeAnalysis(int.parse(periodFilterType!));
+        // The AI analysis is a separate request: if it fails, the trend chart
+        // must still show, with the AI section reporting the failure instead
+        // of spinning forever.
+        AiRecommendationResult glucoseInputAIAnalysis;
+        try {
+          glucoseInputAIAnalysis = await client.fetchGlucoseAlltimeAnalysis(
+                  int.parse(periodFilterType!)) ??
+              AiRecommendationResult.failure(null);
+        } catch (e) {
+          glucoseInputAIAnalysis = AiRecommendationResult.failure(e);
+        }
         yield GlucoseTrendLoaded(
           trend: model,
           glucoseInputAIAnalysis: glucoseInputAIAnalysis,
@@ -152,7 +162,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         yield GlucoseError(message: e.message);
       } else {
         yield GlucoseError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -217,7 +227,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         yield GlucoseError(message: e.message);
       } else {
         yield GlucoseError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }

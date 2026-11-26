@@ -61,11 +61,13 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
         ((data.healthRecommendation?.isEmpty) ?? true);
 
+    Object? failure;
     final fetched = shouldFetchNewData
         ? await GlucoseClient()
             .fetchGlucoseInputAnalysis(widget.data.id, unit)
             .catchError((e, s) {
             TrackingManager.recordError(e, s);
+            failure = e;
             return null;
           })
         : null;
@@ -75,7 +77,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     } else if (data.healthRecommendation != null) {
       _aiResult = AiRecommendationResult(recommendation: data.healthRecommendation!);
     } else {
-      _aiResult = AiRecommendationResult(recommendation: '');
+      _aiResult = AiRecommendationResult.failure(failure);
     }
     if (mounted) {
       setState(() {});
@@ -306,7 +308,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             )
           else if (_aiResult!.recommendation.isEmpty)
             Text(
-              'Có lỗi xảy ra',
+              _aiResult!.errorMessage ?? R.string.an_error_occurred.tr(),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,

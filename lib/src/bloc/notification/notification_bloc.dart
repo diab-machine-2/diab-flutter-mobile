@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 import '../../modal/notification/notification_data_list_model.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'notification_bloc_event.dart';
 part 'notification_bloc_state.dart';
@@ -41,7 +40,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       } else {
         yield NotificationError(
             message:
-                R.string.error_can_not_connect_to_server.tr());
+                apiErrorMessage(e));
       }
     }
   }

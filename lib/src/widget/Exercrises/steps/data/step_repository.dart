@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/api_methods.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 import 'models/getStepList_model.dart';
 import 'models/requestSyncStep_model.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class StepRepository extends FetchClient {
   Future getStepList(int? periodFilterType) async {
@@ -32,7 +31,7 @@ class StepRepository extends FetchClient {
       throw error;
     }
     // } catch (e) {
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    //   throw apiFailure(e);
     // }
   }
 
@@ -51,7 +50,7 @@ class StepRepository extends FetchClient {
         return false;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 }

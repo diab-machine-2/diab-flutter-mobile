@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
@@ -9,6 +7,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 
 import 'change_menu.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class ChangeMenuCubit extends Cubit<ChangeMenuState> {
   ChangeMenuCubit(this.repository, {required this.initFood})
@@ -69,7 +68,7 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
       if (e is Error) {
         emit(ChangeMenuFailure('$e'));
       } else {
-        emit(ChangeMenuFailure(R.string.error_can_not_connect_to_server.tr()));
+        emit(ChangeMenuFailure(apiErrorMessage(e)));
       }
     }
   }

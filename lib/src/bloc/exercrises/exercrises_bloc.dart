@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
@@ -20,7 +19,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'exercrises_bloc_event.dart';
 part 'exercrises_bloc_state.dart';
@@ -104,7 +103,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     } finally {
       _isFetchingCategories = false;
@@ -119,7 +118,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -156,7 +155,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -204,7 +203,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -295,7 +294,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -317,7 +316,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -339,7 +338,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -360,7 +359,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         yield ExercrisesError(message: e.message);
       } else {
         yield ExercrisesError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -397,7 +396,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     } catch (e, s) {
       TrackingManager.recordError(e, s);
       yield ExercrisesError(
-          message: R.string.error_can_not_connect_to_server.tr());
+          message: apiErrorMessage(e));
     }
   }
 }

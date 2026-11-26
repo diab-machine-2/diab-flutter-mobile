@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_data_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_detail_model.dart';
@@ -16,7 +15,7 @@ import 'package:medical/src/modal/exercrises/exercrises_data_model.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class ExercrisesClient extends FetchClient {
   // lấy danh sách vận động
@@ -38,7 +37,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   // lay danh sach cuong do van dong
@@ -59,7 +58,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -80,7 +79,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -101,7 +100,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -125,7 +124,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -144,7 +143,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -164,7 +163,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -197,7 +196,7 @@ class ExercrisesClient extends FetchClient {
         throw Error.fromString(error);
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -213,7 +212,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -234,7 +233,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   //cập nhật chỉ số vận động
@@ -269,7 +268,7 @@ class ExercrisesClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -285,7 +284,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -306,7 +305,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -322,7 +321,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -351,7 +350,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -373,7 +372,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 }

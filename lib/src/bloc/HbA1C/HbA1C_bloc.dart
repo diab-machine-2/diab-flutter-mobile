@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'HbA1C_bloc_event.dart';
 part 'HbA1C_bloc_state.dart';
@@ -44,7 +43,7 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
         yield HbA1CError(message: e.message);
       } else {
         yield HbA1CError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -60,7 +59,7 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
         yield HbA1CError(message: e.message);
       } else {
         yield HbA1CError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -89,7 +88,7 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
         yield HbA1CError(message: e.message);
       } else {
         yield HbA1CError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }

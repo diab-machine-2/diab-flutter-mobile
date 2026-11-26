@@ -1,12 +1,11 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_data_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 
 import 'search_food.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class SearchFoodCubit extends Cubit<SearchFoodState> {
   SearchFoodCubit(this.repository) : super(const SearchFoodInitial());
@@ -44,7 +43,7 @@ class SearchFoodCubit extends Cubit<SearchFoodState> {
       if (e is Error) {
         emit(SearchFoodFailure('$e'));
       } else {
-        emit(SearchFoodFailure(R.string.error_can_not_connect_to_server.tr()));
+        emit(SearchFoodFailure(apiErrorMessage(e)));
       }
       return false;
     }
@@ -65,7 +64,7 @@ class SearchFoodCubit extends Cubit<SearchFoodState> {
       if (e is Error) {
         emit(SearchFoodFailure('$e'));
       } else {
-        emit(SearchFoodFailure(R.string.error_can_not_connect_to_server.tr()));
+        emit(SearchFoodFailure(apiErrorMessage(e)));
       }
     }
   }

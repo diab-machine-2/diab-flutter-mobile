@@ -17,6 +17,7 @@ class Strings {
   String get error_unexpected_error => 'error_unexpected_error';
   String get error_request_timeout => 'error_request_timeout';
   String get error_no_network_connection => 'error_no_network_connection';
+  String get error_system_problem => 'error_system_problem';
   String get error_send_timeout => 'error_send_timeout';
   String get error_conflict => 'error_conflict';
   String get error_connect_to_server => 'error_connect_to_server';

@@ -13,9 +13,9 @@ import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 typedef BloodPressureChartCallback = void Function(
     BloodPressureRangeType rangeType);
@@ -686,8 +686,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
               periodFilterType: _periodFilterType,
             ));
           }
+          // API failed: show the error with a retry instead of an endless
+          // spinner (model stays null on error).
           if (state is BloodPressureError) {
-            Message.showToastMessage(context, state.message);
+            return _buildError(state.message);
           }
 
           List<SubTrendItemModel> trends = [];
@@ -848,6 +850,21 @@ class BloodPressureChartState extends State<BloodPressureChart>
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildError(String? message) {
+    return Container(
+      height: 240,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      alignment: Alignment.center,
+      // "Hệ thống đang gặp sự cố" / "Không có kết nối mạng" (see
+      // api_error.dart). No retry button: a 5xx fails the same way again.
+      child: Text(
+        (message?.isNotEmpty ?? false) ? message! : apiErrorMessage(null),
+        textAlign: TextAlign.center,
+        style: TextStyle(color: R.color.color0xff636A6B, fontSize: 15),
       ),
     );
   }

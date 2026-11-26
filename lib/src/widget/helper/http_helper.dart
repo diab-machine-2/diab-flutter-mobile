@@ -3,14 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 // Matches the timeout convention already used by AppClient/DocosanClient
 // (lib/src/model/service/app_client.dart, docosan_client.dart) — FetchClient
@@ -494,6 +493,9 @@ class FetchClient {
     ));
     dio.interceptors.add(TrackingInterceptor());
     dio.interceptors.add(ApiTimingInterceptor());
+    // Reports 5xx to Crashlytics on production. The 5xx still comes back as
+    // a Response (callers expect that); Error.fromJson maps its message.
+    dio.interceptors.add(ServerErrorInterceptor());
   }
 
   checkNetwork() async {
@@ -503,7 +505,7 @@ class FetchClient {
         print('connected');
       }
     } on SocketException catch (_) {
-      throw R.string.error_can_not_connect_to_server.tr();
+      throw apiFailureMessage(ApiFailureKind.network);
     }
   }
 

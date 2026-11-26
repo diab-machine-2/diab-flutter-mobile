@@ -143,10 +143,14 @@ class _BloodPressureDetailTabbarControllerState
   }
 
   Future<void> _loadAITrend() async {
-    final bloodPressureInputAIAnalysis = await BloodPressureClient()
-        .fetchBloodPressureAlltimeAnalysis(_periodFilterType);
-    if (bloodPressureInputAIAnalysis != null) {
-      _aiSuggestion = bloodPressureInputAIAnalysis;
+    // A failed request used to leave _aiSuggestion null, which the AI section
+    // renders as a spinner that never stops.
+    try {
+      _aiSuggestion = await BloodPressureClient()
+              .fetchBloodPressureAlltimeAnalysis(_periodFilterType) ??
+          AiRecommendationResult.failure(null);
+    } catch (e) {
+      _aiSuggestion = AiRecommendationResult.failure(e);
     }
   }
 
@@ -474,7 +478,7 @@ class _BloodPressureDetailTabbarControllerState
             )
           else if (aiSuggestion.recommendation.isEmpty)
             Text(
-              'Có lỗi xảy ra',
+              aiSuggestion.errorMessage ?? R.string.an_error_occurred.tr(),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,

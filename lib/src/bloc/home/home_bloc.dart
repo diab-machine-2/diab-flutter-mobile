@@ -32,6 +32,7 @@ import 'package:medical/src/widget/home/home_mock.dart';
 import 'package:medical/src/widget/home/home_view_flags.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
@@ -190,7 +191,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           await Future.delayed(Duration(seconds: timeToRetry));
         } else {
           yield HomeError(
-              message: R.string.error_can_not_connect_to_server.tr());
+              message: apiErrorMessage(e));
           break; // Break the loop if a non-retryable error occurs
         }
       }

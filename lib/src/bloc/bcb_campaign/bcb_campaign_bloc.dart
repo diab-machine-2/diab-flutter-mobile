@@ -5,8 +5,7 @@ import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_registration_model.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 part 'bcb_campaign_bloc_event.dart';
 part 'bcb_campaign_bloc_state.dart';
@@ -45,7 +44,7 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
         yield BcbCampaignError(message: e.message ?? '');
       } else {
         yield BcbCampaignError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -65,7 +64,7 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
         yield BcbCampaignError(message: e.message ?? '');
       } else {
         yield BcbCampaignError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }
@@ -84,7 +83,7 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
         yield BcbCampaignError(message: e.message ?? '');
       } else {
         yield BcbCampaignError(
-            message: R.string.error_can_not_connect_to_server.tr());
+            message: apiErrorMessage(e));
       }
     }
   }

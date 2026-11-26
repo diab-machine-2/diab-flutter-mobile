@@ -30,6 +30,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class RegisterController extends StatefulWidget {
   const RegisterController({this.sharedCode, this.phone});
@@ -373,12 +374,16 @@ class _RegisterControllerState extends State<RegisterController> {
           phoneKey.currentState!
               .validate(R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
+          // 5xx (code HTTP_5xx) → "Hệ thống đang gặp sự cố"; other backend
+          // codes keep the generic message as before.
           Message.showToastMessage(
-              context, R.string.error_can_not_connect_to_server.tr());
+              context,
+              (e.code?.startsWith('HTTP_') ?? false)
+                  ? apiErrorMessage(e)
+                  : R.string.error_can_not_connect_to_server.tr());
         }
       } else {
-        Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+        Message.showToastMessage(context, apiErrorMessage(e));
       }
     }
   }
@@ -508,11 +513,11 @@ class _RegisterControllerState extends State<RegisterController> {
               .validate(R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
           Message.showToastMessage(
-              context, R.string.error_can_not_connect_to_server.tr());
+              context, apiErrorMessage(e));
         }
       } else {
         Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+            context, apiErrorMessage(e));
       }
     }
   }
@@ -594,7 +599,7 @@ class _RegisterControllerState extends State<RegisterController> {
             googleAccount: account, appleCredential: null);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+            context, apiErrorMessage(error));
       } else {
         BotToast.closeAllLoading();
         Message.showToastMessage(context, error.toString());
@@ -658,7 +663,7 @@ class _RegisterControllerState extends State<RegisterController> {
             appleCredential: credential);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+            context, apiErrorMessage(error));
       } else {
         // Message.showToastMessage(context, error.toString());
       }

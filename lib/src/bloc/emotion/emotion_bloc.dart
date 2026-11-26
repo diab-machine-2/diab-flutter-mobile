@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
@@ -9,7 +8,7 @@ import 'package:medical/src/repo/emotion/emotion_client.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/api_error.dart';
 part 'emotion_bloc_event.dart';
 part 'emotion_bloc_state.dart';
 
@@ -58,7 +57,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                R.string.error_can_not_connect_to_server.tr());
+                apiErrorMessage(e));
       }
     }
   }
@@ -78,7 +77,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                R.string.error_can_not_connect_to_server.tr());
+                apiErrorMessage(e));
       }
     }
   }
@@ -98,7 +97,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                R.string.error_can_not_connect_to_server.tr());
+                apiErrorMessage(e));
       }
     }
   }
@@ -118,7 +117,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                R.string.error_can_not_connect_to_server.tr());
+                apiErrorMessage(e));
       }
     }
   }

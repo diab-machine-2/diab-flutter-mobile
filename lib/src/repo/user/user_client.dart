@@ -6,7 +6,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
@@ -36,6 +35,7 @@ import '../../model/response/common_response.dart';
 import '../../model/service/api_result.dart';
 import '../../model/service/network_exceptions.dart';
 import '../../widget/helper/version.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 enum CategoryType {
   JOB_TYPE,
@@ -87,7 +87,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -139,7 +139,7 @@ class UserClient extends FetchClient {
         throw errorMessage;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -267,7 +267,7 @@ class UserClient extends FetchClient {
   //       throw error;
   //     }
   //   } catch (e) {
-  //     throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+  //     throw apiFailure(e);
   //   }
   // }
 
@@ -307,7 +307,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -326,7 +326,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -384,7 +384,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -429,7 +429,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -453,7 +453,7 @@ class UserClient extends FetchClient {
         throw Error.fromString(error);
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -516,7 +516,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -541,7 +541,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -746,7 +746,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -762,7 +762,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -781,7 +781,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -801,7 +801,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -821,7 +821,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -841,7 +841,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -860,7 +860,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -883,7 +883,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -901,7 +901,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -930,7 +930,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -946,7 +946,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -963,7 +963,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1003,7 +1003,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1020,7 +1020,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1035,7 +1035,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1051,7 +1051,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1066,7 +1066,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1081,7 +1081,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1104,7 +1104,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1121,7 +1121,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1145,7 +1145,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -1162,7 +1162,7 @@ class UserClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 

@@ -481,7 +481,7 @@ class _BloodSugarDetailTabbarControllerState
             )
           else if (aiSuggestion.recommendation.isEmpty)
             Text(
-              'Có lỗi xảy ra',
+              aiSuggestion.errorMessage ?? R.string.an_error_occurred.tr(),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,

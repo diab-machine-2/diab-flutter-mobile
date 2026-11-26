@@ -1,11 +1,27 @@
+import 'package:medical/src/utils/api_error.dart';
+
 class AiRecommendationResult {
   final String recommendation;
   final List<AiReference> references;
 
+  /// Set when the analysis request failed, so the AI section can stop its
+  /// loading indicator and say why ("Hệ thống đang gặp sự cố" /
+  /// "Không có kết nối mạng") instead of spinning forever.
+  final String? errorMessage;
+
   AiRecommendationResult({
     required this.recommendation,
     List<AiReference>? references,
+    this.errorMessage,
   }) : references = references ?? [];
+
+  /// A failed analysis. [error] is whatever the request threw (or null when
+  /// the backend answered without usable data).
+  factory AiRecommendationResult.failure(Object? error) =>
+      AiRecommendationResult(
+        recommendation: '',
+        errorMessage: apiErrorMessage(error),
+      );
 
   factory AiRecommendationResult.fromJson(Map<String, dynamic> json) {
     return AiRecommendationResult(

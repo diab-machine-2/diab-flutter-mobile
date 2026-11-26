@@ -7,6 +7,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart' show ApiTimingInterceptor;
 
 import '../app_api.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 const _defaultConnectTimeout = Duration(minutes: 1);
 const _defaultReceiveTimeout = Duration(minutes: 1);
@@ -150,6 +151,8 @@ class AppClient {
     // Unlike FullLogInterceptor above, timing must also work in release
     // builds — it's how slow-endpoint reports get built from real usage.
     _dio.interceptors.add(ApiTimingInterceptor());
+    // Reports 5xx to Crashlytics on production.
+    _dio.interceptors.add(ServerErrorInterceptor());
 
     _dio.interceptors
         .add(InterceptorsWrapper(onRequest: (options, handler) async {

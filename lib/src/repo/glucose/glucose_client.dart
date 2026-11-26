@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
 import 'package:medical/src/modal/base/images.dart';
@@ -21,8 +20,8 @@ import 'package:medical/src/model/response/config/glucose_color_config.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
+import 'package:medical/src/utils/api_error.dart';
 
 class GlucoseClient extends FetchClient {
   int _parseEpochSeconds(dynamic value) {
@@ -46,7 +45,7 @@ class GlucoseClient extends FetchClient {
       throw error;
     }
     // } catch (e) {
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    //   throw apiFailure(e);
     // }
   }
 
@@ -187,7 +186,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
@@ -231,7 +230,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 //============ lấy chi tiết chỉ số Đường huyết =============/
@@ -247,7 +246,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -264,7 +263,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -306,7 +305,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       print('🔍 DEBUG: API Exception: $e');
       print(e.toString());
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -347,7 +346,7 @@ class GlucoseClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   //============ nhập chỉ số Đường huyết =============/
@@ -398,7 +397,7 @@ class GlucoseClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -423,7 +422,7 @@ class GlucoseClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -449,7 +448,7 @@ class GlucoseClient extends FetchClient {
       return null;
     }
     // } catch (e) {
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    //   throw apiFailure(e);
     // }
   }
 
@@ -466,7 +465,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -496,7 +495,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -522,7 +521,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
   //============ update chỉ số đường huyết =============/
@@ -574,7 +573,7 @@ class GlucoseClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 
@@ -601,7 +600,7 @@ class GlucoseClient extends FetchClient {
         throw response.reasonPhrase ?? 'Failed to analyze blood sugar images';
       }
     } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      throw apiFailure(e);
     }
   }
 }
