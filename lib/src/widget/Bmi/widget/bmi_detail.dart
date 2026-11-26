@@ -325,6 +325,8 @@ class BmiDetailControllerState extends State<BmiDetailController>
   }
 
   Widget _rangeName(InputWeightModel kpiItem) {
+    // No BMI category from the backend → no badge (not the text "null").
+    if (kpiItem.bmiText?.isEmpty ?? true) return const SizedBox.shrink();
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
       decoration: BoxDecoration(

@@ -139,7 +139,10 @@ class _InfoHeader extends StatelessWidget {
                           size: 18,
                         )),
                   ),
-                  if (bmiBloc.selectedPointChart?.bmiText == null) ...[
+                  // "No data" only when there is no reading. A reading can
+                  // come back without bmiText (BMI category) and still has
+                  // weight/BMI to show.
+                  if (bmiBloc.selectedPointChart == null) ...[
                     Text(
                       R.string.no_data_within
                           .tr(args: ["${bmiBloc.periodType.days}"]),

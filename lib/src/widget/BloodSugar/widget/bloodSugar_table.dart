@@ -135,7 +135,8 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
                                   ),
                                   children: model.map((item) {
                                     final time = item.createDate!;
-                                    final timeFrame = item.timeFrame!;
+                                    // null for synced readings.
+                                    final timeFrame = item.timeFrame ?? '';
                                     final glucose = item.glucose!.toDouble();
 
                                     return _buildItem(context, time, timeFrame,

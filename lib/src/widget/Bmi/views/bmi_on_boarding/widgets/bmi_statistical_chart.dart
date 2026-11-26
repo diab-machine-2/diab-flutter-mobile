@@ -228,7 +228,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                                     return const Text('-');
                                   if (value < 0) return const Text('');
                                   return Text(
-                                    data[index].waist?.toStringAsFixed(0) ?? '',
+                                    _formatWaist(data[index].waist),
                                     style: R.style.smallTextStyle,
                                   );
                                 }
@@ -363,6 +363,14 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
             ],
           );
         });
+  }
+
+  /// Waist under each point: one decimal so close readings (76.8, 77.4)
+  /// don't all round to the same "77".
+  static String _formatWaist(double? waist) {
+    if (waist == null) return '';
+    if (waist == waist.roundToDouble()) return waist.toStringAsFixed(0);
+    return waist.toStringAsFixed(1);
   }
 
   void _focusToSelectedPoint({required int totalPoint}) {

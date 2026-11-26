@@ -153,7 +153,7 @@ class _BloodSugarDistribuitonTableControllerState
                                     } else {
                                       final time = model![index - 1].createDate!;
                                       final timeFrame =
-                                          model[index - 1].timeFrame!;
+                                          model[index - 1].timeFrame ?? '';
                                       final glucose =
                                           roundNumber(model[index - 1].glucose!);
                                       final color =

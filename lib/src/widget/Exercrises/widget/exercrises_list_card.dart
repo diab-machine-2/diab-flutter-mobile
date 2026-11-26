@@ -94,9 +94,12 @@ class ExercrisesListCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                                convertToUTC(itemInput.date!, 'HH:mm') +
-                                    ', ' +
+                                // timeFrame is null for synced entries.
+                                [
+                                  convertToUTC(itemInput.date!, 'HH:mm'),
+                                  if (itemInput.timeFrame?.isNotEmpty ?? false)
                                     itemInput.timeFrame!,
+                                ].join(', '),
                                 style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 16,
