@@ -9,10 +9,10 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 
 import 'daily_nutrition/daily_nutrition.dart';
 import 'daily_nutrition/update_meal_page_ai.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class FoodDetailController extends StatefulWidget {
   final int? periodFilterType;
@@ -96,8 +96,9 @@ class FoodDetailControllerState extends State<FoodDetailController>
                 periodFilterType: periodFilterType.toString(),
                 page: 1));
           }
+          // A failed load used to toast and then spin forever.
           if (state is FoodError) {
-            Message.showToastMessage(context, state.message);
+            return ApiErrorPlaceholder(message: state.message);
           }
           if (state is FoodInputLoaded) {
             model = state.inputs;

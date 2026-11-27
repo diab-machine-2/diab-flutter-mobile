@@ -7,6 +7,7 @@ import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class HbA1cDetailPage extends StatefulWidget {
   final int? initPeriodFilterType;
@@ -105,8 +106,12 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
         value: _hbA1CBloc,
         child: BlocConsumer<HbA1CBloc, HbA1CState>(
           listener: (context, state) {
+            // With an empty list the error is shown in place (below); a
+            // toast only when older items stay on screen.
             if (state is HbA1CError) {
-              Message.showToastMessage(context, state.message);
+              if (_allItems.isNotEmpty) {
+                Message.showToastMessage(context, state.message);
+              }
             } else if (state is HbA1CDetailLoaded) {
               // Update list in listener to avoid concurrent modification during build
               if (_currentPage == 1) {
@@ -127,6 +132,11 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
             // Update loading state and model based on state
             bool isLoading = state is HbA1CLoading || state is HbA1CInitial;
             List<InputHbA1CModel>? model;
+
+            // A failed first load used to leave a blank screen.
+            if (state is HbA1CError && _allItems.isEmpty) {
+              return ApiErrorPlaceholder(message: state.message);
+            }
 
             if (state is HbA1CDetailLoaded) {
               // Use the already updated _allItems from listener

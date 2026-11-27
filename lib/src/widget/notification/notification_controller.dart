@@ -23,6 +23,7 @@ import 'package:medical/src/widgets/shimmer_box.dart';
 
 import '../../modal/notification/notification_list_model.dart';
 import 'notification_sent_label.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class NotificationController extends StatefulWidget {
   const NotificationController({required this.isRemovealbe});
@@ -129,7 +130,9 @@ class NotificationControllerState extends State<NotificationController>
       value: _bloc,
       child: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (BuildContext context, NotificationState state) {
-          if (state is NotificationError) {
+          // With an empty list the error is shown in place (below); a toast
+          // only when older notifications stay on screen.
+          if (state is NotificationError && model.isNotEmpty) {
             Message.showToastMessage(context, state.message);
           }
           if (state is NotificationLoaded) {
@@ -145,7 +148,17 @@ class NotificationControllerState extends State<NotificationController>
             child: Scaffold(
               body: state is NotificationInitial
                   ? _buildNotificationSkeleton()
-                  : _buildNotificationList(model, state),
+                  : state is NotificationError && model.isEmpty
+                      // Was "Không có thông báo nào" while offline / on a 5xx.
+                      // Scrollable so pull-to-refresh still works.
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            ApiErrorPlaceholder(
+                                message: state.message, height: 400),
+                          ],
+                        )
+                      : _buildNotificationList(model, state),
             ),
           );
         },

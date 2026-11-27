@@ -11,6 +11,8 @@ import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_record_card.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_statistical_data_app_bar.dart';
+import 'package:medical/src/utils/api_error.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class BmiStatisticalDataPage extends StatefulWidget {
   const BmiStatisticalDataPage({super.key});
@@ -115,6 +117,14 @@ class _HistoricalWeightListView extends StatelessWidget {
         builder: (context, state) {
           Map<DateTime, List<BmiGetWeightRecord>> groupedData =
               _bmiBloc.getGroupedWeightRecords();
+
+          // A failed load used to leave a blank screen.
+          if (groupedData.isEmpty &&
+              state is BmiGetWeightIndexListState &&
+              state.data.isError) {
+            return ApiErrorPlaceholder(
+                message: apiErrorMessage(state.data.error));
+          }
 
           return ListView.builder(
             controller: scrollController,
