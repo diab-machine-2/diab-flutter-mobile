@@ -1,0 +1,131 @@
+name: Upload to TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Run ID from ios-build.yml (leave empty to use latest successful run)"
+        required: false
+        type: string
+      release_notes:
+        description: 'Release notes (What to test) - Optional'
+        required: false
+        type: string
+
+jobs:
+  upload-testflight:
+    runs-on: macos-26
+    permissions:
+      actions: read
+
+    steps:
+      # ─────────────────────────────────────────────────────────────
+      # 1. Checkout repo FIRST so Fastfile is available
+      # ─────────────────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+
+      # ─────────────────────────────────────────────────────────────
+      # 2. Resolve which build artifact to download
+      # ─────────────────────────────────────────────────────────────
+      - name: Resolve Run ID and Artifact Name
+        id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GIT_TOKEN }}
+        run: |
+          INPUT_ID="${{ inputs.run_id }}"
+          if [ -n "$INPUT_ID" ]; then
+            if [ ${#INPUT_ID} -lt 8 ]; then
+              echo "🔍 Converting Run Number #$INPUT_ID to Database ID..."
+              RUN_ID=$(gh run list --limit 100 --json databaseId,number -q ".[] | select(.number == ${INPUT_ID}) | .databaseId" --repo ${{ github.repository }})
+              if [ -z "$RUN_ID" ]; then
+                echo "❌ Could not find a run with number #$INPUT_ID"
+                exit 1
+              fi
+            else
+              RUN_ID="$INPUT_ID"
+            fi
+          else
+            RUN_ID=$(gh run list \
+              --workflow ios-build.yml \
+              --status success \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId' \
+              --repo ${{ github.repository }})
+          fi
+
+          if [ -z "$RUN_ID" ]; then
+            echo "❌ Could not find a successful ios-build.yml run"
+            exit 1
+          fi
+
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          echo "✅ Using Run ID: $RUN_ID"
+
+          echo "🔍 Looking for ios-artifacts-* artifact..."
+
+          ARTIFACT_NAME=$(gh api \
+            repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts \
+            --jq '.artifacts[] | select(.name | startswith("ios-artifacts-")) | .name' \
+            | head -1)
+
+          if [ -z "$ARTIFACT_NAME" ]; then
+            echo "❌ No ios-artifacts-* artifact found for run $RUN_ID"
+            exit 1
+          fi
+
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+          echo "✅ Found artifact: $ARTIFACT_NAME"
+
+      # ─────────────────────────────────────────────────────────────
+      # 3. Download the build artifact
+      # ─────────────────────────────────────────────────────────────
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ steps.resolve.outputs.artifact_name }}
+          github-token: ${{ secrets.GIT_TOKEN }}
+          run-id: ${{ steps.resolve.outputs.run_id }}
+          path: ./artifact
+
+      # ─────────────────────────────────────────────────────────────
+      # 4. Find the IPA inside the artifact
+      # ─────────────────────────────────────────────────────────────
+      - name: Find IPA
+        id: find_ipa 
+        run: |
+          echo "📂 Files inside artifact:"
+          find ./artifact -type f
+
+          IPA_PATH=$(find ./artifact -name "*.ipa" | head -1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "❌ No IPA found in artifact!"
+            exit 1
+          fi
+
+          echo "ipa_path=$IPA_PATH" >> $GITHUB_OUTPUT
+          echo "✅ Found IPA: $IPA_PATH"
+
+      # ─────────────────────────────────────────────────────────────
+      # 5. Install Fastlane
+      # ─────────────────────────────────────────────────────────────
+      - name: Install Fastlane
+        run: sudo gem install fastlane --no-document
+
+      # ─────────────────────────────────────────────────────────────
+      # 6. Upload to TestFlight via Fastlane
+      # ─────────────────────────────────────────────────────────────
+      - name: Upload to TestFlight via Fastlane Pilot
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+          SIGNED_IPA: ${{ steps.find_ipa.outputs.ipa_path }}
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+          PILOT_SKIP_WAITING_FOR_BUILD_PROCESSING: true
+        run: |
+          fastlane upload_tf
+          echo "✅ Uploaded to TestFlight!"
