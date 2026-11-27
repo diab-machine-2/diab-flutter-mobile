@@ -11,10 +11,10 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'widget/horizontal_selector.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class BloodPressureDetailListingController extends StatefulWidget {
   BloodPressureDetailListingController({
@@ -207,8 +207,9 @@ class BloodPressureDetailListingControllerState
                       bloodPressureType:
                           _bloodPressureRangeType?.value.toString()));
             }
+            // A failed load used to toast and then spin forever.
             if (state is BloodPressureError) {
-              Message.showToastMessage(context, state.message);
+              return ApiErrorPlaceholder(message: state.message);
             }
             if (state is BloodPressureLoading) {
               return Center(child: CircularProgressIndicator());

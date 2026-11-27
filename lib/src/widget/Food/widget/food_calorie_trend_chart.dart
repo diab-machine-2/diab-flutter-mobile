@@ -13,6 +13,7 @@ import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class FoodCalorieTrendChart extends StatefulWidget {
   FoodCalorieTrendChart({
@@ -182,13 +183,11 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         if (!mounted) return SizedBox.shrink();
 
         if (state is FoodError) {
-          print('[FoodCalorieTrendChart] BLoC error: ${state.message}');
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              widget.onDataLoaded?.call(false);
-            }
-          });
-          return _buildEmptyState();
+          // A failed load is not "no data": say why instead. Don't report
+          // onDataLoaded(false) either — the overview reads that as "this
+          // user has no meals" and may send them to the nutrition intro.
+          // The sections below stay hidden (hasData starts false).
+          return ApiErrorPlaceholder(message: state.message, height: 300);
         }
 
         if (state is FoodNutritionOverviewLoaded ||

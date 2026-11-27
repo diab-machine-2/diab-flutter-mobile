@@ -9,10 +9,10 @@ import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class BloodSugarDetailController extends StatefulWidget {
   BloodSugarDetailController(
@@ -176,8 +176,9 @@ class BloodSugarDetailControllerState
                             widget.glucoseDistributionType?.toString(),
                         page: 1));
                   }
+                  // A failed load used to toast and then spin forever.
                   if (state is GlucoseError) {
-                    Message.showToastMessage(context, state.message);
+                    return ApiErrorPlaceholder(message: state.message);
                   }
                   if (state is GlucoseLoading) {
                     return Center(child: CircularProgressIndicator());

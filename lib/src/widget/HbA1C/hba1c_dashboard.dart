@@ -17,6 +17,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_functions.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_trend_chart.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 // Re-export HbA1cDataPoint for compatibility
 export 'hba1c_trend_chart.dart' show HbA1cDataPoint;
@@ -478,7 +479,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
               _loadTrendData();
             }
 
-            if (state is HbA1CError) {
+            // With nothing on screen the error is shown in place of the
+            // chart; a toast only when older data stays visible.
+            if (state is HbA1CError && _dataPoints.isNotEmpty) {
               Message.showToastMessage(context, state.message);
             }
 
@@ -774,6 +777,11 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           child: CircularProgressIndicator(),
         ),
       );
+    }
+
+    // A failed load is not "no data": say why instead.
+    if (state is HbA1CError && _dataPoints.isEmpty) {
+      return ApiErrorPlaceholder(message: state.message);
     }
 
     // Show empty state when no data

@@ -477,23 +477,10 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       NutritionSummaryModel summary;
       try {
         summary = await client.fetchNutritionSummary(range);
-      } catch (_) {
-        yield FoodNutritionOverviewLoaded(
-          periodFilterType: range,
-          trendItems: const [],
-          energyGoal: energyGoal,
-          perMealThreshold: perMealThreshold,
-          distributeModel: const FoodDistributeModel(
-            legends: [],
-            energyChart: [],
-            carbChart: [],
-          ),
-          balancedCount: 0,
-          totalMealCount: 0,
-          targetKcal: targetKcal,
-          nutrientPercent: _emptyNutrientPercentMap(),
-          aiAdvice: null,
-        );
+      } catch (e) {
+        // Used to yield an empty overview, which the screen showed as "no
+        // data in the last N days" while offline or on a 5xx.
+        yield FoodError(message: apiErrorMessage(e));
         return;
       }
 

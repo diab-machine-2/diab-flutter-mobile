@@ -65,20 +65,18 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
   Stream<WeightState> fetchTrendWeight(
       String? currentDateTime, String? periodFilterType, String? page) async* {
     periodFilterType = await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
-    // try {
-    final client = WeightClient();
-    yield WeightLoading();
-    var model = await client.fetchWeightTrend(currentDateTime, periodFilterType, page);
-    yield WeightTrendLoaded(trend: model);
-    // } catch (e, _) {
-    //   if (e is Error) {
-    //     yield WeightError(message: e.message);
-    //   } else {
-    //     yield WeightError(
-    //         message:
-    //             R.string.error_can_not_connect_to_server.tr());
-    //   }
-    // }
+    try {
+      final client = WeightClient();
+      yield WeightLoading();
+      var model = await client.fetchWeightTrend(currentDateTime, periodFilterType, page);
+      yield WeightTrendLoaded(trend: model);
+    } catch (e, _) {
+      if (e is Error) {
+        yield WeightError(message: e.message);
+      } else {
+        yield WeightError(message: apiErrorMessage(e));
+      }
+    }
   }
 
   Stream<WeightState> fetchTrendHip(

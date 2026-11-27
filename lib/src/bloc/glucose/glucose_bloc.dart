@@ -175,33 +175,30 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
     String? glucoseDistributionType,
     String? size,
   ) async* {
-    // try {
-    final client = GlucoseClient();
     final GlucoseState currenState = state;
-    var model = await client.fetchInput(currentDateTime, periodFilterType, page,
-        timeFrameType, glucoseDistributionType,
-        size: size ?? '10');
+    try {
+      final client = GlucoseClient();
+      var model = await client.fetchInput(currentDateTime, periodFilterType,
+          page, timeFrameType, glucoseDistributionType,
+          size: size ?? '10');
 
-    if (currenState is GlucoseAlllLoaded) {
-      if (page != 1) {
-        model.inputs.insertAll(0, currenState.inputGlucoseModel);
+      if (currenState is GlucoseAlllLoaded) {
+        if (page != 1) {
+          model.inputs.insertAll(0, currenState.inputGlucoseModel);
+        }
       }
-    }
 
-    yield GlucoseAlllLoaded(
-      inputGlucoseModel: model.inputs,
-      hasMore: model.hasMore,
-      page: (page ?? 0) + 1,
-    );
-    // } catch (e, _) {
-    //   if (e is Error) {
-    //     yield GlucoseError(message: e.message);
-    //   } else {
-    //     yield GlucoseError(
-    //         message:
-    //             R.string.error_can_not_connect_to_server.tr());
-    //   }
-    // }
+      yield GlucoseAlllLoaded(
+        inputGlucoseModel: model.inputs,
+        hasMore: model.hasMore,
+        page: (page ?? 0) + 1,
+      );
+    } catch (e, _) {
+      // Without this the history screen spun forever on a failed first
+      // load. A failed "load more" keeps the list already on screen.
+      if (page != 1 && currenState is GlucoseAlllLoaded) return;
+      yield GlucoseError(message: apiErrorMessage(e));
+    }
   }
 
   Stream<GlucoseState> fetchComparerGlucose(String? currentDateTime,

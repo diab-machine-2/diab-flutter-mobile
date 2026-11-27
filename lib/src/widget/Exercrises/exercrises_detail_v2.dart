@@ -15,12 +15,12 @@ import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/widget/filter_segment_button.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 import '../../utils/navigator_name.dart';
 import 'widget/exercrises_list_card.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class ExercrisesDetailV2 extends StatefulWidget {
   final int periodFilterType;
@@ -224,8 +224,9 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
               if (state is ExercrisesInitial) {
                 _initializeData();
               }
+              // A failed load is not "no data": say why instead.
               if (state is ExercrisesError) {
-                Message.showToastMessage(context, state.message);
+                return ApiErrorPlaceholder(message: state.message);
               }
               if (state is ExercrisesLoading) {
                 return Center(child: CircularProgressIndicator());
