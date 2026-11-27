@@ -293,7 +293,13 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
           _aiAnalysicTrend = data;
           emit(BmiGetAIAnalysicState(Resource.success(data)));
         },
-        failure: (error) => emit(BmiGetAIAnalysicState(Resource.error(error))));
+        failure: (error) {
+          // Keep the failure (not the previous period's analysis) so the AI
+          // section says why: "Không có kết nối mạng" / "Hệ thống đang gặp
+          // sự cố".
+          _aiAnalysicTrend = AiRecommendationResult.failure(error);
+          emit(BmiGetAIAnalysicState(Resource.error(error)));
+        });
   }
 
   void _onGetAIIndexAnalysis(

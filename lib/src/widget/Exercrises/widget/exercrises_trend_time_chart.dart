@@ -12,9 +12,9 @@ import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ai_suggestion.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class ExercrisesTrendTimeChart extends StatefulWidget {
   const ExercrisesTrendTimeChart({
@@ -159,9 +159,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                     (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
                 periodFilterType: periodFilterType.toString()));
           }
-          if (state is ExercrisesError) {
-            Message.showToastMessage(context, state.message);
-          }
           if (state is TimeTrendTrendLoaded && mounted) {
             // Only process if mounted
             model = state.model;
@@ -178,6 +175,10 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
           }
 
           if (model == null) {
+            // A failed request used to toast and then spin forever.
+            if (state is ExercrisesError) {
+              return ApiErrorPlaceholder(message: state.message, height: 450);
+            }
             return Container(
                 height: 450, child: Center(child: CircularProgressIndicator()));
           }

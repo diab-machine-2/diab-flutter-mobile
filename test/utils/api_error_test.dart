@@ -100,6 +100,20 @@ void main() {
           _system);
     });
 
+    test('Retrofit failures (weight / exercise AI) keep their classification',
+        () {
+      expect(
+          AiRecommendationResult.failure(
+                  const NetworkExceptions.noInternetConnection())
+              .errorMessage,
+          _network);
+      expect(
+          AiRecommendationResult.failure(
+                  const NetworkExceptions.internalServerError())
+              .errorMessage,
+          _system);
+    });
+
     test('a normal result carries no error', () {
       expect(AiRecommendationResult(recommendation: 'ok').errorMessage, isNull);
     });

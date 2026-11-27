@@ -138,6 +138,11 @@ class ExercrisesLessonSectionState extends State<ExercrisesLessonSection> {
             ),
           );
         }
+        // Lessons are optional: hide the section when they fail to load
+        // instead of spinning forever (the charts above already say why).
+        if (state is ExercrisesError) {
+          return const SizedBox();
+        }
         // Widget hiển thị khi đang loading
         return Center(
           child: CircularProgressIndicator(),

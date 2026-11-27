@@ -19,7 +19,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/widget/components/ai_references_widget.dart';
-import 'package:medical/src/utils/api_error.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -291,19 +291,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                   if (mounted) widget.bloodSugarChartCallback!(null, failure);
                 });
               }
-              return Container(
-                height: 450,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                alignment: Alignment.center,
-                child: Text(
-                  (state.message?.isNotEmpty ?? false)
-                      ? state.message!
-                      : apiErrorMessage(null),
-                  textAlign: TextAlign.center,
-                  style:
-                      TextStyle(color: R.color.color0xff636A6B, fontSize: 15),
-                ),
-              );
+              return ApiErrorPlaceholder(message: state.message, height: 450);
             }
             return Container(
                 height: 450, child: Center(child: CircularProgressIndicator()));

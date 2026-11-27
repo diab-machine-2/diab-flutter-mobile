@@ -25,6 +25,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
 import '../../../widgets/network_image_widget.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 
 class ExercrisesTrendCaloChart extends StatefulWidget {
   ExercrisesTrendCaloChart(
@@ -122,8 +123,9 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
               periodFilterType: periodFilterType.toString(),
             ));
           }
+          // A failed request used to toast and then spin forever.
           if (state is ExercrisesError) {
-            Message.showToastMessage(context, state.message);
+            return ApiErrorPlaceholder(message: state.message);
           }
           if (state is CaloTrendLoaded) {
             model = state.model;

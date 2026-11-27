@@ -83,7 +83,7 @@ class BmiAiWeightIndexAnalysis extends StatelessWidget {
       if (recommendation == null || recommendation.isEmpty) {
         // Error or empty recommendation — same pattern as BloodSugar's _sectionAIHelp
         inner = Text(
-          'Có lỗi xảy ra',
+          bloc.aiAnalysicTrend?.errorMessage ?? R.string.an_error_occurred.tr(),
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w400,

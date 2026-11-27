@@ -10,7 +10,7 @@ import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/utils/api_error.dart';
+import 'package:medical/src/widgets/api_error_placeholder.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
@@ -93,19 +93,7 @@ class BloodPressureDistributionChartState
             // A failed request used to toast and then spin forever; say why
             // in place instead, like the trend chart above it.
             if (state is BloodPressureError) {
-              return Container(
-                height: 240,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                alignment: Alignment.center,
-                child: Text(
-                  (state.message?.isNotEmpty ?? false)
-                      ? state.message!
-                      : apiErrorMessage(null),
-                  textAlign: TextAlign.center,
-                  style:
-                      TextStyle(color: R.color.color0xff636A6B, fontSize: 15),
-                ),
-              );
+              return ApiErrorPlaceholder(message: state.message, height: 240);
             }
             return Container(
                 height: 240, child: Center(child: CircularProgressIndicator()));

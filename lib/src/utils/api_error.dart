@@ -6,6 +6,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart' as api;
+import 'package:medical/src/model/service/network_exceptions.dart'
+    show NetworkExceptions;
 import 'package:medical/src/utils/const.dart';
 
 /// Why an API call failed, as far as the user is concerned.
@@ -63,6 +65,10 @@ String apiErrorMessage(Object? error) {
     return error.message!;
   }
   if (error is String && error.isNotEmpty) return error;
+  // Retrofit repositories (ApiResult.failure) already classified it.
+  if (error is NetworkExceptions) {
+    return NetworkExceptions.getErrorMessage(error);
+  }
   if (error == null || error is api.Error || error is String) {
     return apiFailureMessage(ApiFailureKind.server);
   }

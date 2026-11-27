@@ -8,6 +8,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/components/ai_references_widget.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class BmiAISuggestionSession extends StatefulWidget {
   final int periodFilterType;
@@ -74,7 +75,7 @@ class _BmiAISuggestionSessionState extends State<BmiAISuggestionSession> {
           if (mounted) {
             setState(() {
               hasError = true;
-              errorMessage = error.toString();
+              errorMessage = apiErrorMessage(error);
               isLoading = false;
             });
           }
@@ -84,7 +85,7 @@ class _BmiAISuggestionSessionState extends State<BmiAISuggestionSession> {
       if (mounted) {
         setState(() {
           hasError = true;
-          errorMessage = e.toString();
+          errorMessage = apiErrorMessage(e);
           isLoading = false;
         });
       }
@@ -178,7 +179,9 @@ class _BmiAISuggestionSessionState extends State<BmiAISuggestionSession> {
           ),
           SizedBox(height: 8),
           Text(
-            'Trợ lý Sống khoẻ đang nhận quá nhiều yêu cầu. Vui lòng thử lại sau nhé!',
+            // A failed request says why (offline / system problem); an empty
+            // answer keeps the "assistant is busy" text.
+            hasError ? errorMessage : R.string.ai_assistant_busy.tr(),
             style: TextStyle(
               fontSize: 15,
               color: R.color.color0xff111515,

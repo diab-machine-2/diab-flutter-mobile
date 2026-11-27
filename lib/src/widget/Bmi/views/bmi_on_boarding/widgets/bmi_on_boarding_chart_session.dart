@@ -13,6 +13,7 @@ import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_ai_weight_index_analysis.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_statistical_chart.dart';
+import 'package:medical/src/utils/api_error.dart';
 
 class BmiOnBoardingChartSession extends StatefulWidget {
   const BmiOnBoardingChartSession({
@@ -142,10 +143,13 @@ class _InfoHeader extends StatelessWidget {
                   // "No data" only when there is no reading. A reading can
                   // come back without bmiText (BMI category) and still has
                   // weight/BMI to show.
+                  // A failed load is not "no data": say why instead.
                   if (bmiBloc.selectedPointChart == null) ...[
                     Text(
-                      R.string.no_data_within
-                          .tr(args: ["${bmiBloc.periodType.days}"]),
+                      state is BmiGetWeightIndexListState && state.data.isError
+                          ? apiErrorMessage(state.data.error)
+                          : R.string.no_data_within
+                              .tr(args: ["${bmiBloc.periodType.days}"]),
                       textAlign: TextAlign.center,
                       style: R.style.normalTextStyle,
                     )
